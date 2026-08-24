@@ -20,15 +20,15 @@ Nuestra filosofía combina la innovación práctica con la resolución de retos 
 ---
 
 ## 📚 **Tabla de Contenidos**
-- [📂 Estructura de Documentación](#-estructura-de-documentación)
-- [👥 El Equipo](#-el-equipo)
-- [🛠️ Stack Tecnológico](#-stack-tecnológico)
-- [🔧 Sistema Electrónico](#-sistema-electrónico)
-- [🚀 Instalación y Uso](#-instalación-y-uso)
+- [📂 Estructura de Documentación](#estructura)
+- [👥 El Equipo](#equipo)
+- [🛠️ Stack Tecnológico](#stack)
+- [🔧 Sistema Electrónico](#hardware)
+- [🚀 Instalación y Uso](#instalacion)
 
 ---
 
-## 📂 **Estructura de Documentación**
+## <a id="estructura"></a>📂 **Estructura de Documentación**
 
 <div align="center">
 
@@ -42,7 +42,7 @@ Nuestra filosofía combina la innovación práctica con la resolución de retos 
 
 ---
 
-## 👥 **El Equipo** <a id="the-team"></a>
+## <a id="equipo"></a>👥 **El Equipo**
 
 Un equipo interdisciplinario que une trayectorias individuales en la WRO y una sólida experiencia conjunta en competencias internacionales de alto nivel como la **FTC Championship en Italia**.
 
@@ -69,27 +69,64 @@ Un equipo interdisciplinario que une trayectorias individuales en la WRO y una s
 
 ---
 
-## 🛠️ **Stack Tecnológico**
+## <a id="stack"></a>🛠️ **Stack Tecnológico**
 
 * **Cerebro:** ESP32-S3 para la ejecución central de algoritmos de navegación y control.
-* **Percepción Visual y Orientación:** Cámara inteligente HuskyLens para reconocimiento de pista y sensor IMU BMI160 para orientación.
+* **Percepción Visual, Distancia e Inercia:** Cámara inteligente HuskyLens para reconocimiento de pista, sensor ultrasónico HC-SR04 para detección de proximidad y sensor IMU BMI160 para orientación.
 * **Control de Dirección:** Servomotor controlado directamente mediante GPIO 7 con la librería `ESP32Servo`.
 * **Actuación y Tracción:** Puente H L298N operado con GPIOs directos (GPIO 4 para PWM/ENA, GPIO 5 y 6 para dirección) para propulsión.
 
 ---
 
-## 🔧 **Sistema Electrónico (Componentes Principales)**
+## <a id="hardware"></a>🔧 **Sistema Electrónico (Ficha Técnica de Hardware)**
 
-| Componente | Vista Previa | Función Crítica | Pinout / Asignación GPIO |
-|-----------|:-----------:|-------------------|---------------------------|
-| **ESP32-S3** | <img src="./Esquemas/ESP32-S3.jpeg" width="100"> | Unidad de procesamiento central. | MCU Principal |
-| **HuskyLens** | <img src="./Esquemas/Huskylens.jpg" width="100"> | Reconocimiento visual y seguimiento. | Cámara inteligente |
-| **BMI160** | <img src="./Esquemas/bmi160.jpg" width="100"> | Unidad de medición inercial (IMU). | Bus I2C |
-| **L298N** | <img src="./Esquemas/L298N.jpg" width="100"> | Controlador de motor principal (Puente H). | **ENA:** GPIO 4 (PWM)<br>**IN1:** GPIO 5<br>**IN2:** GPIO 6 |
+<h2 align="center">📋 Ficha Técnica de Hardware - Team Nexus</h2>
+
+<table align="center" width="100%">
+  <thead>
+    <tr>
+      <th width="20%">Vista Previa</th>
+      <th width="60%">Modelo y Descripción Técnica</th>
+      <th width="20%">Documentación</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td align="center"><img src="./Esquemas/ESP32-S3.jpeg" width="120" style="border-radius: 8px;"/></td>
+      <td><b>ESP32-S3</b><br/>Unidad de procesamiento principal Dual-Core con soporte para aceleración de IA y control central del vehículo.</td>
+      <td align="center"><a href="https://www.espressif.com/sites/default/files/documentation/esp32-s3_datasheet_en.pdf"><img src="https://img.shields.io/badge/Datasheet-red?style=for-the-badge&logo=adobeacrobatreader&logoColor=white" /></a></td>
+    </tr>
+    <tr>
+      <td align="center"><img src="./Esquemas/Huskylens.jpg" width="120" style="border-radius: 8px;"/></td>
+      <td><b>HuskyLens</b><br/>Cámara inteligente de visión artificial para reconocimiento visual y clasificación de obstáculos.</td>
+      <td align="center"><a href="https://www.dfrobot.com/product-3118.html"><img src="https://img.shields.io/badge/Datasheet-red?style=for-the-badge&logo=adobeacrobatreader&logoColor=white" /></a></td>
+    </tr>
+    <tr>
+      <td align="center"><img src="./Esquemas/bmi160.jpg" width="120" style="border-radius: 8px;"/></td>
+      <td><b>BMI160 (IMU)</b><br/>Sensor inercial de 6 ejes (Giroscopio + Acelerómetro) para corrección de rumbo y maniobras de giro.</td>
+      <td align="center"><a href="https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bmi160-ds000.pdf"><img src="https://img.shields.io/badge/Datasheet-red?style=for-the-badge&logo=adobeacrobatreader&logoColor=white" /></a></td>
+    </tr>
+    <tr>
+      <td align="center"><img src="./Esquemas/HC-SR04.jpg" width="120" style="border-radius: 8px;"/></td>
+      <td><b>HC-SR04</b><br/>Sensor de distancia por ultrasonido para prevención de colisiones y medición rápida de proximidad a paredes o bloques.</td>
+      <td align="center"><a href="https://agelectronica.lat/pdfs/textos/U/ULTRASONIC-HC-SR04.PDF"><img src="https://img.shields.io/badge/Datasheet-red?style=for-the-badge&logo=adobeacrobatreader&logoColor=white" /></a></td>
+    </tr>
+    <tr>
+      <td align="center"><img src="./Esquemas/L298N.jpg" width="120" style="border-radius: 8px;"/></td>
+      <td><b>L298N Driver</b><br/>Controlador Puente H de doble canal para regulación de velocidad PWM (GPIO 4) y dirección de tracción (GPIO 5 y 6).</td>
+      <td align="center"><a href="https://agelectronica.lat/pdfs/textos/L/L298N-DRIVE-MODULE.PDF"><img src="https://img.shields.io/badge/Datasheet-red?style=for-the-badge&logo=adobeacrobatreader&logoColor=white" /></a></td>
+    </tr>
+    <tr>
+      <td align="center"><img src="./Esquemas/MG90S.jpg" width="120" style="border-radius: 8px;"/></td>
+      <td><b>Servomotor de Dirección</b><br/>Actuador de alta precisión operado mediante GPIO 7 para el control de ángulo en la dirección Ackermann.</td>
+      <td align="center"><a href="https://studylib.net/doc/25404669/mg90s-datasheet"><img src="https://img.shields.io/badge/Datasheet-red?style=for-the-badge&logo=adobeacrobatreader&logoColor=white" /></a></td>
+    </tr>
+  </tbody>
+</table>
 
 ---
 
-## 🚀 **Instalación y Uso**
+## <a id="instalacion"></a>🚀 **Instalación y Uso**
 
 ```bash
 # Clonar el repositorio oficial
