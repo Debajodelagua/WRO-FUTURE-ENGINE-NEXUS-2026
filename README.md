@@ -3,11 +3,18 @@
 <div align="center">
   <img src="./Otro/NEXUS_LOGO.jpg" alt="Team Nexus Autonomous Vehicle" width="600" style="border-radius: 15px;">
 
-  [![Instagram](https://img.shields.io/badge/Instagram-%23E4405F.svg?style=for-the-badge&logo=Instagram&logoColor=white)](https://www.instagram.com/iniar_zulia/)
-  [![Team](https://img.shields.io/badge/Team-Nexus-blue?style=for-the-badge)](https://github.com/)
+ <br><br>
+   [![WRO](https://img.shields.io/badge/WRO-Future_Engineers_2026-0052CC.svg?style=for-the-badge&logo=target)](https://wro-association.org/)
+  [![Country](https://img.shields.io/badge/Location-Zulia%2C_Venezuela-FFD700.svg?style=for-the-badge&logo=googlemaps&logoColor=black)](https://www.instagram.com/iniar_zulia/)
+  [![Institution](https://img.shields.io/badge/Institution-INIAR-008080.svg?style=for-the-badge)](https://www.instagram.com/iniar_zulia/)
+  <br>
+  [![C++](https://img.shields.io/badge/Language-C%2B%2B-00599C.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white)](https://isocpp.org/)
+  [![Arduino IDE](https://img.shields.io/badge/IDE-Arduino_IDE-00979D.svg?style=for-the-badge&logo=arduino&logoColor=white)](https://www.arduino.cc/)
+  [![Instagram](https://img.shields.io/badge/Instagram-@iniar__zulia-%23E4405F.svg?style=for-the-badge&logo=Instagram&logoColor=white)](https://www.instagram.com/iniar_zulia/)
+  <br><br>
+  
 </div>
 
----
 
 ## 🏆 **REPRESENTANDO A TEAM NEXUS – RUMBO A WRO 2026**
 
@@ -20,27 +27,32 @@ Nuestra filosofía combina la innovación práctica con la resolución de retos 
 ---
 
 ## 📚 **Tabla de Contenidos**
-- [📂 Estructura de Documentación](#estructura)
-- [👥 El Equipo](#equipo)
-- [🛠️ Stack Tecnológico](#stack)
-- [🔧 Sistema Electrónico](#hardware)
-- [🚀 Instalación y Uso](#instalacion)
+- [📂 Estructura del Repositorio](#-estructura-del-repositorio)
+- [👥 El Equipo](#-el-equipo-iniar)
+- [🚗 Arquitectura y Diseño Mecánico](#-arquitectura-y-diseño-mecánico)
+- [⚡ Sistema Eléctrico y Gestión de Potencia](#-sistema-eléctrico-y-gestión-de-potencia)
+- [💻 Algoritmos, Firmware y Visión Artificial](#-algoritmos-firmware-y-visión-artificial)
+- [📓 Diario de Ingeniería e Iteraciones](#-diario-de-ingeniería-e-iteraciones)
+- [🚀 Guía de Instalación y Uso](#-guía-de-instalación-y-uso)
+
 
 ---
 
 ## <a id="estructura"></a>📂 **Estructura de Documentación**
 
+El repositorio está organizado conforme a los estándares de documentación técnica de la **WRO Future Engineers**:
 <div align="center">
-
-| 📁 Carpeta | 🎯 Contenido Técnico | 📖 Link |
-|-----------|----------------------|-----------|
-| **📂 planes** | **Hardware & Componentes**<br>• Fichas técnicas detalladas<br>• Lista de materiales y esquemáticos | [🔗 Ver Documentación](./planes/README.md) |
-| **💻 src** | **Firmware & Algoritmos**<br>• Lógica de navegación<br>• Controladores de sensores y visión | [🔗 Próximamente](#) |
-| **⚙️ models** | **Diseño Mecánico**<br>• Modelos CAD 3D y chasis modular | [🔗 Próximamente](#) |
-
+  
+| Carpeta | Descripción del Contenido | Enlace Directo |
+| :--- | :--- | :---: |
+| **`💻 src/`** | **Código y Firmware:** Archivos `.ino` / C++, librerías de sensores y control de navegación. | [🔗 Ver Código](./src/) |
+| **`⚙️ models/`** | **Diseño CAD:** Archivos 3D (`.stl`, `.step`), chasis modular y soportes de montaje. | [🔗 Ver Modelos](./models/) |
+| **`⚡ schemes/`** | **Esquemáticos:** Diagramas de conexión eléctrica, distribución de voltajes y pinout. | [🔗 Ver Esquemáticos](./schemes/) |
+| **`📸 v-photos/`** | **Fotos del Vehículo:** Tomas técnicas del robot (frontal, superior, laterales y trasera). | [🔗 Ver Fotos Robot](./v-photos/) |
+| **`👥 t-photos/`** | **Fotos del Equipo:** Fotografías del Team Nexus y representantes de INIAR. | [🔗 Ver Fotos Equipo](./t-photos/) |
+| **`🎥 video/`** | **Video Demostrativo:** Enlace oficial al video de conducción autónoma en pista. | [🔗 Ver Video](./video/) |
+| **`📁 other/`** | **Recursos Extra:** Identidad visual, fichas técnicas y archivos complementarios. | [🔗 Ver Recursos](./Otro/) |
 </div>
-
----
 
 ## <a id="equipo"></a>👥 **El Equipo**
 
