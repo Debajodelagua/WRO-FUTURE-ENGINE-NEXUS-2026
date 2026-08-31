@@ -1,0 +1,9 @@
+# ⚙️ Modelos 3D y Diseño Mecánico – Team Nexus
+En esta sección se encuentran todos los componentes mecánicos diseñados y modelados en 3D para el vehículo autónomo de **Team Nexus (WRO 2026)**.
+
+## 🏎️ **Filosofía del Diseño Mecánico y Arquitectura por Capas**
+| Nivel / Piso | Componentes Instalados | Propósito de Ingeniería y Justificación |
+| :--- | :--- | :--- |
+| **🏢 Nivel 3**<br>*(Techo / Superior)* | • Portabaterías<br>• Regulador Buck (Step-Down 5V)<br>• *Futuro módulo Step-Up (Boost)* | **Gestión de Potencia:**<br>• Acceso rápido para cambio de baterías entre rondas.<br>• Aislamiento térmico y eléctrico de la fuente de poder.<br>• Separación de líneas para evitar caídas de tensión en el microcontrolador. |
+| **🧠 Nivel 2**<br>*(Intermedio / Lógica)* | • Microcontrolador ESP32<br>• Cámara HuskyLens<br>• Giroscopio / IMU *(en el centro de masa)*<br>• Driver de motor DC<br>• Protoboard de desarrollo | **Cerebro y Navegación:**<br>• **IMU en el centro geométrico** para evitar aceleraciones tangenciales y lecturas de giro erróneas.<br>• **HuskyLens** con línea de visión despejada y altura ideal para detección de bloques.<br>• Centralización de señales de control. |
+| **⚙️ Nivel 1**<br>*(Base / Inferior)* | • Motor DC de tracción trasera<br>• Servomotor de dirección + brazo impreso<br>• 3x Sensores Ultrasónicos (1 frontal, 2 laterales) | **Tracción, Dirección y Sensado Perimetral:**<br>• **Centro de gravedad bajo** que da máxima estabilidad en curvas y evita volcadas.<br>• Transmisión mecánica directa y precisa en la dirección.<br>• Ultrasónicos a baja altura para detección exacta de paredes y límites de pista. |
