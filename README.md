@@ -56,6 +56,10 @@ El repositorio está organizado conforme a los estándares de documentación té
 
 ## <a id="equipo"></a>👥 **El Equipo**
 
+<p align="center">
+  <img src="./t-fotos/FOTO%20GRUPAL%20DE%20TEAM%20NEXUS.jpg" alt="Nuestro Equipo" width="600"/>
+</p>
+
 Un equipo interdisciplinario que une trayectorias individuales en la WRO y una sólida experiencia conjunta en competencias internacionales de alto nivel como la **FTC Championship en Italia**.
 
 ### **Members**
