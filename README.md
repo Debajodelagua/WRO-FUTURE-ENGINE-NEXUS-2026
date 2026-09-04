@@ -50,9 +50,11 @@ Este espacio documenta de manera transparente, rigurosa y reproducible el ciclo 
   * Selección y conexionado de fuentes de alimentación, convertidores Buck/Boost y cableado de señales.
   * Análisis de balance de carga (*Power Budget*) y telemetría eléctrica.
   * Gestión, estructura y estandarización del repositorio técnico en GitHub.
-<div align="center">
-  <!-- Reemplaza este enlace con la foto oficial cuando la tomes -->
+<p align="center">
+  <img src="./t-fotos/DAVID%20PERFIL.jpeg" alt="Nuestro Equipo" width="600"/>
+  <p align="center">
   <i>[📸 Foto Oficial - David Ocando]</i>
+
 </div>
 
 #### **Historial y Trayectoria Competitiva:**
@@ -70,8 +72,9 @@ Este espacio documenta de manera transparente, rigurosa y reproducible el ciclo 
   * Implementación de la máquina de estados finitos (FSM) para la navegación autónoma.
   * Calibración de la cámara inteligente **HuskyLens** para reconocimiento colorimétrico de bloques.
   * Fusión de datos sensoriales (Giroscopio/IMU y sensores ultrasónicos).
-<div align="center">
-  <!-- Reemplaza este enlace con la foto oficial cuando la tomes -->
+<p align="center">
+  <img src="./t-fotos/JOSE%20PERFIL.jpeg" alt="Nuestro Equipo" width="600"/>
+  <p align="center">
   <i>[📸 Foto Oficial - José Montiel]</i>
 </div>
 
@@ -87,8 +90,9 @@ Este espacio documenta de manera transparente, rigurosa y reproducible el ciclo 
   * Optimización de manufactura e impresión 3D en **Bambu Lab** (orientación de capas, densidades de relleno e interpolación dimensional).
   * Ensamble del sistema de dirección Ackermann híbrido y reducción de holguras (*backlash*).
   * Co-desarrollo y mantenimiento de la documentación en GitHub.
-<div align="center">
-  <!-- Reemplaza este enlace con la foto oficial cuando la tomes -->
+<p align="center">
+  <img src="./t-fotos/JAIRO%20PERFIL.jpeg" alt="Nuestro Equipo" width="600"/>
+  <p align="center">
   <i>[📸 Foto Oficial - Jairo Cruz]</i>
 </div>
 
@@ -102,8 +106,9 @@ Este espacio documenta de manera transparente, rigurosa y reproducible el ciclo 
 **Rol:** *Tutor Principal y Asesor de Ingeniería Mecánica.*
 * **Formación y Perfil:** Ingeniero Mecánico egresado de la **Universidad del Zulia (LUZ)**, con amplia trayectoria profesional en cinemática de mecanismos, dinámica de vehículos y sistemas de tracción.
 * **Acompañamiento:** Mentoría estratégica en diseño mecánico, validación de cálculos de transmisión, distribución de momentos torsionales y metodología del ciclo de ingeniería.
-<div align="center">
-  <!-- Reemplaza este enlace con la foto oficial cuando la tomes -->
+<p align="center">
+  <img src="./t-fotos/MENTOR%20PERFIL.jpeg" alt="Nuestro Equipo" width="600"/>
+  <p align="center">
   <i>[📸 Foto Oficial - Ing. Wender Sánchez]</i>
 </div>
 
