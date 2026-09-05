@@ -576,82 +576,75 @@ flowchart TD
 ```
 #### 8.2 Desglose Técnico del Código (`OPENCHALLENGE.ino`)
 <details>
-<summary><b>▶️ Módulo 1: Bloqueo de Emergencia, Configuración de Pines y FreeRTOS</b></summary>
+<summary>▶️ <b>Módulo 1: Bloqueo de Emergencia, Configuración de Pines y FreeRTOS</b></summary>
 <br>
   
 Para evitar que el robot arranque descontrolado al encenderse, la función `setup()` ejecuta una secuencia de seguridad pasiva inmediata:
-1. **Freno de Motores:** Se configuran los canales PWM con `ledcAttach()` forzando la velocidad a cero y los pines del driver L298N en bajo (`LOW`).
+1. **Freno de Motores:** Se configuran los canales PWM forzando la velocidad a cero y los pines `PIN_MOTOR_IN1` y `PIN_MOTOR_IN2` en estado bajo (`LOW`).
 2. **Centrado Mecánico:** El servo MG90S se clava de inmediato en su ángulo neutro (`SERVO_CENTRO = 96°`).
-3. **Lanzamiento de Tarea en Core 0:** Se crea la tarea `tareaLeerMPU` asignada al Core 0 mediante `xTaskCreatePinnedToCore()`, logrando un bucle inercial de $500\text{ Hz}$ totalmente inmune a las demoras del resto del código.
-```cpp
-// 1. Apagado inmediato de motores
-pinMode(PIN_MOTOR_IN1, OUTPUT); pinMode(PIN_MOTOR_IN2, OUTPUT);
-digitalWrite(PIN_MOTOR_IN1, LOW); digitalWrite(PIN_MOTOR_IN2, LOW);
-ledcAttach(PIN_MOTOR_PWM, 1000, 8); 
-ledcWrite(PIN_MOTOR_PWM, 0); 
-// 2. Centrado inmediato del servo
-ledcAttach(PIN_SERVO, 50, 12); 
-escribirServoGrados(SERVO_CENTRO);
-// 3. Tarea FreeRTOS en Core 0 para el MPU6050
-xTaskCreatePinnedToCore(tareaLeerMPU, "TareaMPU", 4096, NULL, 2, &TareaMPU, 0);
-```
-
+3. **Lanzamiento de Tarea en Core 0:** Se crea la tarea `tareaLeerMPU` asignada al **Core 0** del ESP32-S3 mediante `xTaskCreatePinnedToCore()`, logrando un bucle inercial de lectura a **500 Hz (cada 2 ms)** totalmente inmune a las demoras del resto del programa.
+</details>
+<br>
 <details>
-<summary><b>📂 Módulo 2: Calibración Inercial y Detección Automática de Sentido de Carrera</b></summary>
+<summary>▶️ <b>Módulo 2: Calibración Inercial y Detección Automática de Sentido de Carrera</b></summary>
 <br>
   
-El vehículo elimina cualquier dependencia de programación manual antes de soltarlo en la pista:
-- **Calibración Estática:** Al presionar el botón de inicio (GPIO 21), el ESP32 toma 50 lecturas promediadas del giroscopio para calcular el offset de deriva (`gz_offset`).
-- **Detección Inteligente del Sentido de la Pista (Horario / Antihorario):** En la primera curva, el sensor frontal detecta la pared a 70 cm y el firmware compara las lecturas laterales:
-  - Si el sensor izquierdo tiene mayor distancia libre que el derecho, el robot asume que la carrera es en sentido **antihorario** (giro a la izquierda).
-  - Si el derecho tiene más espacio libre, asume sentido **horario** (giro a la derecha).
-  - Este sentido queda grabado automáticamente para el resto de la carrera.
-```cpp
-if (direccion_giro == 0) {
-  if (dist_izquierda >= dist_derecha) {
-    direccion_giro = 1; // Sentido Antihorario (Izquierda)
-    Serial.println(">>> PRIMERA ESQUINA: MÁS ESPACIO A LA IZQ. GUARDANDO GIRO A LA IZQUIERDA.");
-  } else {
-    direccion_giro = -1; // Sentido Horario (Derecha)
-    Serial.println(">>> PRIMERA ESQUINA: MÁS ESPACIO A LA DER. GUARDANDO GIRO A LA DERECHA.");
-  }
-}
-```
-
+El vehículo elimina cualquier dependencia de configuración manual antes de soltarlo en la pista:
+- **Calibración Estática:** Al presionar el pulsador de inicio (`PIN_INICIO` en GPIO 21), el ESP32 toma 50 lecturas promediadas del giroscopio MPU6050 para calcular el offset de deriva (`gz_offset`) mientras el carro permanece estático.
+- **Detección Inteligente del Sentido de la Pista (Horario / Antihorario):** En la primera esquina, el sensor ultrasónico frontal detecta el muro terminal a $\le 70\text{ cm}$ y el firmware compara automáticamente las lecturas laterales:
+  - Si el sensor izquierdo registra mayor distancia libre que el derecho (`dist_izquierda >= dist_derecha`), el robot memoriza el sentido **antihorario** (giro a la izquierda).
+  - De lo contrario, memoriza el sentido **horario** (giro a la derecha).
+  - Esta dirección queda bloqueada y guardada en la variable `direccion_giro` para todo el resto de la carrera.
+</details>
+<br>
 <details>
-<summary><b>📂 Módulo 3: Controlador PD de Rumbo y Escape Lateral en Rectas</b></summary>
+<summary>▶️ <b>Módulo 3: Controlador PD de Rumbo y Escape Lateral en Rectas</b></summary>
 <br>
   
-En los tramos rectos, el vehículo combina el rumbo del giroscopio con un sistema de evasión preventiva de muros:
-- **Controlador PD Inercial:** Calcula la diferencia entre el rumbo deseado (`setpoint_yaw`) y la orientación actual (`yaw_actual`). Si el error supera la zona muerta de $\pm 2.0^\circ$, aplica corrección proporcional y derivativa hacia el servo MG90S.
-- **Escape Lateral Reactivo:** Si los ultrasonidos detectan que el vehículo se aproxima peligrosamente a un muro ($\le 25\text{ cm}$), se inyecta un offset angular instantáneo de $\pm 25^\circ$ (`ANGULO_ESCAPE`), alejando al vehículo de la pared sin perder la trayectoria base.
-```cpp
-// Ecuación de control PD
-float error = setpoint_efectivo - yaw_actual;
-if (abs(error) < ZONA_MUERTA) { error = 0.0; error_anterior = 0.0; }
-float derivada = (error - error_anterior) / dt;
-error_anterior = error;
-float correccion = (Kp * error) + (Kd * derivada);
-// Escape reactivo por proximidad a muros
-if (dist_derecha < DISTANCIA_MIN_LATERAL)   offset_lateral -= ANGULO_ESCAPE;
-if (dist_izquierda < DISTANCIA_MIN_LATERAL) offset_lateral += ANGULO_ESCAPE;
-```
+En los tramos rectos, el vehículo combina el rumbo del giroscopio con un sistema de evasión preventiva de colisiones:
+- **Controlador PD Inercial:** Calcula el error entre el rumbo objetivo (`setpoint_yaw`) y la orientación real (`yaw_actual`). Si el error supera la zona muerta de $\pm 2.0^\circ$, aplica corrección proporcional (`Kp = 1.0`) y derivativa hacia la timonería del servo MG90S.
+- **Escape Lateral Reactivo:** Si los ultrasonidos detectan que el vehículo se aproxima peligrosamente a un muro lateral ($\le 25\text{ cm}$), se inyecta un offset angular instantáneo de $\pm 25^\circ$ (`ANGULO_ESCAPE`), alejando al vehículo del muro sin perder el rumbo general del circuito.
+</details>
+<br>
 <details>
-<summary><b>📂 Módulo 4: Algoritmo de Giros de 90°, Conteo de Vueltas y Frenado Final</b></summary>
+<summary>▶️ <b>Módulo 4: Algoritmo de Giros de 90°, Conteo de Vueltas y Frenado Final</b></summary>
 <br>
   
-El proceso de negociación de curvas garantiza virajes limpios y finalización exacta:
-1. **Gatillo de Curva:** Al detectar muro frontal a $\le 70\text{ cm}$ con espacio lateral despejado ($\ge 70\text{ cm}$), se bloquea el servo a máxima deflexión (`MAX_DEFLEXION = 21°`), se actualiza el setpoint en $\pm 89^\circ$ y se incrementa el contador de esquinas.
+El proceso de negociación de curvas garantiza virajes limpios y parada exacta en meta:
+1. **Gatillo de Curva:** Al detectar muro frontal a $\le 70\text{ cm}$ con espacio lateral despejado ($\ge 70\text{ cm}$), se bloquea el servo a máxima deflexión (`MAX_DEFLEXION = 21°`), se actualiza el setpoint angular en $\pm 89^\circ$ y se incrementa el contador de esquinas (`esquinas_contadas++`).
 2. **Criterio de Salida de Curva:** La maniobra se considera completada cuando el error angular respecto al setpoint es menor a $8.0^\circ$ o si transcurre el tiempo límite de seguridad (`TIMEOUT_GIRO = 2500 ms`).
-3. **Parada Automática tras 3 Vueltas (12 Esquinas):** Al registrar 12 esquinas válidas, el robot entra en estado de fin de carrera, rueda un tiempo prudencial (`TIEMPO_PARO_FIN = 1500 ms`) para cruzar la línea de meta, corta el PWM del motor Makeblock, conecta los pines IN1 e IN2 a tierra para inducir frenado regenerativo y clava el servo al centro.
-```cpp
-// Criterio de finalización de giro de 90°
-bool giro_completado = abs(setpoint_yaw - yaw_actual) < 8.0; 
-bool tiempo_agotado  = (tiempo_actual - tiempo_inicio_giro > TIMEOUT_GIRO); 
-// Conteo de 12 esquinas (3 vueltas completas)
-if (esquinas_contadas >= 12 && !carrera_terminada) {
-  carrera_terminada = true;
-  tiempo_fin_carrera = tiempo_actual;
-  Serial.println(">>> 12 ESQUINAS ALCANZADAS. APAGANDO EN EL TIEMPO SETEADO...");
-}
+3. **Parada Automática tras 3 Vueltas (12 Esquinas):** Al registrar 12 esquinas válidas, el robot activa la secuencia de finalización: rueda un tiempo prudencial (`TIEMPO_PARO_FIN = 1500 ms`) para cruzar la línea de meta, corta el PWM del motor Makeblock, conecta los pines IN1 e IN2 a tierra para inducir frenado regenerativo y clava el servo al centro.
+</details>
+
+### 9. Diario de Ingeniería, Iteraciones y Solución de Fallas
+El desarrollo de la plataforma **"Smoke"** siguió un riguroso **Ciclo de Diseño en Ingeniería (*Engineering Design Process*)**. Lejos de ocultar los fallos experimentados en el laboratorio de INIAR, el equipo documentó cada contratiempo técnico como una oportunidad de aprendizaje y optimización sistemática:
+```mermaid
+flowchart LR
+    P["⚠️ Falla o Limitación\nIdentificada en Pista"] --> A["🔍 Análisis de Causa Raíz\n(Eléctrica / Mecánica / Firmware)"]
+    A --> S["💡 Diseño e Implementación\nde Solución Técnica"]
+    S --> V["✅ Validación Experimental\n(Telemetría y Rendimiento)"]
+    classDef proc fill:#1f2328,stroke:#58a6ff,stroke-width:1px,color:#c9d1d9;
+    class P,A,S,V proc;
 ```
+
+| Subsistema | Problema Inicial Identificado | Causa Raíz Técnica | Solución de Ingeniería Aplicada | Impacto en "Smoke" |
+| :--- | :--- | :--- | :--- | :--- |
+| **⚡ Potencia** | **Destrucción de 3 Step-Downs (Origen de "Smoke")** | Retornos inductivos del motor DC y transitorios de conmutación quemaron los reguladores en cascada. | Rediseño a **3 ramas independientes** (XL4015 para lógica, LM2596 para actuadores y XL6009 para motor) + masa común unificada. | **100% de fiabilidad:** Cero caídas de tensión (*brownouts*) y rieles de 5V totalmente limpios. |
+| **⚙️ Tracción** | **Pérdida crítica de torque en el motor Makeblock** | Caída de tensión inherente ($\approx 2.0\text{V}$) en los transistores Darlington BJT del driver L298N. | Incorporación de elevador **XL6009 calibrado a 14.0V** y retiro del jumper interno de 5V del driver. | El motor recibe **12V netos constantes**, alcanzando su velocidad nominal de 185 RPM. |
+| **🦾 Dirección** | **Servomotor atascado y dañado mecánicamente** | El firmware enviaba ángulos que superaban los topes mecánicos del chasis, forzando los piñones bajo bloqueo. | Estandarización con servo **MG90S de piñonería metálica**, limitación por software (`MAX_DEFLEXION = 21°`) y rutina de prueba $\pm 80^\circ$. | Eliminación total de bloqueos mecánicos (*binding*) y virajes precisos y fluidos. |
+| **🔗 Transmisión** | **Incompatibilidad dimensional de ejes** | El motor Makeblock cuenta con eje cilíndrico en "D" y el diferencial LEGO EV3 requiere eje en cruz. | Modelado paramétrico en Fusion 360 e impresión al 100% en **PETG** de un **piñón cónico con entrada en D**. | Transmisión a 90° sin holguras (*backlash* mínimo) y alta resistencia al cizallamiento. |
+| **🏎️ Cinemática** | **Fricción y juego en dirección 100% 3D** | Las piezas pequeñas impresas en FDM acumulaban rugosidad superficial y desgaste en los pivotes. | **Arquitectura híbrida:** Manguetas y barras de enlace oficiales inyectadas LEGO EV3 + brazo de servo custom en PETG. | Dirección suave, sin rozamiento parásito y con rigidez torsional constante en curvas. |
+| **🧭 Telemetría** | **Congelamiento aleatorio del bus I2C (MPU6050)** | Ruido eléctrico inducido en las pistas bloqueaba la línea SDA en estado bajo (*bus lockup*). | Implementación de la rutina de hardware `rescatarBusI2C()` con **9 pulsos de reloj forzados en SCL** en Core 0. | El sistema detecta y recupera el bus en caliente en microsegundos sin reiniciar el carro. |
+| **💻 Firmware** | **Comportamiento errático y asincronía en C++** | Bloqueos temporales en bucles `delay()` y condiciones de carrera al procesar sensores y actuar motores. | Reestructuración no bloqueante con **FreeRTOS en Core 0 para la IMU** y máquina de estados finitos con `millis()`. | Ejecución en tiempo real estricta con refresco inercial a **500 Hz**. |
+| **🔋 Acumulación** | **Decaimiento de velocidad a lo largo de las vueltas** | Baterías convencionales presentaban una curva de descarga con pendiente pronunciada. | Migración a celdas cilíndricas industriales **LiFePO4 IFR32140 (2S2P)** certificadas. | Voltaje de bus estable durante toda la ronda; velocidad y radio de giro idénticos de la vuelta 1 a la 3. |
+<p align="right"><a href="#inicio">⬆️ Volver al Inicio</a></p>
+
+## 🏁 Conclusión y Filosofía de Competencia
+La plataforma **"Smoke"** representa meses de trabajo interdisciplinario, rigor metodológico y aprendizaje en el taller del **Instituto de Inteligencia Artificial y Robótica del estado Zulia (INIAR)**. Cada componente, línea de código y decisión de diseño documentada en este repositorio ha sido probada y validada en pista bajo las normativas internacionales de la **World Robot Olympiad™ 2026**.
+<div align="center">
+  <b>Desarrollado con dedicación por Team Nexus</b><br>
+  <i>David Ocando • José Montiel • Jairo Cruz</i><br>
+  Mentor: <i>Ing. Wender Sánchez</i>
+  <br><br>
+  <b>Maracaibo, Estado Zulia – Venezuela 🇻🇪</b>
+</div>
