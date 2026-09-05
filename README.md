@@ -361,3 +361,113 @@ Para optimizar la dinámica del vehículo, se seleccionaron diámetros diferenci
 | **Trasero (Tracción)** | **Ø 43 mm** | LEGO EV3 | **Mayor contacto y tracción:** Su mayor circunferencia incrementa la velocidad lineal de avance por cada revolución del diferencial y mejora la adherencia en aceleración. |
 </div>
 <p align="right"><a href="#inicio">⬆️ Volver al Inicio</a></p>
+
+### 6. Apartado Electrónico y Distribución de Potencia
+La arquitectura eléctrica de **"Smoke"** fue concebida para aislar las cargas dinámicas e inductivas de los actuadores de la lógica de procesamiento central, eliminando definitivamente los reinicios intempestivos (*brownouts*) y las fallas por sobretensión que originaron el nombre del vehículo.
+
+
+#### 6.1 Banco de Baterías LiFePO4 (Configuración 2S2P)
+El vehículo utiliza un acumulador químico industrial de **Fosfato de Hierro y Litio (LiFePO4)** basado en celdas cilíndricas certificadas modelo **IFR32140**:
+- **Arreglo Eléctrico:** Dos ramas en paralelo de dos celdas en serie (**2S2P**), suministrando un bus principal con tensión nominal de **6.4V – 7.0V** (tensión de corte superior a plena carga de 7.2V).
+- **Capacidad Total:** `[COMPLETAR AQUÍ]` Ah / `[COMPLETAR AQUÍ]` Wh.
+- **Seguridad Térmica y Química:** A diferencia de las baterías LiPo comunes, la química LiFePO4 presenta estabilidad química inerte (inmune a fugas térmicas o combustión por sobrecarga), un ciclo de vida útil superior a los 2,000 ciclos y una **curva de descarga extremadamente plana**, lo que asegura que la velocidad del motor y la respuesta del servo no decaigan a lo largo de las 3 vueltas de carrera.
+
+<div align="center">
+  <!-- ESPACIO PARA FOTO DE LAS BATERIAS REALES -->
+  <img src="./schemes/baterias_lifepo4.png" alt="Banco LiFePO4 2S2P" width="380" style="border-radius: 8px; border: 1px solid #444; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+  <br>
+  <i>Banco de potencia LiFePO4 en configuración 2S2P para entrega de corriente sostenida.</i>
+</div>
+
+> 🔋 **Estación de Carga y Balanceo:**
+> Para asegurar la ecualización exacta de voltaje entre celdas y prolongar la vida útil del banco, se utiliza el cargador inteligente:
+> <div align="center">
+
+>   <!-- REEMPLAZA CON LA FOTO DE TU CARGADOR DE BATERÍAS -->
+>   <img src="./schemes/[FOTO_CARGADOR_BATERIAS].jpg" alt="Cargador Oficial LiFePO4" width="350" style="border-radius: 8px; border: 1px solid #444;">
+>   <br>
+>   <i>Cargador balanceador dedicado para celdas LiFePO4: <code>[NOMBRE_Y_MODELO_DEL_CARGADOR]</code>.</i>
+> </div>
+
+#### 6.2 Topología de Tres Ramas de Regulación y Filtrado
+Para erradicar los retornos inductivos generados por el motor Makeblock y los transitorios dinámicos del servo MG90S, el bus de 7.0V se divide en tres convertidores DC-DC independientes:
+```mermaid
+flowchart TD
+    BAT[("🔋 Banco LiFePO4 2S2P\n(~7.0V Nominal)")] --> SW1["🔌 Switch Maestro 1\n(Encendido Reguladores)"]
+    
+    %% Rama A: Potencia Auxiliar
+    SW1 --> BUCK_SERVO["⚡ Step-Down LM2596\n(Regulado a 5.0V / 3A)"]
+    BUCK_SERVO --> SERVO["🦾 Servomotor MG90S"]
+    BUCK_SERVO --> HUSKY["👁️ Cámara HuskyLens 2"]
+    %% Rama B: Control y Lógica
+    SW1 --> BUCK_LOGIC["⚡ Step-Down XL4015E1\n(Regulado a 5.0V / 5A)"]
+    BUCK_LOGIC --> SW2["🔌 Switch Maestro 2\n(Encendido MCU)"]
+    SW2 --> MCU["🧠 ESP32-S3 DevKit"]
+    BUCK_LOGIC --> US["📡 3x Sensores HC-SR04"]
+    BUCK_LOGIC --> L298N_VSS["🔲 Lógica L298N (Pin Vss)"]
+    %% Rama C: Potencia de Tracción
+    SW1 --> BOOST["⚡ Step-Up XL6009\n(Regulado a 14.0V / 4A)"]
+    BOOST --> L298N_VS["🔲 Potencia L298N (Pin Vs)"]
+    L298N_VS -->|"-2.0V Caída Darlington (12V Netos)"| MOTOR["⚙️ Motor Makeblock DC"]
+    %% Control de Inicio
+    BTN["🔘 Botón de Inicio (GPIO 21)\nPull-Down Interno"] -.->|"Gatillo de Rutina"| MCU
+    classDef bat fill:#2ea44f,stroke:#24292e,stroke-width:2px,color:#fff;
+    classDef reg fill:#0366d6,stroke:#24292e,stroke-width:2px,color:#fff;
+    classDef dev fill:#1f2328,stroke:#58a6ff,stroke-width:1px,color:#c9d1d9;
+    classDef sw fill:#d73a49,stroke:#24292e,stroke-width:2px,color:#fff;
+    class BAT bat;
+    class BUCK_SERVO,BUCK_LOGIC,BOOST reg;
+    class SERVO,HUSKY,MCU,US,L298N_VSS,L298N_VS,MOTOR dev;
+    class SW1,SW2,BTN sw;
+```
+> [!NOTE]
+> **Protocolo de Encendido Seguro y Control de Usuario:** 
+> El vehículo cuenta con una interfaz de encendido secuencial para evitar arranques erráticos:
+> Switch 1 (Maestro de Regulación): Energiza simultáneamente los convertidores LM2596, XL4015 y XL6009, permitiendo que los voltajes de salida se estabilicen antes de despertar a la lógica.
+> Switch 2 (Maestro de Lógica): Alimenta exclusivamente el ESP32-S3, garantizando que el microcontrolador inicie su proceso de booteo con un riel de 5V perfectamente limpio y sin picos transitorios.
+> Pulsador de Inicio (Start Button - GPIO 21): El vehículo permanece inmóvil en boxes hasta que el operador presiona este botón físico. El pin está configurado mediante software con resistencia Pull-Down interna, activando la rutina de navegación autónoma tras recibir un flanco de subida de 3.3V.
+
+#### 6.3 Etapa de Tracción (XL6009 + L298N) y Masa Común (Unifed GND)
+#### 1. Justificación del Step-Up a 14V y Compensación Darlington
+El puente H **L298N** emplea transistores de salida bipolares (BJT) en configuración Darlington, los cuales provocan una caída interna de voltaje inevitable:
+$$V_{drop} = V_{CE(sat)} \approx 1.8V - 2.2V$$
+Si el driver se conectara directo al banco de 7V, el motor operaría a menos de 5V, con un torque deficiente. Para suministrar los **12V nominales de máxima potencia al motor Makeblock**:
+- Se retiró el puente (*jumper*) de 5V integrado en la placa del L298N para aislar por completo su regulador interno 78M05.
+- El módulo elevador **XL6009** se calibró a **14.0V DC**:
+  $$V_{Salida\_L298N} = V_{Boost} - V_{drop} = 14.0V - 2.0V = 12.0V \text{ netos}$$
+---
+#### 2. Beneficios de la Tierra Común Unificada (Common Ground Plane)
+Todos los terminales negativos (GND) del banco LiFePO4, los tres convertidores DC-DC, el driver L298N, los sensores y el ESP32-S3 están **eléctricamente soldados a un único bus de masa común**:
+- **Referencia Equipotencial Cero:** Elimina bucles de tierra (*ground loops*) y corrientes de fuga entre las etapas de lógica y potencia.
+- **Integridad de Señales PWM y UART:** Al compartir la misma referencia de 0V, las señales de control de alta velocidad (como la comunicación serial a 115200 baudios de la HuskyLens 2 y las señales de modulación PWM del servo y motor) no sufren distorsión ni desplazamientos de nivel lógico (*logic level shifting*).
+
+#### 6.4 Diagrama Esquemático General
+
+El conexionado eléctrico integral de potencia, distribución y señales lógicas de la plataforma **"Smoke"** se detalla en el siguiente plano:
+<div align="center">
+  <img src="./Esquemas/DIAGRAMAVF.jpg" alt="Esquemático Eléctrico Oficial Smoke" width="850" style="border-radius: 8px; border: 1px solid #444; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+  <br>
+  <i>Plano esquemático general de conexiones eléctricas de "Smoke" (Archivo: <code>./Esquemas/DIAGRAMAVF.jpg</code>).</i>
+</div>
+
+#### 6.5 Mapeo de Pines de Entrada y Salida (ESP32-S3 Pinout)
+
+Para facilitar la trazabilidad técnica y la reproducibilidad del firmware, a continuación se documenta el esquema de asignación de pines GPIO del microcontrolador **ESP32-S3 DevKit**:
+| Subsistema | Componente / Periférico | Pin Físico | Conexión / Función de Firmware |
+| :--- | :--- | :---: | :--- |
+| **🦾 Dirección** | Servomotor TowerPro MG90S | **GPIO 8** | Salida PWM (Librería `ESP32Servo.h`) |
+| **⚙️ Tracción** | Driver L298N – ENA (PWM) | **GPIO 4** | Modulación de ancho de pulso (Velocidad motor) |
+| | Driver L298N – IN1 | **GPIO 5** | Sentido de giro horario (Avance) |
+| | Driver L298N – IN2 | **GPIO 6** | Sentido de giro antihorario (Reversa / Freno) |
+| **👁️ Visión IA** | Cámara DFRobot HuskyLens 2 | **GPIO 9** | **UART RX** (Conectado al pin TX / Verde de la cámara) |
+| | Cámara DFRobot HuskyLens 2 | **GPIO 10** | **UART TX** (Conectado al pin RX / Azul de la cámara) |
+| **🧭 Orientación** | Giroscopio / IMU MPU6050 | **GPIO 16** | Bus I2C – Línea de Datos (**SDA**) |
+| | Giroscopio / IMU MPU6050 | **GPIO 17** | Bus I2C – Línea de Reloj (**SCL**) |
+| **📡 Sensado Perimetral** | HC-SR04 Frontal | **GPIO 42** | Salida de Disparo (**TRIGGER**) |
+| | HC-SR04 Frontal | **GPIO 41** | Entrada de Retorno (**ECHO**) |
+| | HC-SR04 Derecho | **GPIO 38** | Salida de Disparo (**TRIGGER**) |
+| | HC-SR04 Derecho | **GPIO 37** | Entrada de Retorno (**ECHO**) |
+| | HC-SR04 Izquierdo | **GPIO 39** | Salida de Disparo (**TRIGGER**) |
+| | HC-SR04 Izquierdo | **GPIO 40** | Entrada de Retorno (**ECHO**) |
+| **🔘 Interfaz de Usuario**| Pulsador de Inicio (Start Button) | **GPIO 21** | Entrada digital con resistencia **Pull-Down** interna |
+<p align="right"><a href="#inicio">⬆️ Volver al Inicio</a></p>
