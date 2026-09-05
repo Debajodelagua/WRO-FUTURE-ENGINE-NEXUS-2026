@@ -203,7 +203,7 @@ A continuación se detalla la lista completa de componentes integrados en **"Smo
 La plataforma física de **"Smoke"** combina técnicas avanzadas de **fabricación aditiva en PETG** con componentes mecánicos de precisión provenientes de la robótica educativa (**LEGO MINDSTORMS EV3**), creando un vehículo ágil, modular y fácilmente reparable en boxes de competición.
 
 ### 5.1 Filosofía de Chasis Modular y Manufactura Aditiva (PETG)
-Para garantizar un bajo centro de gravedad (CoG), facilidad de mantenimiento en boxes y un blindaje natural contra ruidos electromagnéticos, el chasis se diseñó en **Autodesk Fusion 360** bajo una arquitectura vertical de **tres pisos modulares**, fabricados al 100% en filamento **PETG** en una impresora **Bambu Lab**:
+Para garantizar un bajo centro de gravedad (CoG), facilidad de mantenimiento rápido en boxes y un desacoplamiento natural contra ruidos electromagnéticos, el chasis se diseñó en **Autodesk Fusion 360** bajo una arquitectura vertical de **tres pisos modulares**, fabricados al 100% en filamento **PETG** en una impresora **Bambu Lab**:
 ```mermaid
 flowchart TD
     subgraph "Nivel 3: Potencia y Acumulación"
@@ -223,3 +223,81 @@ flowchart TD
     class P3 n3;
     class P2 n2;
     class P1 n1;
+```
+
+#### 5.1.1 Estandarización de Sujeción Mecánica (Kit de Tornillería M3)
+Uno de los criterios esenciales para garantizar la fiabilidad del vehículo ante vibraciones de alta frecuencia y aceleraciones bruscas en pista fue la **unificación total del hardware de ensamble bajo métrica M3**.
+<div align="center">
+  <img src="./Otro/KITTORNILLOS.jpg" alt="Kit de Tornillería y Fijaciones M3" width="450" style="border-radius: 8px; border: 1px solid #444;">
+  <br>
+
+  <i>Kit estandarizado de tornillería métrica M3, tuercas de seguridad autoblocantes y separadores.</i>
+</div>
+
+- **Tornillería Estandarizada M3:** Se emplearon tornillos de acero al carbono grado 10.9 con cabeza cilíndrica hexagonal interior (Allen) en longitudes calibradas de **8 mm, 12 mm, 16 mm y 20 mm**, evitando la necesidad de múltiples herramientas en el área de pits (un único destornillador Allen de 2.5 mm opera todo el vehículo).
+- **Tuercas de Seguridad Autoblocantes (Nyloc):** Cada unión crítica utiliza tuercas con inserto elástico de nylon empotradas en cavidades hexagonales diseñadas en el propio modelo de PETG, previniendo aflojamientos por resonancia mecánica.
+- **Separadores Rígidos:** Columnas espaciadoras de precisión para vincular sólidamente los pisos 1, 2 y 3, garantizando el paralelismo estructural del chasis.
+
+ ### 5.2 Geometría de Dirección Ackermann Híbrida (Servo MG90S)
+#### ¿Qué es la Geometría Ackermann y por qué es indispensable?
+Cuando un vehículo con dirección delantera traza una curva, las ruedas directrices no recorren el mismo radio: la rueda interna describe un círculo más cerrado que la rueda externa. Si ambas ruedas giraran exactamente al mismo ángulo (geometría paralela estándar), los neumáticos se verían forzados a arrastrarse lateralmente sobre la pista (*wheel scrub* o arrastre de caucho), generando:
+1. Frenado parásito que resta velocidad al vehículo en las curvas.
+2. Pérdida crítica de tracción y agarre direccional.
+3. Desgaste irregular y sobreesfuerzo en el servomotor.
+Para erradicar este problema, **"Smoke"** implementa una **geometría de dirección Ackermann**, donde los brazos de dirección convergen hacia el centro del eje trasero, logrando mecánicamente que **la rueda interna describa un ángulo de giro más pronunciado ($\theta_i$) que la rueda externa ($\theta_o$)**.
+
+#### Solución de Ingeniería: Hibridación de Materiales (LEGO Oficial vs. Impresión 3D)
+Durante las fases iniciales de prototipado, el equipo evaluó la fabricación integral en 3D de todas las rótulas, manguetas (*knuckles*) y barras de dirección. Sin embargo, tras rigurosas pruebas de esfuerzo dinámico, identificamos limitaciones inherentes a las piezas impresas en articulaciones de dimensiones reducidas (micro-fricción superficial entre capas de plástico y holguras acumuladas o *backlash*).
+
+> [!NOTE]
+> **Decisión de Ingeniería y Selección de Materiales:**
+> Tras un análisis comparativo de tolerancias, optamos por una solución híbrida de alto rendimiento:
+> - **Manguetas y Barras de Enlace Oficiales (LEGO EV3):** Se seleccionaron los pivotes y tirantes moldeados por inyección de plástico técnico de LEGO. Al ser piezas inyectadas bajo estándares industriales microscópicos, ofrecen una fricción casi nula en los ejes de rotación, cero rebabas y una rigidez torsional constante que ninguna impresora FDM puede igualar en articulaciones de tan reducida escala.
+> - **Brazo de Servomotor y Anclajes Custom (PETG Bambu Lab):** Diseñamos en **Autodesk Fusion 360** un brazo de dirección (*servo horn*) personalizado impreso en PETG al 100% de densidad, capaz de acoplar de forma milimétrica el estriado metálico del servo TowerPro MG90S con el sistema de articulaciones de LEGO.
+> 
+> Esta combinación híbrida nos brindó lo mejor de ambos mundos: la **libertad paramétrica de la impresión 3D** para fijar la geometría al chasis y la **precisión dimensional del moldeo por inyección** para una dirección suave, rígida y sin holguras.
+> 
+#### Registro Visual del Sistema de Dirección
+<div align="center">
+  
+| 1. Geometría Teórica | 2. Diseño CAD (Fusion 360) | 3. Ensamble Físico en Piso 1 |
+| :---: | :---: | :---: |
+| <img src="v-fotos/ackermann_teoria.jpg" width="220" alt="Esquema Teórico Ackermann"> | <img src="./v-fotos/Sistema%20de%20direccion.png" width="220" alt="Modelo CAD de Dirección"> | <img src="./v-fotos/FOTO%20DEL%20SERVO%20ARMADO.jpg?" width="220" alt="Ensamble Físico en Chasis"> |
+| *Principio de convergencia al eje trasero* | *Brazo custom en PETG + manguetas* | *Integración final con servo MG90S* |
+</div>
+
+#### Validación Cinemática del Rango de Giro ($\pm 80^\circ$)
+Para garantizar que el servo pueda ejecutar maniobras evasivas extremas sin forzar los topes mecánicos ni presentar bloqueos (*binding*), se programó y validó una rutina de barrido angular extremo:
+<div align="center">
+  <img src="./video/servo_80_grados.gif" alt="Validación del barrido angular del servo MG90S" width="450" style="border-radius: 8px; border: 1px solid #444; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+  <br>
+  <i>Verificación de recorrido del servomotor MG90S alcanzando giros de hasta 80° hacia ambos extremos con movimiento fluido y respuesta lineal.</i>
+</div>
+
+#### Validación Cinemática del Rango de Giro (±80°)
+Para garantizar que el servo pueda ejecutar maniobras evasivas extremas sin forzar los topes mecánicos ni presentar bloqueos (*binding*), se programó y validó una rutina de barrido angular extremo:
+<div align="center">
+  <!-- REEMPLAZA EL NOMBRE ENTRE CORCHETES POR EL NOMBRE EXACTO DE TU GIF -->
+  <img src="./Video/movimientoservo.gif" alt="Validación del barrido angular del servo MG90S" width="450" style="border-radius: 8px; border: 1px solid #444; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+  <br>
+  <i>Verificación de recorrido del servomotor MG90S alcanzando giros de hasta 80° hacia ambos extremos con movimiento fluido y respuesta lineal.</i>
+</div>
+
+#### Formulación Matemática y Ecuaciones Cinemáticas
+La condición de rodadura geométrica pura de Ackermann establece que los ejes prolongados de todas las ruedas deben intersectar exactamente en el **Centro Instantáneo de Rotación ($CIR$)**, ubicado sobre la prolongación del eje posterior: $$\cot(\theta_o) - \cot(\theta_i) = \frac{W}{L}$$
+
+Donde los parámetros estructurales del vehículo son:
+- $W$ = Trocha o vía delantera (distancia transversal entre pernos de pivote de dirección).
+- $L$ = Batalla (distancia longitudinal entre el centro de las ruedas delanteras y traseras).
+- $\theta_i$ = Ángulo de viraje de la rueda interior a la trayectoria curva.
+- $\theta_o$ = Ángulo de viraje de la rueda exterior a la trayectoria curva.
+```mermaid
+flowchart LR
+    CIR(("● Centro Instantáneo\nde Rotación (CIR)"))
+    EJE_TRASERO["Eje Posterior (Línea Base)"] --- CIR
+    RUEDA_INT["🛞 Rueda Interior (θᵢ)"] -.-> CIR
+    RUEDA_EXT["🛞 Rueda Exterior (θₒ < θᵢ)"] -.-> CIR
+    classDef cir fill:#d73a49,stroke:#24292e,stroke-width:2px,color:#fff;
+    classDef comp fill:#1f2328,stroke:#58a6ff,stroke-width:1px,color:#c9d1d9;
+    class CIR cir;
+    class EJE_TRASERO,RUEDA_INT,RUEDA_EXT comp; 
