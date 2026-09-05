@@ -157,12 +157,38 @@ Demostración de la detección e interpretación en tiempo real de los bloques d
 ---
 
 ## 3. Estructura del Repositorio
-Para facilitar la auditoría técnica de los jueces y la reproducibilidad internacional, el repositorio se organiza de forma estricta según las directrices de la WRO:
-```plaintext
-├── models/         # Archivos CAD de manufactura (.stl, .step) de piezas impresas en Bambu Lab
-├── schemes/        # Diagramas de conexión eléctrica, distribución de buses y esquemáticos
-├── src/            # Código fuente en C++ para ESP32-S3 (Ronda Abierta y Ronda Cerrada)
-├── v-photos/       # Galería de inspección técnica 360° del vehículo autónomo
-├── t-photos/       # Fotografías oficiales de los integrantes y sesiones de trabajo en INIAR
-├── video/          # Registro audiovisual de pruebas dinámicas y esquiva de obstáculos
-└── Otro/           # Logotipos oficiales, hojas de datos complementarias y recursos visuales
+Para agilizar la revisión técnica de los jueces y garantizar la reproducibilidad internacional del proyecto, el repositorio se organiza en los siguientes directorios dedicados:
+
+| Directorio / Carpeta | Contenido Técnico | Acceso Directo |
+| :--- | :--- | :---: |
+| **📁 `models/`** | Archivos de diseño y fabricación CAD (`.stl`, `.step`) para impresión 3D en Bambu Lab. | [🔗 Explorar Archivos CAD](./models/) |
+| **📁 `schemes/`** | Diagramas de conexiones eléctricas, buses de potencia y esquemáticos generales. | [🔗 Ver Esquemáticos](./schemes/) |
+| **📁 `src/`** | Firmware y código fuente en C++ para ESP32-S3 (Open y Obstacle Challenge). | [🔗 Revisar Código Fuente](./src/) |
+| **📁 `v-photos/`** | Registro fotográfico de inspección técnica ortogonal 360° del vehículo "Smoke". | [🔗 Ver Galería del Vehículo](./v-photos/) |
+| **📁 `t-photos/`** | Fotografías oficiales de los miembros del equipo y trabajo en laboratorio INIAR. | [🔗 Ver Galería del Equipo](./t-photos/) |
+| **📁 `video/`** | Clips de pruebas dinámicas en pista reglamentaria y maniobras de esquiva. | [🔗 Ver Grabaciones](./video/) |
+| **📁 `Otro/`** | Logotipos oficiales, recursos gráficos complementarios y documentación de apoyo. | [🔗 Abrir Recursos](./Otro/) |
+---
+
+## 4. Lista Maestra de Materiales y Componentes (BOM)
+A continuación se detalla la lista completa de componentes integrados en **"Smoke"**, documentando su función técnica, vista previa, hoja de datos y enlace de adquisición:
+### 4.1 Electrónica, Potencia y Control
+| Componente | Vista Previa | Especificaciones Clave | Función en "Smoke" | Datasheet | Compra |
+| :--- | :---: | :--- | :--- | :---: | :---: |
+| **ESP32-S3 DevKit** | <img src="https://m.media-amazon.com/images/I/61N9xZ3mYdL._AC_SL1500_.jpg" width="80" style="border-radius: 6px;"> | • Dual-Core Xtensa LX7 @ 240MHz<br>• Wi-Fi & Bluetooth 5 (LE)<br>• 44 Pines GPIO programables | Cerebro central; administra la máquina de estados finitos, lectura de sensores y control PWM. | [📄 PDF](https://www.espressif.com/sites/default/files/documentation/esp32-s3_datasheet_en.pdf) | [🛒 Link](https://es.aliexpress.com/item/1005005086873539.html) |
+| **HuskyLens 2** | <img src="https://image.dfrobot.com/image/cache/catalog/SEN0305/SEN0305-6-800x800.jpg" width="80" style="border-radius: 6px;"> | • Procesador AI KPU integrado<br>• Pantalla IPS a color<br>• Algoritmo de visión colorimétrica | Procesamiento de visión artificial por hardware para detección y clasificación de bloques en el Obstacle Challenge. | [📄 Wiki](https://wiki.dfrobot.com/HUSKYLENS_V1.0_SKU_SEN0305_SEN0336) | [🛒 Link](https://www.dfrobot.com/product-1922.html) |
+| **Driver L298N** | <img src="https://m.media-amazon.com/images/I/71csm1kQx7L._AC_SL1500_.jpg" width="80" style="border-radius: 6px;"> | • Doble puente H (Darlington BJT)<br>• 2A pico por canal<br>• Disipador térmico de aluminio | Control de avance, retroceso y velocidad del motor de tracción (jumper de 5V retirado). | [📄 PDF](https://www.sparkfun.com/datasheets/Robotics/L298_H_Bridge.pdf) | [🛒 Link](https://es.aliexpress.com/item/1005003118671408.html) |
+| **Step-Down XL4015E1** | <img src="https://m.media-amazon.com/images/I/61jC7K0h4CL._AC_SL1001_.jpg" width="80" style="border-radius: 6px;"> | • Regulador Buck 5A máx.<br>• Salida ajustada a **5.0V DC**<br>• Alta eficiencia (>90%) | Línea limpia de alimentación para ESP32-S3, sensores HC-SR04 y lógica del driver L298N. | [📄 PDF](https://www.xlsemi.com/datasheet/XL4015%20datasheet.pdf) | [🛒 Link](https://es.aliexpress.com/item/32832049185.html) |
+| **Step-Down LM2596** | <img src="https://m.media-amazon.com/images/I/61FfI8iB-kL._AC_SL1200_.jpg" width="80" style="border-radius: 6px;"> | • Regulador Buck 3A máx.<br>• Salida ajustada a **5.0V DC**<br>• Filtro de rizado | Rama aislada exclusiva para absorber los picos dinámicos de corriente del servo MG90S y la HuskyLens 2. | [📄 PDF](https://www.ti.com/lit/ds/symlink/lm2596.pdf) | [🛒 Link](https://es.aliexpress.com/item/1005001636544837.html) |
+| **Step-Up XL6009** | <img src="https://m.media-amazon.com/images/I/61r5T0vGgQL._AC_SL1001_.jpg" width="80" style="border-radius: 6px;"> | • Regulador Boost 4A máx.<br>• Salida ajustada a **14.0V DC**<br>• Frecuencia de 400KHz | Eleva los 7V del banco a 14V para compensar la caída de 2V en el L298N y entregar 12V netos al motor de tracción. | [📄 PDF](https://www.xlsemi.com/datasheet/XL6009%20datasheet.pdf) | [🛒 Link](https://es.aliexpress.com/item/1005002880590858.html) |
+| **HC-SR04 Ultrasónico** | <img src="https://m.media-amazon.com/images/I/61Y0+38oIuL._AC_SL1500_.jpg" width="80" style="border-radius: 6px;"> | • Rango: 2 cm a 400 cm<br>• Ángulo de apertura: 15°<br>• Resolución: 0.3 cm | Sensado perimetral de distancia a muros laterales para estabilización de trayectoria y centrado. | [📄 PDF](https://www.sparkfun.com/datasheets/Sensors/Proximity/HCSR04.pdf) | [🛒 Link](https://es.aliexpress.com/item/32713520550.html) |
+| **Celdas LiFePO4 IFR32140** | <img src="./schemes/baterias_lifepo4.png" width="80" style="border-radius: 6px;"> | • Química LiFePO4 de alta seguridad<br>• Configuración **2S2P** (~7.0V bus)<br>• Capacidad: `[__]` Ah | Fuente primaria de energía del vehículo; máxima estabilidad térmica, alta tasa de descarga y descarga plana. | [📄 Info](https://en.wikipedia.org/wiki/Lithium_iron_phosphate_battery) | [🛒 Link](https://es.aliexpress.com/) |
+### 4.2 Mecánica, Actuadores y Chasis
+| Componente | Vista Previa | Especificaciones Clave | Función en "Smoke" | Enlace Técnico / Modelo |
+| :--- | :---: | :--- | :--- | :---: |
+| **Servo TowerPro MG90S** | <img src="https://m.media-amazon.com/images/I/61I2H7P8JvL._AC_SL1000_.jpg" width="80" style="border-radius: 6px;"> | • Piñonería metálica reforzada<br>• Torque: 2.2 kg·cm @ 6V<br>• Velocidad: 0.10s / 60° | Acciona la timonería del sistema de dirección Ackermann con alta resistencia a esfuerzos mecánicos. | [📄 PDF](https://www.electronicoscaldas.com/datasheet/MG90S_Tower-Pro.pdf) |
+| **Motor Makeblock DC** | <img src="https://m.media-amazon.com/images/I/61k8wD57VbL._AC_SL1000_.jpg" width="80" style="border-radius: 6px;"> | • Tensión nominal: 9V - 12V<br>• Velocidad eje: 185 RPM<br>• Caja reductora cilíndrica metálica | Motor de tracción longitudinal; acoplado al diferencial trasero para propulsión RWD. | [🌐 Web](https://www.makeblock.com/) |
+| **Diferencial Lego Technic** | <img src="https://m.media-amazon.com/images/I/41K-j71vWTL.jpg" width="80" style="border-radius: 6px;"> | • Caja diferencial de 3 satélites cónicos<br>• Plástico técnico de bajo rozamiento | Distribuye la velocidad angular entre las ruedas traseras izquierda y derecha para un giro limpio sin derrape. | [🔗 Lego Spec](https://www.bricklink.com/) |
+| **Engranajes Cónicos de Ángulo Recto** | <img src="./models/pinon_conico_preview.png" width="80" style="border-radius: 6px;"> | • Reducción cónica 90°<br>• Fabricación aditiva en Bambu Lab | Transfiere el giro longitudinal del motor Makeblock hacia el eje transversal del diferencial trasero. | [⚙️ Ver Modelo](./models/) |
+| **Chasis Modular de 3 Pisos** | <img src="./models/chasis_render.png" width="80" style="border-radius: 6px;"> | • 100% manufactura en **PETG**<br>• Arquitectura vertical desacoplada | Aloja y protege los subsistemas de tracción (Piso 1), control (Piso 2) y potencia/visión (Piso 3). | [⚙️ Ver CAD](./models/) |
+<p align="right"><a href="#inicio">⬆️ Volver al Inicio</a></p>
