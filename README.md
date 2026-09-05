@@ -471,3 +471,70 @@ Para facilitar la trazabilidad técnica y la reproducibilidad del firmware, a co
 | | HC-SR04 Izquierdo | **GPIO 40** | Entrada de Retorno (**ECHO**) |
 | **🔘 Interfaz de Usuario**| Pulsador de Inicio (Start Button) | **GPIO 21** | Entrada digital con resistencia **Pull-Down** interna |
 <p align="right"><a href="#inicio">⬆️ Volver al Inicio</a></p>
+
+### 7. Percepción Sensorial y Visión Artificial
+
+La plataforma **"Smoke"** integra un ecosistema sensorial distribuido que combina visión por computador acelerada por hardware (IA embebida) con una red de tiempo de vuelo ultrasónico y telemetría inercial de alta frecuencia.
+```mermaid
+flowchart TD
+    subgraph "Percepción Sensorial Smoke"
+        US_F["📡 HC-SR04 Frontal\n(Gatillo de Giros 90° @ 70cm)"]
+        US_R["📡 HC-SR04 Lateral Der\n(Centrado @ 30cm / Escape 25cm)"]
+        US_L["📡 HC-SR04 Lateral Izq\n(Centrado @ 30cm / Escape 25cm)"]
+        MPU["🧭 IMU MPU6050\n(Yaw Z en Core 0 con FreeRTOS)"]
+        HUSKY["👁️ HuskyLens 2\n(Color Recognition UART @ 115200)"]
+    end
+    US_F & US_R & US_L -->|"Pulsos Eco (Tiempo Vuelo)"| ESP["🧠 ESP32-S3 DevKit"]
+    MPU -->|"Bus I2C con Auto-Rescate"| ESP
+    HUSKY -->|"Protocolo Serial UART (Pines 9/10)"| ESP
+    classDef sens fill:#1f2328,stroke:#58a6ff,stroke-width:1px,color:#c9d1d9;
+    classDef mcu fill:#0366d6,stroke:#24292e,stroke-width:2px,color:#fff;
+    class US_F,US_R,US_L,MPU,HUSKY sens;
+    class ESP mcu;
+```
+
+#### 7.1 Visión Artificial por IA (DFRobot HuskyLens 2)
+
+Para superar el **Desafío de Obstáculos (Obstacle Challenge)**, el vehículo emplea la cámara inteligente **HuskyLens 2** montada rígidamente en el Piso 2, optimizando el ángulo cenital para evitar reflejos de luz sobre el tapiz:
+- **Algoritmo de Detección:** Modo **Reconocimiento de Color (*Color Recognition*)**, entrenado bajo condiciones lumínicas de competencia para clasificar los bloques de tráfico:
+  - **Bloque Rojo (ID 1):** Obliga una trayectoria de evasión hacia la **izquierda**.
+  - **Bloque Verde (ID 2):** Obliga una trayectoria de evasión hacia la **derecha**.
+- **Enlace UART de Alta Velocidad:** A diferencia del bus I2C (que puede presentar bloqueos de reloj ante ruido eléctrico severo), la HuskyLens 2 se comunica a través del puerto serie de hardware (`Serial1` a **115,200 baudios**) en los pines **GPIO 9 (RX)** y **GPIO 10 (TX)**, garantizando un flujo continuo de paquetes de datos a 30 FPS sin pérdidas.
+- **Aislamiento por Software en Ronda Abierta:** Durante el Open Challenge, la cámara permanece encendida pero su hilo de procesamiento se desactiva en el firmware, liberando ancho de banda de procesamiento y garantizando la total reproducibilidad basada en sensado inercial/ultrasónico.
+
+#### 7.2 Orientación Inercial y Fusión en Tiempo Real (MPU6050)
+Ubicado con precisión milimétrica en el **centro geométrico del chasis (Piso 2)** para eliminar componentes de aceleración centrípeta parásita, el sensor inercial **MPU6050** actúa como la referencia absoluta de rumbo angular (*Yaw Heading*):
+#### 1. Arquitectura Multitarea en Core Dedicado (FreeRTOS)
+Para erradicar la deriva (*drift*) provocada por demoras en la lectura del bus, el firmware instancia una tarea independiente en el **Core 0** del ESP32-S3 (`tareaLeerMPU`):
+- Frecuencia de muestreo ultrarrápida: Lectura cada **2 ms ($500 \text{ Hz}$)**.
+- Calibración Automática en Arranque: Al encender el robot, se toman **50 muestras promediadas** para eliminar el offset estático del giroscopio ($gz_{offset}$) antes de liberar los motores.
+ **Integración Numérica Discreta del Eje Z:**
+  $$\Delta \theta = (gz - gz_{offset}) \cdot \Delta t$$
+  $$\text{Yaw}_{actual} = \text{Yaw}_{actual} + \Delta \theta \quad (\text{para } |gz| > 0.3^\circ/\text{s})$$
+  
+#### 2. Mecanismo de Tolerancia a Fallas: Auto-Rescate del Bus I2C
+Ante eventuales picos de retorno electromagnético que puedan bloquear la línea SDA en estado bajo (*I2C bus lockup*), el firmware implementa la función de recuperación por hardware `rescatarBusI2C()`:
+- Detecta el congelamiento mediante `Wire.endTransmission() != 0`.
+- Libera la línea SDA forzando manualmente **9 ciclos de reloj en SCL**.
+- Reconfigura y reinicia en caliente la interfaz I2C a **100 kHz** con filtro paso-bajo a 21 Hz, restaurando la telemetría sin necesidad de reiniciar el microcontrolador ni detener el carro.
+
+#### 7.3 Red de Sensores Ultrasónicos HC-SR04 y Filtrado Espacial
+El primer piso alberga tres transductores ultrasónicos para el centrado dinámico en rectas y la detección temprana de viraje:
+<div align="center">
+  
+| Transductor | Ubicación en Chasis | Umbral Clave | Función de Navegación |
+| :--- | :---: | :---: | :--- |
+| **Frontal** | Vértice central delantero | **$\le 70.0 \text{ cm}$** | Gatillo de esquinas: Al cruzar este umbral, inicia la maniobra de giro a 90° e incrementa el contador de esquinas. |
+| **Derecho** | Costado lateral derecho | **$\le 25.0 \text{ cm}$** | Mantenimiento de carril: Si la distancia baja de 25 cm, aplica un offset de escape de $25^\circ$ hacia la izquierda. |
+| **Izquierdo** | Costado lateral izquierdo | **$\le 25.0 \text{ cm}$** | Mantenimiento de carril: Si la distancia baja de 25 cm, aplica un offset de escape de $25^\circ$ hacia la derecha. |
+</div>
+
+#### 1. Muestreo Rotativo Asíncrono (Anti-Crosstalk)
+Para evitar que los ecos emitidos por un sensor reboten y sean leídos incorrectamente por otro (*interferencia acústica cruzada*), el firmware ejecuta un ciclo de muestreo secuencial cada **50 ms**:
+$$\text{Secuencia: } \text{Frontal} \longrightarrow \text{Derecho} \longrightarrow \text{Frontal} \longrightarrow \text{Izquierdo}$$
+Esta distribución otorga una tasa de refresco del **100% adicional al sensor frontal**, permitiendo detectar el muro terminal a alta velocidad con holgura suficiente para desacelerar y virar.
+#### 2. Ecuación de Tiempo de Vuelo y Rechazo de Outliers
+La distancia se calcula con base en la velocidad de propagación del sonido en el aire ($343 \text{ m/s}$):
+$$d = \frac{t_{pulso} \cdot 0.0343}{2} \quad [\text{cm}]$$
+El temporizador `pulseIn` cuenta con un *timeout* ajustado a **$15,000\ \mu\text{s}$** (equivalente a $\sim 257 \text{ cm}$). Si no se recibe eco o el valor excede el rango válido, la función retorna inmediatamente `999.0 cm`, descartando lecturas espurias que pudieran desestabilizar el servo.
+<p align="right"><a href="#inicio">⬆️ Volver al Inicio</a></p>
