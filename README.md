@@ -152,9 +152,13 @@ Demostración técnica del vehículo **"Smoke"** completando el recorrido reglam
 
 ### 2.2 Ronda de Obstáculos (Obstacle Challenge)
 Demostración de la detección e interpretación en tiempo real de los bloques de tráfico (rojos) mediante el procesador de visión integrado de la **HuskyLens**, activando las maniobras de esquiva lateral.
-> 📹 *El clip técnico de prueba de esquiva de bloques se encuentra disponible en la carpeta local [`./video/`](./video/) y actualmente se está integrando al flujo de competencia continuo.*
+> 📹 *El clip técnico de prueba de esquiva de bloques se encuentra disponible en la carpeta local y actualmente se está integrando al flujo de competencia continuo.*
+<div align="center">
+  
+> ![Demostración Esquivando Bloque Rojo](./Video/ESQUIVANDOROJOS.gif)
+
 <p align="right"><a href="#inicio">⬆️ Volver al Inicio</a></p>
----
+</div>
 
 ## 3. Estructura del Repositorio
 Para agilizar la revisión técnica de los jueces y garantizar la reproducibilidad internacional del proyecto, el repositorio se organiza en los siguientes directorios dedicados:
@@ -192,5 +196,30 @@ A continuación se detalla la lista completa de componentes integrados en **"Smo
 | **Motor Makeblock DC** | <img src="/Otro/Makeblock.jpg" width="80" style="border-radius: 6px;"> | • Tensión nominal: 9V - 12V<br>• Velocidad eje: 185 RPM<br>• Caja reductora cilíndrica metálica | Motor de tracción longitudinal; acoplado al diferencial trasero para propulsión RWD. | [🌐 Web](https://www.makeblock.com/) |
 | **Diferencial Lego Technic** | <img src="/Otro/Diferencial%20Lego.jpg" width="80" style="border-radius: 6px;"> | • Caja diferencial de 3 satélites cónicos<br>• Plástico técnico de bajo rozamiento | Distribuye la velocidad angular entre las ruedas traseras izquierda y derecha para un giro limpio sin derrape. | [🔗 Lego Spec](https://www.bricklink.com/) |
 | **Engranajes Cónicos de Ángulo Recto** | <img src="./Otro/ENGRANAJECONICO.jpg" width="80" style="border-radius: 6px;"> | • Reducción cónica 90°<br>• Fabricación aditiva en Bambu Lab | Transfiere el giro longitudinal del motor Makeblock hacia el eje transversal del diferencial trasero. | [⚙️ Ver Modelo](./models/) |
-| **Chasis Modular de 3 Pisos** | <img src="./models/chasis_render.png" width="80" style="border-radius: 6px;"> | • 100% manufactura en **PETG**<br>• Arquitectura vertical desacoplada | Aloja y protege los subsistemas de tracción (Piso 1), control (Piso 2) y potencia/visión (Piso 3). | [⚙️ Ver CAD](./models/) |
+| **Chasis Modular de 3 Pisos** | <img src="./v-fotos/CHASISCOMPLETO.jpg" width="80" style="border-radius: 6px;"> | • 100% manufactura en **PETG**<br>• Arquitectura vertical desacoplada | Aloja y protege los subsistemas de tracción (Piso 1), control (Piso 2) y potencia/visión (Piso 3). | [⚙️ Ver CAD](./models/) |
 <p align="right"><a href="#inicio">⬆️ Volver al Inicio</a></p>
+
+## 5. Apartado Mecánico y Cinemática
+La plataforma física de **"Smoke"** combina técnicas avanzadas de **fabricación aditiva en PETG** con componentes mecánicos de precisión provenientes de la robótica educativa (**LEGO MINDSTORMS EV3**), creando un vehículo ágil, modular y fácilmente reparable en boxes de competición.
+
+### 5.1 Filosofía de Chasis Modular y Manufactura Aditiva (PETG)
+Para garantizar un bajo centro de gravedad (CoG), facilidad de mantenimiento en boxes y un blindaje natural contra ruidos electromagnéticos, el chasis se diseñó en **Autodesk Fusion 360** bajo una arquitectura vertical de **tres pisos modulares**, fabricados al 100% en filamento **PETG** en una impresora **Bambu Lab**:
+```mermaid
+flowchart TD
+    subgraph "Nivel 3: Potencia y Acumulación"
+        P3["🔋 Banco LiFePO4 2S2P (~7.0V)<br>⚡ Convertidores XL4015, LM2596 y XL6009<br>🔌 Interruptor de Potencia Maestro"]
+    end
+    subgraph "Nivel 2: Procesamiento, Visión y Driver"
+        P2["🧠 ESP32-S3 DevKit<br>👁️ Cámara Inteligente HuskyLens 2<br>🔲 Driver de Motor L298N<br>📶 Bus de Señal y Filtros"]
+    end
+    subgraph "Nivel 1: Dinámica de Tracción y Sensado Rasante"
+        P1["⚙️ Motor Makeblock + Diferencial LEGO (RWD)<br>🦾 Dirección Ackermann + Servo MG90S<br>📡 3x Sensores Ultrasónicos HC-SR04 (Frente/Lados)"]
+    end
+    P3 === P2
+    P2 === P1
+    classDef n3 fill:#1f2328,stroke:#f85149,stroke-width:2px,color:#fff;
+    classDef n2 fill:#1f2328,stroke:#0366d6,stroke-width:2px,color:#fff;
+    classDef n1 fill:#1f2328,stroke:#2ea44f,stroke-width:2px,color:#fff;
+    class P3 n3;
+    class P2 n2;
+    class P1 n1;
