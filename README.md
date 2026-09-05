@@ -538,3 +538,120 @@ La distancia se calcula con base en la velocidad de propagación del sonido en e
 $$d = \frac{t_{pulso} \cdot 0.0343}{2} \quad [\text{cm}]$$
 El temporizador `pulseIn` cuenta con un *timeout* ajustado a **$15,000\ \mu\text{s}$** (equivalente a $\sim 257 \text{ cm}$). Si no se recibe eco o el valor excede el rango válido, la función retorna inmediatamente `999.0 cm`, descartando lecturas espurias que pudieran desestabilizar el servo.
 <p align="right"><a href="#inicio">⬆️ Volver al Inicio</a></p>
+
+### 8. Arquitectura de Firmware y Software
+El software embebido de **"Smoke"** fue desarrollado en **C++ bajo el entorno Arduino IDE**, optimizado específicamente para el microcontrolador de doble núcleo **ESP32-S3**. Para garantizar un control en tiempo real estricto, el código opera bajo una **arquitectura no bloqueante basada en temporizadores de hardware y el sistema operativo en tiempo real FreeRTOS**.
+El firmware de la ronda abierta se encuentra disponible en [`./src/OPENCHALLENGE.ino`](./src/OPENCHALLENGE.ino).
+
+#### 8.1 Máquina de Estados Finitos (FSM - Navegación Autónoma)
+El flujo de control de carrera se rige mediante una máquina de estados finitos que gestiona la transición entre la calibración estática, el guiado reactivo en rectas y las maniobras de viraje en esquinas:
+```mermaid
+flowchart TD
+    BOOT["🔌 Encendido y Bloqueo de Actuadores\n(Motores a 0V / Servo Centrado a 96°)"] --> WAIT_BTN{"🔘 Pulsador GPIO 21\n¿Presionado?"}
+    
+    WAIT_BTN -- No --> WAIT_BTN
+    WAIT_BTN -- Sí --> CALIB["🧭 Calibración MPU6050\n(50 Muestras Estáticas / Tarea FreeRTOS Core 0)"]
+    
+    CALIB --> DRIVE["🏎️ Avance en Recta con Control PD\n(Corrección por Yaw MPU + Escape Lateral US)"]
+    
+    DRIVE --> CHECK_CORNER{"📡 HC-SR04 Frontal\n¿Distancia ≤ 70 cm?"}
+    
+    CHECK_CORNER -- No --> DRIVE
+    CHECK_CORNER -- Sí --> DETECT_DIR{"¿Primera Esquina?\n(Dirección = 0)"}
+    
+    DETECT_DIR -- Sí --> EVAL_SPACE["Comparar US Izq vs Der\n(Guardar sentido: +89° o -89°)"]
+    EVAL_SPACE --> TURN["🔄 Maniobra de Giro 90°\n(Servo a Tope / Conteo Esquina +1)"]
+    DETECT_DIR -- No --> TURN
+    
+    TURN --> CHECK_END{"¿Esquinas ≥ 12?\n(3 Vueltas Completadas)"}
+    
+    CHECK_END -- No --> COOLDOWN["⏱️ Cooldown de Giro (500 ms)\nRetorno a Setpoint"] --> DRIVE
+    CHECK_END -- Sí --> STOP["🛑 Parada de Emergencia\n(Frenado Regenerativo Motor / Servo a 96°)"]
+    classDef state fill:#1f2328,stroke:#58a6ff,stroke-width:1px,color:#c9d1d9;
+    classDef dec fill:#0366d6,stroke:#24292e,stroke-width:2px,color:#fff;
+    classDef stop fill:#d73a49,stroke:#24292e,stroke-width:2px,color:#fff;
+    class BOOT,CALIB,DRIVE,EVAL_SPACE,TURN,COOLDOWN state;
+    class WAIT_BTN,CHECK_CORNER,DETECT_DIR,CHECK_END dec;
+    class STOP stop;
+```
+#### 8.2 Desglose Técnico del Código (`OPENCHALLENGE.ino`)
+<details>
+<summary><b>▶️ Módulo 1: Bloqueo de Emergencia, Configuración de Pines y FreeRTOS</b></summary>
+<br>
+  
+Para evitar que el robot arranque descontrolado al encenderse, la función `setup()` ejecuta una secuencia de seguridad pasiva inmediata:
+1. **Freno de Motores:** Se configuran los canales PWM con `ledcAttach()` forzando la velocidad a cero y los pines del driver L298N en bajo (`LOW`).
+2. **Centrado Mecánico:** El servo MG90S se clava de inmediato en su ángulo neutro (`SERVO_CENTRO = 96°`).
+3. **Lanzamiento de Tarea en Core 0:** Se crea la tarea `tareaLeerMPU` asignada al Core 0 mediante `xTaskCreatePinnedToCore()`, logrando un bucle inercial de $500\text{ Hz}$ totalmente inmune a las demoras del resto del código.
+```cpp
+// 1. Apagado inmediato de motores
+pinMode(PIN_MOTOR_IN1, OUTPUT); pinMode(PIN_MOTOR_IN2, OUTPUT);
+digitalWrite(PIN_MOTOR_IN1, LOW); digitalWrite(PIN_MOTOR_IN2, LOW);
+ledcAttach(PIN_MOTOR_PWM, 1000, 8); 
+ledcWrite(PIN_MOTOR_PWM, 0); 
+// 2. Centrado inmediato del servo
+ledcAttach(PIN_SERVO, 50, 12); 
+escribirServoGrados(SERVO_CENTRO);
+// 3. Tarea FreeRTOS en Core 0 para el MPU6050
+xTaskCreatePinnedToCore(tareaLeerMPU, "TareaMPU", 4096, NULL, 2, &TareaMPU, 0);
+```
+
+<details>
+<summary><b>📂 Módulo 2: Calibración Inercial y Detección Automática de Sentido de Carrera</b></summary>
+<br>
+  
+El vehículo elimina cualquier dependencia de programación manual antes de soltarlo en la pista:
+- **Calibración Estática:** Al presionar el botón de inicio (GPIO 21), el ESP32 toma 50 lecturas promediadas del giroscopio para calcular el offset de deriva (`gz_offset`).
+- **Detección Inteligente del Sentido de la Pista (Horario / Antihorario):** En la primera curva, el sensor frontal detecta la pared a 70 cm y el firmware compara las lecturas laterales:
+  - Si el sensor izquierdo tiene mayor distancia libre que el derecho, el robot asume que la carrera es en sentido **antihorario** (giro a la izquierda).
+  - Si el derecho tiene más espacio libre, asume sentido **horario** (giro a la derecha).
+  - Este sentido queda grabado automáticamente para el resto de la carrera.
+```cpp
+if (direccion_giro == 0) {
+  if (dist_izquierda >= dist_derecha) {
+    direccion_giro = 1; // Sentido Antihorario (Izquierda)
+    Serial.println(">>> PRIMERA ESQUINA: MÁS ESPACIO A LA IZQ. GUARDANDO GIRO A LA IZQUIERDA.");
+  } else {
+    direccion_giro = -1; // Sentido Horario (Derecha)
+    Serial.println(">>> PRIMERA ESQUINA: MÁS ESPACIO A LA DER. GUARDANDO GIRO A LA DERECHA.");
+  }
+}
+```
+
+<details>
+<summary><b>📂 Módulo 3: Controlador PD de Rumbo y Escape Lateral en Rectas</b></summary>
+<br>
+  
+En los tramos rectos, el vehículo combina el rumbo del giroscopio con un sistema de evasión preventiva de muros:
+- **Controlador PD Inercial:** Calcula la diferencia entre el rumbo deseado (`setpoint_yaw`) y la orientación actual (`yaw_actual`). Si el error supera la zona muerta de $\pm 2.0^\circ$, aplica corrección proporcional y derivativa hacia el servo MG90S.
+- **Escape Lateral Reactivo:** Si los ultrasonidos detectan que el vehículo se aproxima peligrosamente a un muro ($\le 25\text{ cm}$), se inyecta un offset angular instantáneo de $\pm 25^\circ$ (`ANGULO_ESCAPE`), alejando al vehículo de la pared sin perder la trayectoria base.
+```cpp
+// Ecuación de control PD
+float error = setpoint_efectivo - yaw_actual;
+if (abs(error) < ZONA_MUERTA) { error = 0.0; error_anterior = 0.0; }
+float derivada = (error - error_anterior) / dt;
+error_anterior = error;
+float correccion = (Kp * error) + (Kd * derivada);
+// Escape reactivo por proximidad a muros
+if (dist_derecha < DISTANCIA_MIN_LATERAL)   offset_lateral -= ANGULO_ESCAPE;
+if (dist_izquierda < DISTANCIA_MIN_LATERAL) offset_lateral += ANGULO_ESCAPE;
+```
+<details>
+<summary><b>📂 Módulo 4: Algoritmo de Giros de 90°, Conteo de Vueltas y Frenado Final</b></summary>
+<br>
+  
+El proceso de negociación de curvas garantiza virajes limpios y finalización exacta:
+1. **Gatillo de Curva:** Al detectar muro frontal a $\le 70\text{ cm}$ con espacio lateral despejado ($\ge 70\text{ cm}$), se bloquea el servo a máxima deflexión (`MAX_DEFLEXION = 21°`), se actualiza el setpoint en $\pm 89^\circ$ y se incrementa el contador de esquinas.
+2. **Criterio de Salida de Curva:** La maniobra se considera completada cuando el error angular respecto al setpoint es menor a $8.0^\circ$ o si transcurre el tiempo límite de seguridad (`TIMEOUT_GIRO = 2500 ms`).
+3. **Parada Automática tras 3 Vueltas (12 Esquinas):** Al registrar 12 esquinas válidas, el robot entra en estado de fin de carrera, rueda un tiempo prudencial (`TIEMPO_PARO_FIN = 1500 ms`) para cruzar la línea de meta, corta el PWM del motor Makeblock, conecta los pines IN1 e IN2 a tierra para inducir frenado regenerativo y clava el servo al centro.
+```cpp
+// Criterio de finalización de giro de 90°
+bool giro_completado = abs(setpoint_yaw - yaw_actual) < 8.0; 
+bool tiempo_agotado  = (tiempo_actual - tiempo_inicio_giro > TIMEOUT_GIRO); 
+// Conteo de 12 esquinas (3 vueltas completas)
+if (esquinas_contadas >= 12 && !carrera_terminada) {
+  carrera_terminada = true;
+  tiempo_fin_carrera = tiempo_actual;
+  Serial.println(">>> 12 ESQUINAS ALCANZADAS. APAGANDO EN EL TIEMPO SETEADO...");
+}
+```
