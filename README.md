@@ -58,603 +58,86 @@ Este documento técnico ha sido elaborado bajo un formato de **libro blanco de i
 - [12. Diario de Ingeniería, Iteraciones y Solución de Fallas](#12-diario-de-ingeniería-iteraciones-y-solución-de-fallas)
 
 
-
-## 1. Nuestro Equipo & Plataforma "Smoke"
-Bienvenidos al repositorio técnico oficial de **Team Nexus**, representantes del **Instituto de Inteligencia Artificial y Robótica del estado Zulia "Dr. Héctor Rafael Rojas" (INIAR)** para la categoría **Future Engineers** de la **World Robot Olympiad™ (WRO) 2026**.
-Este espacio documenta de manera transparente, rigurosa y reproducible el ciclo completo de diseño, manufactura aditiva en PETG, arquitectura de potencia desacoplada y algoritmos de control de nuestra plataforma autónoma **"Smoke"**, desarrollada para superar tanto la **Ronda Abierta (Open Challenge)** como la **Ronda de Obstáculos (Obstacle Challenge)**.
-### 1.1 Integrantes y Asesoría Técnica
-<div align="center">
-  <img src="./t-fotos/FOTO%20GRUPAL%20DE%20TEAM%20NEXUS.jpg" alt="Foto Grupal Team Nexus" width="700" style="border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
-</div>
-<br>
-<table>
-  <tr>
-    <td width="30%" align="center" style="vertical-align: top;">
-      <img src="./t-fotos/DAVID%20PERFIL.jpeg" width="100%" style="border-radius: 10px;">
-      <br><b>David Ocando</b>
-    </td>
-    <td width="70%" style="vertical-align: top;">
-      <h4>⚡ Arquitectura Eléctrica, Gestión de Potencia & Documentación</h4>
-      <p><b>🎓 Formación:</b> Estudiante de Ingeniería Eléctrica (URU).</p>
-      <p><b>🛠️ Responsabilidades:</b></p>
-      <ul>
-        <li>Diseño de la topología de distribución eléctrica de 3 ramas (Buck / Boost).</li>
-        <li>Selección del banco de baterías LiFePO4, cálculo de caídas de tensión y aislamiento de ruido electromecánico.</li>
-        <li>Estructuración de ingeniería, esquemáticos y mantenimiento del repositorio en GitHub.</li>
-      </ul>
-      <p><b>🏆 Trayectoria:</b> Copa KAI (2023), FTC Championship (Italia, 2024), WRO Venezuela RoboSports (2025).</p>
-    </td>
-  </tr>
-  <tr>
-    <td width="30%" align="center" style="vertical-align: top;">
-      <img src="./t-fotos/JOSE%20PERFIL.jpeg" width="100%" style="border-radius: 10px;">
-      <br><b>José Montiel</b>
-    </td>
-    <td width="70%" style="vertical-align: top;">
-      <h4>💻 Firmware, Visión Artificial & Control Autónomo</h4>
-      <p><b>🎓 Formación:</b> Estudiante de Ingeniería Electrónica (URBE).</p>
-      <p><b>🛠️ Responsabilidades:</b></p>
-      <ul>
-        <li>Desarrollo de firmware en C++ sobre ESP32-S3 mediante temporización no bloqueante.</li>
-        <li>Entrenamiento y calibración de visión artificial por hardware con HuskyLens (detección colorimétrica en Obstacle Challenge).</li>
-        <li>Fusión sensorial ultrasónica y lógica de la máquina de estados finitos (FSM).</li>
-      </ul>
-      <p><b>🏆 Trayectoria:</b> WRO Venezuela Regional Future Engineers (2025).</p>
-    </td>
-  </tr>
-  <tr>
-    <td width="30%" align="center" style="vertical-align: top;">
-      <img src="./t-fotos/JAIRO%20PERFIL.jpeg" width="100%" style="border-radius: 10px;">
-      <br><b>Jairo Cruz</b>
-    </td>
-    <td width="70%" style="vertical-align: top;">
-      <h4>⚙️ Diseño CAD Mecánico, Dinámica & Manufactura Aditiva</h4>
-      <p><b>🎓 Formación:</b> Estudiante de Ingeniería Electrónica.</p>
-      <p><b>🛠️ Responsabilidades:</b></p>
-      <ul>
-        <li>Modelado paramétrico en Autodesk Fusion 360 del chasis modular de tres niveles.</li>
-        <li>Optimización de impresión 3D en Bambu Lab con PETG estructural (orientación de esfuerzo y relleno).</li>
-        <li>Diseño cinemático de dirección Ackermann híbrida y diferencial trasero con piñonería cónica.</li>
-      </ul>
-      <p><b>🏆 Trayectoria:</b> Copa KAI (2023), FTC Championship (Italia, 2024), WRO Venezuela RoboSports (2025).</p>
-    </td>
-  </tr>
-  <tr>
-    <td width="30%" align="center" style="vertical-align: top;">
-      <img src="./t-fotos/MENTOR%20PERFIL.jpeg" width="100%" style="border-radius: 10px;">
-      <br><b>Ing. Wender Sánchez</b>
-    </td>
-    <td width="70%" style="vertical-align: top;">
-      <h4>📐 Mentor Líder & Asesor de Ingeniería Mecánica</h4>
-      <p><b>🎓 Formación:</b> Ingeniero Mecánico – Universidad del Zulia (LUZ).</p>
-      <p><b>🛠️ Rol:</b> Supervisión metodológica en cinemática automotriz, cálculo de relaciones de transmisión, tolerancias mecánicas y validación de seguridad de sistemas en competencia.</p>
-    </td>
-  </tr>
-</table>
-
-### 1.2 Origen del Robot y Filosofía ("Smoke")
-> [!NOTE]
-> **El Bautizo de "Smoke":**
-> En las etapas iniciales de pruebas dinámicas en el banco de trabajo, el prototipo experimentó severos picos de sobretensión y corrientes parásitas generadas por el frenado inductivo del motor y ruidos en la conmutación. Esto provocó que tres módulos reguladores (*Step-Down*) consecutivos se quemaran, despidiendo una densa nube de humo en el laboratorio.
-> 
-> Lejos de ser un fallo desalentador, este suceso definió el nombre de batalla de nuestro vehículo: **"Smoke"**. Nos impulsó a rediseñar de forma radical la distribución eléctrica, separando la lógica de control de las cargas de alta potencia y migrando hacia una arquitectura robusta de tres etapas de regulación independiente.
----
-
-### 1.3 Estado Actual del Proyecto y Roadmap
-| Módulo / Fase | Estado | Descripción Técnica y Avance Real |
-| :--- | :---: | :--- |
-| **Diseño y Fabricación Chasis** | `🟢 COMPLETADO` | Estructura modular 100% impresa en PETG en Bambu Lab. Geometría Ackermann y diferencial RWD acoplados. |
-| **Desafío Abierto (Open Challenge)** | `🟢 COMPLETADO` | Navegación autónoma fluida de 3 vueltas completada y validada en pista reglamentaria usando la red ultrasónica. |
-| **Desafío de Obstáculos (Obstacle Challenge)** | `🟡 EN DESARROLLO` | Algoritmo de detección colorimétrica con HuskyLens funcional en pruebas de banco y clips de esquiva; optimizando el firmware para el recorrido continuo de competencia. |
----
-
-## 2. Videos y Desempeño en Pista
-### 2.1 Ronda Abierta (Open Challenge)
-Demostración técnica del vehículo **"Smoke"** completando el recorrido reglamentario de 3 vueltas completas de manera 100% autónoma. En esta ronda, la navegación se basa exclusivamente en el algoritmo de seguimiento y estabilización ultrasónica (la cámara HuskyLens permanece montada y alimentada pero su lógica de control está desactivada en el firmware de la abierta).
-<div align="center">
-  <a href="https://youtu.be/ooOyRUvQE2Y" target="_blank">
-    <img src="https://img.youtube.com/vi/ooOyRUvQE2Y/maxresdefault.jpg" alt="Video Open Challenge Team Nexus" width="550" style="border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); border: 1px solid #444;">
-    <br>
-    <b>▶️ Ver en YouTube: Ronda Abierta Oficial - Team Nexus (WRO 2026)</b>
-  </a>
-</div>
-<br>
-
-### 2.2 Ronda de Obstáculos (Obstacle Challenge)
-Demostración de la detección e interpretación en tiempo real de los bloques de tráfico (rojos) mediante el procesador de visión integrado de la **HuskyLens**, activando las maniobras de esquiva lateral.
-> 📹 *El clip técnico de prueba de esquiva de bloques se encuentra disponible en la carpeta local y actualmente se está integrando al flujo de competencia continuo.*
-<div align="center">
-  
-> ![Demostración Esquivando Bloque Rojo](./Video/ESQUIVANDOROJOS.gif)
-
-<p align="right"><a href="#inicio">⬆️ Volver al Inicio</a></p>
-</div>
-
-## 3. Estructura del Repositorio
-Para agilizar la revisión técnica de los jueces y garantizar la reproducibilidad internacional del proyecto, el repositorio se organiza en los siguientes directorios dedicados:
-
-| Directorio / Carpeta | Contenido Técnico | Acceso Directo |
-| :--- | :--- | :---: |
-| **📁 `models/`** | Archivos de diseño y fabricación CAD (`.stl`, `.step`) para impresión 3D en Bambu Lab. | [🔗 Explorar Archivos CAD](./models/) |
-| **📁 `schemes/`** | Diagramas de conexiones eléctricas, buses de potencia y esquemáticos generales. | [🔗 Ver Esquemáticos](./schemes/) |
-| **📁 `src/`** | Firmware y código fuente en C++ para ESP32-S3 (Open y Obstacle Challenge). | [🔗 Revisar Código Fuente](./src/) |
-| **📁 `v-photos/`** | Registro fotográfico de inspección técnica ortogonal 360° del vehículo "Smoke". | [🔗 Ver Galería del Vehículo](./v-photos/) |
-| **📁 `t-photos/`** | Fotografías oficiales de los miembros del equipo y trabajo en laboratorio INIAR. | [🔗 Ver Galería del Equipo](./t-photos/) |
-| **📁 `video/`** | Clips de pruebas dinámicas en pista reglamentaria y maniobras de esquiva. | [🔗 Ver Grabaciones](./video/) |
-| **📁 `Otro/`** | Logotipos oficiales, recursos gráficos complementarios y documentación de apoyo. | [🔗 Abrir Recursos](./Otro/) |
----
-
-
-## 4. Lista Maestra de Materiales y Componentes (BOM)
-A continuación se detalla la lista completa de componentes integrados en **"Smoke"**, documentando su función técnica, vista previa, hoja de datos y enlace de adquisición:
-### 4.1 Electrónica, Potencia y Control
-| Componente | Vista Previa | Especificaciones Clave | Función en "Smoke" | Datasheet | Compra |
-| :--- | :---: | :--- | :--- | :---: | :---: |
-| **ESP32-S3 DevKit** | <img src="/Otro/ESP32S3.jpg" width="80" style="border-radius: 6px;"> | • Dual-Core Xtensa LX7 @ 240MHz<br>• Wi-Fi & Bluetooth 5 (LE)<br>• 44 Pines GPIO programables | Cerebro central; administra la máquina de estados finitos, lectura de sensores y control PWM. | [📄 PDF](https://www.espressif.com/sites/default/files/documentation/esp32-s3_datasheet_en.pdf) | [🛒 Link](https://es.aliexpress.com/item/1005005086873539.html) |
-| **HuskyLens 2** | <img src="/Otro/HUSKYLENS2.jpg" width="80" style="border-radius: 6px;"> | • Procesador AI KPU integrado<br>• Pantalla IPS a color<br>• Algoritmo de visión colorimétrica | Procesamiento de visión artificial por hardware para detección y clasificación de bloques en el Obstacle Challenge. | [📄 Wiki](https://wiki.dfrobot.com/HUSKYLENS_V1.0_SKU_SEN0305_SEN0336) | [🛒 Link](https://www.dfrobot.com/product-1922.html) |
-| **Driver L298N** | <img src="/Otro/L298N.jpg" width="80" style="border-radius: 6px;"> | • Doble puente H (Darlington BJT)<br>• 2A pico por canal<br>• Disipador térmico de aluminio | Control de avance, retroceso y velocidad del motor de tracción (jumper de 5V retirado). | [📄 PDF](https://www.sparkfun.com/datasheets/Robotics/L298_H_Bridge.pdf) | [🛒 Link](https://es.aliexpress.com/item/1005003118671408.html) |
-| **Step-Down XL4015E1** | <img src="/Otro/XL4015E1.jpg" width="80" style="border-radius: 6px;"> | • Regulador Buck 5A máx.<br>• Salida ajustada a **5.0V DC**<br>• Alta eficiencia (>90%) | Línea limpia de alimentación para ESP32-S3, sensores HC-SR04 y lógica del driver L298N. | [📄 PDF](https://www.xlsemi.com/datasheet/XL4015%20datasheet.pdf) | [🛒 Link](https://es.aliexpress.com/item/32832049185.html) |
-| **Step-Down LM2596** | <img src="/Otro/LM2596.jpg" width="80" style="border-radius: 6px;"> | • Regulador Buck 3A máx.<br>• Salida ajustada a **5.0V DC**<br>• Filtro de rizado | Rama aislada exclusiva para absorber los picos dinámicos de corriente del servo MG90S y la HuskyLens 2. | [📄 PDF](https://www.ti.com/lit/ds/symlink/lm2596.pdf) | [🛒 Link](https://es.aliexpress.com/item/1005001636544837.html) |
-| **Step-Up XL6009** | <img src="/Otro/XL6009.jpg" width="80" style="border-radius: 6px;"> | • Regulador Boost 4A máx.<br>• Salida ajustada a **14.0V DC**<br>• Frecuencia de 400KHz | Eleva los 7V del banco a 14V para compensar la caída de 2V en el L298N y entregar 12V netos al motor de tracción. | [📄 PDF](https://www.xlsemi.com/datasheet/XL6009%20datasheet.pdf) | [🛒 Link](https://es.aliexpress.com/item/1005002880590858.html) |
-| **HC-SR04 Ultrasónico** | <img src="/Otro/HC-SR04.jpg" width="80" style="border-radius: 6px;"> | • Rango: 2 cm a 400 cm<br>• Ángulo de apertura: 15°<br>• Resolución: 0.3 cm | Sensado perimetral de distancia a muros laterales para estabilización de trayectoria y centrado. | [📄 PDF](https://www.sparkfun.com/datasheets/Sensors/Proximity/HCSR04.pdf) | [🛒 Link](https://es.aliexpress.com/item/32713520550.html) |
-| **Celdas LiFePO4 IFR32140** | <img src="./schemes/baterias_lifepo4.png" width="80" style="border-radius: 6px;"> | • Química LiFePO4 de alta seguridad<br>• Configuración **2S2P** (~7.0V bus)<br>• Capacidad: `[__]` Ah | Fuente primaria de energía del vehículo; máxima estabilidad térmica, alta tasa de descarga y descarga plana. | [📄 Info](https://en.wikipedia.org/wiki/Lithium_iron_phosphate_battery) | [🛒 Link](https://es.aliexpress.com/) |
-
-### 4.2 Mecánica, Actuadores y Chasis
-| Componente | Vista Previa | Especificaciones Clave | Función en "Smoke" | Enlace Técnico / Modelo |
-| :--- | :---: | :--- | :--- | :---: |
-| **Servo TowerPro MG90S** | <img src="/Otro/MG90S.jpg" width="80" style="border-radius: 6px;"> | • Piñonería metálica reforzada<br>• Torque: 2.2 kg·cm @ 6V<br>• Velocidad: 0.10s / 60° | Acciona la timonería del sistema de dirección Ackermann con alta resistencia a esfuerzos mecánicos. | [📄 PDF](https://www.electronicoscaldas.com/datasheet/MG90S_Tower-Pro.pdf) |
-| **Motor Makeblock DC** | <img src="/Otro/Makeblock.jpg" width="80" style="border-radius: 6px;"> | • Tensión nominal: 9V - 12V<br>• Velocidad eje: 185 RPM<br>• Caja reductora cilíndrica metálica | Motor de tracción longitudinal; acoplado al diferencial trasero para propulsión RWD. | [🌐 Web](https://www.makeblock.com/) |
-| **Diferencial Lego Technic** | <img src="/Otro/Diferencial%20Lego.jpg" width="80" style="border-radius: 6px;"> | • Caja diferencial de 3 satélites cónicos<br>• Plástico técnico de bajo rozamiento | Distribuye la velocidad angular entre las ruedas traseras izquierda y derecha para un giro limpio sin derrape. | [🔗 Lego Spec](https://www.bricklink.com/) |
-| **Engranajes Cónicos de Ángulo Recto** | <img src="./Otro/ENGRANAJECONICO.jpg" width="80" style="border-radius: 6px;"> | • Reducción cónica 90°<br>• Fabricación aditiva en Bambu Lab | Transfiere el giro longitudinal del motor Makeblock hacia el eje transversal del diferencial trasero. | [⚙️ Ver Modelo](./models/) |
-| **Chasis Modular de 3 Pisos** | <img src="./v-fotos/CHASISCOMPLETO.jpg" width="80" style="border-radius: 6px;"> | • 100% manufactura en **PETG**<br>• Arquitectura vertical desacoplada | Aloja y protege los subsistemas de tracción (Piso 1), control (Piso 2) y potencia/visión (Piso 3). | [⚙️ Ver CAD](./models/) |
-<p align="right"><a href="#inicio">⬆️ Volver al Inicio</a></p>
-
-## 5. Apartado Mecánico y Cinemática
-La plataforma física de **"Smoke"** combina técnicas avanzadas de **fabricación aditiva en PETG** con componentes mecánicos de precisión provenientes de la robótica educativa (**LEGO MINDSTORMS EV3**), creando un vehículo ágil, modular y fácilmente reparable en boxes de competición.
-
-### 5.1 Filosofía de Chasis Modular y Manufactura Aditiva (PETG)
-Para garantizar un bajo centro de gravedad (CoG), facilidad de mantenimiento rápido en boxes y un desacoplamiento natural contra ruidos electromagnéticos, el chasis se diseñó en **Autodesk Fusion 360** bajo una arquitectura vertical de **tres pisos modulares**, fabricados al 100% en filamento **PETG** en una impresora **Bambu Lab**:
+# 1. Filosofía de Trabajo y Metodología de Co-Diseño
+En el **Instituto de Inteligencia Artificial y Robótica del estado Zulia (INIAR)**, el desarrollo de **"Smoke"** no se abordó como una suma de tareas aisladas, sino bajo un **modelo holístico de ingeniería concurrente**:
 ```mermaid
 flowchart TD
-    subgraph "Nivel 3: Potencia y Acumulación"
-        P3["🔋 Banco LiFePO4 2S2P (~7.0V)<br>⚡ Convertidores XL4015, LM2596 y XL6009<br>🔌 Interruptor de Potencia Maestro"]
-    end
-    subgraph "Nivel 2: Procesamiento, Visión y Driver"
-        P2["🧠 ESP32-S3 DevKit<br>👁️ Cámara Inteligente HuskyLens 2<br>🔲 Driver de Motor L298N<br>📶 Bus de Señal y Filtros"]
-    end
-    subgraph "Nivel 1: Dinámica de Tracción y Sensado Rasante"
-        P1["⚙️ Motor Makeblock + Diferencial LEGO (RWD)<br>🦾 Dirección Ackermann + Servo MG90S<br>📡 3x Sensores Ultrasónicos HC-SR04 (Frente/Lados)"]
-    end
-    P3 === P2
-    P2 === P1
-    classDef n3 fill:#1f2328,stroke:#f85149,stroke-width:2px,color:#fff;
-    classDef n2 fill:#1f2328,stroke:#0366d6,stroke-width:2px,color:#fff;
-    classDef n1 fill:#1f2328,stroke:#2ea44f,stroke-width:2px,color:#fff;
-    class P3 n3;
-    class P2 n2;
-    class P1 n1;
-```
-
-#### 5.1.1 Estandarización de Sujeción Mecánica (Kit de Tornillería M3)
-Uno de los criterios esenciales para garantizar la fiabilidad del vehículo ante vibraciones de alta frecuencia y aceleraciones bruscas en pista fue la **unificación total del hardware de ensamble bajo métrica M3**.
-<div align="center">
-  <img src="./Otro/KITTORNILLOS.jpg" alt="Kit de Tornillería y Fijaciones M3" width="450" style="border-radius: 8px; border: 1px solid #444;">
-  <br>
-
-  <i>Kit estandarizado de tornillería métrica M3, tuercas de seguridad autoblocantes y separadores.</i>
-</div>
-
-- **Tornillería Estandarizada M3:** Se emplearon tornillos de acero al carbono grado 10.9 con cabeza cilíndrica hexagonal interior (Allen) en longitudes calibradas de **8 mm, 12 mm, 16 mm y 20 mm**, evitando la necesidad de múltiples herramientas en el área de pits (un único destornillador Allen de 2.5 mm opera todo el vehículo).
-- **Tuercas de Seguridad Autoblocantes (Nyloc):** Cada unión crítica utiliza tuercas con inserto elástico de nylon empotradas en cavidades hexagonales diseñadas en el propio modelo de PETG, previniendo aflojamientos por resonancia mecánica.
-- **Separadores Rígidos:** Columnas espaciadoras de precisión para vincular sólidamente los pisos 1, 2 y 3, garantizando el paralelismo estructural del chasis.
-
- ### 5.2 Geometría de Dirección Ackermann Híbrida (Servo MG90S)
-#### ¿Qué es la Geometría Ackermann y por qué es indispensable?
-Cuando un vehículo con dirección delantera traza una curva, las ruedas directrices no recorren el mismo radio: la rueda interna describe un círculo más cerrado que la rueda externa. Si ambas ruedas giraran exactamente al mismo ángulo (geometría paralela estándar), los neumáticos se verían forzados a arrastrarse lateralmente sobre la pista (*wheel scrub* o arrastre de caucho), generando:
-1. Frenado parásito que resta velocidad al vehículo en las curvas.
-2. Pérdida crítica de tracción y agarre direccional.
-3. Desgaste irregular y sobreesfuerzo en el servomotor.
-Para erradicar este problema, **"Smoke"** implementa una **geometría de dirección Ackermann**, donde los brazos de dirección convergen hacia el centro del eje trasero, logrando mecánicamente que **la rueda interna describa un ángulo de giro más pronunciado ($\theta_i$) que la rueda externa ($\theta_o$)**.
-
-#### Solución de Ingeniería: Hibridación de Materiales (LEGO Oficial vs. Impresión 3D)
-Durante las fases iniciales de prototipado, el equipo evaluó la fabricación integral en 3D de todas las rótulas, manguetas (*knuckles*) y barras de dirección. Sin embargo, tras rigurosas pruebas de esfuerzo dinámico, identificamos limitaciones inherentes a las piezas impresas en articulaciones de dimensiones reducidas (micro-fricción superficial entre capas de plástico y holguras acumuladas o *backlash*).
-
-> [!NOTE]
-> **Decisión de Ingeniería y Selección de Materiales:**
-> Tras un análisis comparativo de tolerancias, optamos por una solución híbrida de alto rendimiento:
-> - **Manguetas y Barras de Enlace Oficiales (LEGO EV3):** Se seleccionaron los pivotes y tirantes moldeados por inyección de plástico técnico de LEGO. Al ser piezas inyectadas bajo estándares industriales microscópicos, ofrecen una fricción casi nula en los ejes de rotación, cero rebabas y una rigidez torsional constante que ninguna impresora FDM puede igualar en articulaciones de tan reducida escala.
-> - **Brazo de Servomotor y Anclajes Custom (PETG Bambu Lab):** Diseñamos en **Autodesk Fusion 360** un brazo de dirección (*servo horn*) personalizado impreso en PETG al 100% de densidad, capaz de acoplar de forma milimétrica el estriado metálico del servo TowerPro MG90S con el sistema de articulaciones de LEGO.
-> 
-> Esta combinación híbrida nos brindó lo mejor de ambos mundos: la **libertad paramétrica de la impresión 3D** para fijar la geometría al chasis y la **precisión dimensional del moldeo por inyección** para una dirección suave, rígida y sin holguras.
-> 
-#### Registro Visual del Sistema de Dirección
-<div align="center">
-  
-| 1. Geometría Teórica | 2. Diseño CAD (Fusion 360) | 3. Ensamble Físico en Piso 1 |
-| :---: | :---: | :---: |
-| <img src="v-fotos/ackermann_teoria.jpg" width="220" alt="Esquema Teórico Ackermann"> | <img src="./v-fotos/Sistema%20de%20direccion.png" width="220" alt="Modelo CAD de Dirección"> | <img src="./v-fotos/FOTO%20DEL%20SERVO%20ARMADO.jpg?" width="220" alt="Ensamble Físico en Chasis"> |
-| *Principio de convergencia al eje trasero* | *Brazo custom en PETG + manguetas* | *Integración final con servo MG90S* |
-</div>
-
-#### Validación Cinemática del Rango de Giro ($\pm 80^\circ$)
-Para garantizar que el servo pueda ejecutar maniobras evasivas extremas sin forzar los topes mecánicos ni presentar bloqueos (*binding*), se programó y validó una rutina de barrido angular extremo:
-<div align="center">
-  <img src="./video/servo_80_grados.gif" alt="Validación del barrido angular del servo MG90S" width="450" style="border-radius: 8px; border: 1px solid #444; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
-  <br>
-  <i>Verificación de recorrido del servomotor MG90S alcanzando giros de hasta 80° hacia ambos extremos con movimiento fluido y respuesta lineal.</i>
-</div>
-
-#### Validación Cinemática del Rango de Giro (±80°)
-Para garantizar que el servo pueda ejecutar maniobras evasivas extremas sin forzar los topes mecánicos ni presentar bloqueos (*binding*), se programó y validó una rutina de barrido angular extremo:
-<div align="center">
-  <!-- REEMPLAZA EL NOMBRE ENTRE CORCHETES POR EL NOMBRE EXACTO DE TU GIF -->
-  <img src="./Video/movimientoservo.gif" alt="Validación del barrido angular del servo MG90S" width="450" style="border-radius: 8px; border: 1px solid #444; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
-  <br>
-  <i>Verificación de recorrido del servomotor MG90S alcanzando giros de hasta 80° hacia ambos extremos con movimiento fluido y respuesta lineal.</i>
-</div>
-
-#### Formulación Matemática y Ecuaciones Cinemáticas
-La condición de rodadura geométrica pura de Ackermann establece que los ejes prolongados de todas las ruedas deben intersectar exactamente en el **Centro Instantáneo de Rotación ($CIR$)**, ubicado sobre la prolongación del eje posterior: $$\cot(\theta_o) - \cot(\theta_i) = \frac{W}{L}$$
-
-Donde los parámetros estructurales del vehículo son:
-- $W$ = Trocha o vía delantera (distancia transversal entre pernos de pivote de dirección).
-- $L$ = Batalla (distancia longitudinal entre el centro de las ruedas delanteras y traseras).
-- $\theta_i$ = Ángulo de viraje de la rueda interior a la trayectoria curva.
-- $\theta_o$ = Ángulo de viraje de la rueda exterior a la trayectoria curva.
-```mermaid
-flowchart LR
-    CIR(("● Centro Instantáneo\nde Rotación (CIR)"))
-    EJE_TRASERO["Eje Posterior (Línea Base)"] --- CIR
-    RUEDA_INT["🛞 Rueda Interior (θᵢ)"] -.-> CIR
-    RUEDA_EXT["🛞 Rueda Exterior (θₒ < θᵢ)"] -.-> CIR
-    classDef cir fill:#d73a49,stroke:#24292e,stroke-width:2px,color:#fff;
-    classDef comp fill:#1f2328,stroke:#58a6ff,stroke-width:1px,color:#c9d1d9;
-    class CIR cir;
-    class EJE_TRASERO,RUEDA_INT,RUEDA_EXT comp; 
-```
-
-### 5.3 Tren de Potencia Trasero (RWD) y Transmisión Cónica
-La propulsión de **"Smoke"** utiliza una configuración de **Tracción Trasera (RWD)**. Para transferir la potencia mecánica desde el motor longitudinal Makeblock hacia el eje transversal de las ruedas traseras en un espacio compacto, se diseñó una transmisión cónica a 90° acoplada a un diferencial de satélites:
-<div align="center">
-  <!-- REEMPLAZA EL NOMBRE POR EL ARCHIVO DE TU RENDER DE FUSION 360 -->
-  <img src="./Otro/ENGRANAJEM2.jpg" alt="Render CAD Transmisión Cónica y Diferencial" width="650" style="border-radius: 8px; border: 1px solid #444; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
-  <br>
-  <i>Render de ingeniería en Autodesk Fusion 360: Acople del eje en D del motor Makeblock al piñón cónico custom en PETG atacando la corona del diferencial LEGO EV3.</i>
-</div>
-
-#### Adaptación del Eje Motor (D-Shaft a Engranaje Cónico)
-El motorreductor Makeblock cuenta con un eje cilíndrico rebajado (**tipo D o *D-Shaft***), el cual resulta físicamente incompatible con los orificios estándar en cruz del ecosistema LEGO:
-<div align="center">
-  <!-- REEMPLAZA CON LA FOTO O RENDER DEL PIÑÓN CÓNICO CON ENTRADA EN D -->
-  <img src="./Otro/ENGRANAJEM.jpg" alt="Piñón Cónico Personalizado con Eje en D" width="350" style="border-radius: 8px; border: 1px solid #444; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
-  <br>
-  <i>Detalle del piñón cónico modelado en Fusion 360 con orificio interior en forma de "D" para el eje del motor Makeblock.</i>
-</div>
-
-- **Solución Técnica:** Modelamos paramétricamente en **Autodesk Fusion 360** un piñón cónico con cavidad interna en forma de "D", compensando la contracción térmica del material con una tolerancia de 0.15 mm.
-- **Manufactura:** Impreso al **100% de densidad de relleno (Infill sólido)** en **PETG** en la Bambu Lab, garantizando alta resistencia a la cizalladura en la base de los dientes ante picos de torque.
-
-#### Soporte del Motor Personalizado (Motor Bracket en PETG)
-Para evitar que la fuerza de reacción del par motor desalinee los engranajes cónicos durante aceleraciones bruscas, se diseñó un bloque de bancada a medida:
-<div align="center">
-  
-| 1. Soporte en Aislado (CAD) | 2. Ensamble en el Chasis |
-| :---: | :---: |
-| <img src="./Otro/SOPORTEM.jpg" width="300" alt="Soporte Motor Makeblock Aislado"> | <!-- REEMPLAZA CON LA FOTO DEL SOPORTE EN CHASIS --> <img src="./models/[FOTO_SOPORTE_MOTOR_CHASIS].png" width="300" alt="Soporte Motor Montado en Chasis"> |
-| *Bancada custom en PETG con orificios métricos* | *Fijación de alta rigidez estructural en Piso 1* |
-</div>
-
-- **Fijación Frontal del Motor:** El motor Makeblock se asegura frontalmente mediante **2 tornillos métricos** directamente roscados a la pared anterior del soporte, bloqueando cualquier desplazamiento longitudinal.
-- **Anclaje al Chasis (Piso 1):** La bancada se fija rígidamente a la placa base del chasis mediante **6 tornillos M3** con tuercas autoblocantes, distribuyendo homogéneamente las fuerzas tangenciales generadas por el ataque de los engranes cónicos.
-
-#### Diferencial Trasero y Estabilización de Semiejes
-El diferencial de 3 piñones cónicos internos (satélites) del kit LEGO EV3 permite que la rueda exterior acelere y la rueda interior reduzca su velocidad en las curvas cerradas de 90°, actuando como un pivote natural y erradicando el subviraje (*understeer*) característico de los ejes bloqueados o rígidos:
-$$\omega_{diferencial} = \frac{\omega_{izq} + \omega_{der}}{2}$$
-<div align="center">
-  
-| A. Diseño CAD de Semiejes | B. Retenedores LEGO (Tope Axial) | C. Ensamble Físico en "Smoke" |
-| :---: | :---: | :---: |
-| <img src="./Otro/MOTANDO1.jpg" width="220" alt="CAD Chasis con Ejes"> | <img src="./Otro/RETENEDORA.jpg" width="220" alt="Retenedores LEGO"> | <!-- FOTO C: FOTO REAL EN EL ROBOT --> <img src="./models/[FOTO_EJE_ROBOT_FISICO].jpg" width="220" alt="Ensamble Trasero Físico"> |
-| *Doble bancada de apoyo por semieje* | *Bushing amarillo para fijación axial* | *Montaje final en chasis con neumáticos* |
-</div>
-
-- **Doble Bancada de Apoyo por Lado:** Para evitar que los semiejes flecten bajo carga, cada lado cuenta con dos puntos de apoyo integrados en el PETG: uno contiguo a la salida del diferencial y otro adyacente a la rueda.
-- **Bujes de Tolerancia y Retenedores Axiales:** Los orificios en el chasis se dimensionaron ligeramente por encima del diámetro del eje de acero/LEGO para asegurar una rotación libre de fricción, asegurando la posición lateral mediante **retenedores amarillos LEGO (*bushings*)** que impiden el desplazamiento axial de las ruedas.
-
-####  Configuración de Neumáticos Escalonados (Staggered Wheels)
-Para optimizar la dinámica del vehículo, se seleccionaron diámetros diferenciados entre el tren delantero y el trasero:
-<div align="center">
-  
-| Tren / Posición | Diámetro Circular | Procedencia | Función Dinámica en "Smoke" |
-| :---: | :---: | :---: | :--- |
-| **Delantero (Dirección)** | **Ø 30 mm** | LEGO EV3 | **Baja inercia rotacional:** Minimiza la masa no suspendida y reduce sustancialmente el esfuerzo de torque requerido por el servomotor MG90S al ejecutar virajes bruscos. |
-| **Trasero (Tracción)** | **Ø 43 mm** | LEGO EV3 | **Mayor contacto y tracción:** Su mayor circunferencia incrementa la velocidad lineal de avance por cada revolución del diferencial y mejora la adherencia en aceleración. |
-</div>
-<p align="right"><a href="#inicio">⬆️ Volver al Inicio</a></p>
-
-### 6. Apartado Electrónico y Distribución de Potencia
-La arquitectura eléctrica de **"Smoke"** fue concebida para aislar las cargas dinámicas e inductivas de los actuadores de la lógica de procesamiento central, eliminando definitivamente los reinicios intempestivos (*brownouts*) y las fallas por sobretensión que originaron el nombre del vehículo.
-
-
-#### 6.1 Banco de Baterías LiFePO4 (Configuración 2S2P)
-El vehículo utiliza un acumulador químico industrial de **Fosfato de Hierro y Litio (LiFePO4)** basado en celdas cilíndricas certificadas modelo **IFR32140**:
-- **Arreglo Eléctrico:** Dos ramas en paralelo de dos celdas en serie (**2S2P**), suministrando un bus principal con tensión nominal de **6.4V – 7.0V** (tensión de corte superior a plena carga de 7.2V).
-- **Capacidad Total:** `[COMPLETAR AQUÍ]` Ah / `[COMPLETAR AQUÍ]` Wh.
-- **Seguridad Térmica y Química:** A diferencia de las baterías LiPo comunes, la química LiFePO4 presenta estabilidad química inerte (inmune a fugas térmicas o combustión por sobrecarga), un ciclo de vida útil superior a los 2,000 ciclos y una **curva de descarga extremadamente plana**, lo que asegura que la velocidad del motor y la respuesta del servo no decaigan a lo largo de las 3 vueltas de carrera.
-
-<div align="center">
-  <!-- ESPACIO PARA FOTO DE LAS BATERIAS REALES -->
-  <img src="./schemes/baterias_lifepo4.png" alt="Banco LiFePO4 2S2P" width="380" style="border-radius: 8px; border: 1px solid #444; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
-  <br>
-  <i>Banco de potencia LiFePO4 en configuración 2S2P para entrega de corriente sostenida.</i>
-</div>
-
-> 🔋 **Estación de Carga y Balanceo:**
-> Para asegurar la ecualización exacta de voltaje entre celdas y prolongar la vida útil del banco, se utiliza el cargador inteligente:
-> <div align="center">
-
->   <!-- REEMPLAZA CON LA FOTO DE TU CARGADOR DE BATERÍAS -->
->   <img src="./schemes/[FOTO_CARGADOR_BATERIAS].jpg" alt="Cargador Oficial LiFePO4" width="350" style="border-radius: 8px; border: 1px solid #444;">
->   <br>
->   <i>Cargador balanceador dedicado para celdas LiFePO4: <code>[NOMBRE_Y_MODELO_DEL_CARGADOR]</code>.</i>
-> </div>
-
-#### 6.2 Topología de Tres Ramas de Regulación y Filtrado
-Para erradicar los retornos inductivos generados por el motor Makeblock y los transitorios dinámicos del servo MG90S, el bus de 7.0V se divide en tres convertidores DC-DC independientes:
-```mermaid
-flowchart TD
-    BAT[("🔋 Banco LiFePO4 2S2P\n(~7.0V Nominal)")] --> SW1["🔌 Switch Maestro 1\n(Encendido Reguladores)"]
+    OBJ["🎯 Objetivo Común: Desempeño Robusto en WRO 2026"] --> DISCUSS["🧠 Lluvia de Ideas y Bocetos Preliminares"]
+    DISCUSS --> CAD["⚙️ Modelado CAD Paramétrico\n(Fusion 360)"]
+    DISCUSS --> ELEC["⚡ Arquitectura y Esquemáticos\n(Fritzing)"]
+    DISCUSS --> CODE["💻 Firmware No Bloqueante\n(Arduino IDE + FreeRTOS)"]
     
-    %% Rama A: Potencia Auxiliar
-    SW1 --> BUCK_SERVO["⚡ Step-Down LM2596\n(Regulado a 5.0V / 3A)"]
-    BUCK_SERVO --> SERVO["🦾 Servomotor MG90S"]
-    BUCK_SERVO --> HUSKY["👁️ Cámara HuskyLens 2"]
-    %% Rama B: Control y Lógica
-    SW1 --> BUCK_LOGIC["⚡ Step-Down XL4015E1\n(Regulado a 5.0V / 5A)"]
-    BUCK_LOGIC --> SW2["🔌 Switch Maestro 2\n(Encendido MCU)"]
-    SW2 --> MCU["🧠 ESP32-S3 DevKit"]
-    BUCK_LOGIC --> US["📡 3x Sensores HC-SR04"]
-    BUCK_LOGIC --> L298N_VSS["🔲 Lógica L298N (Pin Vss)"]
-    %% Rama C: Potencia de Tracción
-    SW1 --> BOOST["⚡ Step-Up XL6009\n(Regulado a 14.0V / 4A)"]
-    BOOST --> L298N_VS["🔲 Potencia L298N (Pin Vs)"]
-    L298N_VS -->|"-2.0V Caída Darlington (12V Netos)"| MOTOR["⚙️ Motor Makeblock DC"]
-    %% Control de Inicio
-    BTN["🔘 Botón de Inicio (GPIO 21)\nPull-Down Interno"] -.->|"Gatillo de Rutina"| MCU
-    classDef bat fill:#2ea44f,stroke:#24292e,stroke-width:2px,color:#fff;
-    classDef reg fill:#0366d6,stroke:#24292e,stroke-width:2px,color:#fff;
-    classDef dev fill:#1f2328,stroke:#58a6ff,stroke-width:1px,color:#c9d1d9;
-    classDef sw fill:#d73a49,stroke:#24292e,stroke-width:2px,color:#fff;
-    class BAT bat;
-    class BUCK_SERVO,BUCK_LOGIC,BOOST reg;
-    class SERVO,HUSKY,MCU,US,L298N_VSS,L298N_VS,MOTOR dev;
-    class SW1,SW2,BTN sw;
+    CAD & ELEC & CODE --> TEST["🏁 Validación Incremental en Pista de Pruebas"]
+    
+    TEST -->|"Falla o Comportamiento Irregular"| TRIAGE["🔍 Triaje Conjunto de Falla\n(Todo el equipo analiza la causa raíz)"]
+    TRIAGE --> DISCUSS
+    classDef main fill:#0366d6,stroke:#24292e,stroke-width:2px,color:#fff;
+    classDef step fill:#1f2328,stroke:#58a6ff,stroke-width:1px,color:#c9d1d9;
+    classDef fail fill:#d73a49,stroke:#24292e,stroke-width:2px,color:#fff;
+    class OBJ main;
+    class DISCUSS,CAD,ELEC,CODE,TEST step;
+    class TRIAGE fail;
 ```
-> [!NOTE]
-> **Protocolo de Encendido Seguro y Control de Usuario:** 
-> El vehículo cuenta con una interfaz de encendido secuencial para evitar arranques erráticos:
-> Switch 1 (Maestro de Regulación): Energiza simultáneamente los convertidores LM2596, XL4015 y XL6009, permitiendo que los voltajes de salida se estabilicen antes de despertar a la lógica.
-> Switch 2 (Maestro de Lógica): Alimenta exclusivamente el ESP32-S3, garantizando que el microcontrolador inicie su proceso de booteo con un riel de 5V perfectamente limpio y sin picos transitorios.
-> Pulsador de Inicio (Start Button - GPIO 21): El vehículo permanece inmóvil en boxes hasta que el operador presiona este botón físico. El pin está configurado mediante software con resistencia Pull-Down interna, activando la rutina de navegación autónoma tras recibir un flanco de subida de 3.3V.
 
-#### 6.3 Etapa de Tracción (XL6009 + L298N) y Masa Común (Unifed GND)
-#### 1. Justificación del Step-Up a 14V y Compensación Darlington
-El puente H **L298N** emplea transistores de salida bipolares (BJT) en configuración Darlington, los cuales provocan una caída interna de voltaje inevitable:
-$$V_{drop} = V_{CE(sat)} \approx 1.8V - 2.2V$$
-Si el driver se conectara directo al banco de 7V, el motor operaría a menos de 5V, con un torque deficiente. Para suministrar los **12V nominales de máxima potencia al motor Makeblock**:
-- Se retiró el puente (*jumper*) de 5V integrado en la placa del L298N para aislar por completo su regulador interno 78M05.
-- El módulo elevador **XL6009** se calibró a **14.0V DC**:
-  $$V_{Salida\_L298N} = V_{Boost} - V_{drop} = 14.0V - 2.0V = 12.0V \text{ netos}$$
+# 2. Nuestro Equipo (INIAR)
+Team Nexus está integrado por estudiantes universitarios del **Instituto de Inteligencia Artificial y Robótica del estado Zulia "Dr. Héctor Rafael Rojas" (INIAR)**, combinando experiencia práctica en torneos nacionales y mundiales:
+
+## 👤 David Ocando
+**Líder de Arquitectura Eléctrica, Gestión de Potencia y Co-Administrador Digital**
+<div align="center">
+  <img src="./t-fotos/DAVID%20PERFIL.jpeg" alt="David Ocando" width="320" style="border-radius: 12px; border: 1px solid #444; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+</div>
+
+* **Formación Académica:** Estudiante de Ingeniería Eléctrica (Mención Generación y Distribución de Potencia) – **Universidad Rafael Urdaneta (URU)**.
+* **Responsabilidades Técnicas en "Smoke":**
+  * **Diseño Eléctrico de Potencia:** Cálculo de caídas de tensión, selección de convertidores DC-DC y desacoplamiento en 3 ramas independientes (lógica a 5V, actuadores a 5V y tracción a 14V).
+  * **Almacenamiento Energético:** Configuración del banco de celdas 18650 (2S2P / 7000 mAh), monitoreo de curvas de descarga y dimensionamiento de cables de potencia.
+  * **Inmunidad Electromagnética:** Unificación del plano de masas (Common Ground), filtrado de ruidos parásitos de conmutación y protocolo de encendido seguro.
+  * **Documentación Técnica:** Mantenimiento y estandarización del repositorio en GitHub bajo la rúbrica oficial de la WRO.
+### 🏆 Historial de Competición:
+* **Copa KAI (2023):** Participación en robótica móvil y combate autónomo.
+* **FIRST Tech Challenge (FTC Championship – Piacenza, Italia 2024):** Representación internacional de Venezuela; desarrollo de sistemas de potencia de alta corriente y actuadores de respuesta rápida.
+* **WRO Venezuela (Temporada 2025):** Competidor oficial en la categoría **RoboSports**, optimizando la respuesta dinámica y la robustez eléctrica del robot en cancha.
 ---
-#### 2. Beneficios de la Tierra Común Unificada (Common Ground Plane)
-Todos los terminales negativos (GND) del banco LiFePO4, los tres convertidores DC-DC, el driver L298N, los sensores y el ESP32-S3 están **eléctricamente soldados a un único bus de masa común**:
-- **Referencia Equipotencial Cero:** Elimina bucles de tierra (*ground loops*) y corrientes de fuga entre las etapas de lógica y potencia.
-- **Integridad de Señales PWM y UART:** Al compartir la misma referencia de 0V, las señales de control de alta velocidad (como la comunicación serial a 115200 baudios de la HuskyLens 2 y las señales de modulación PWM del servo y motor) no sufren distorsión ni desplazamientos de nivel lógico (*logic level shifting*).
 
-#### 6.4 Diagrama Esquemático General
-
-El conexionado eléctrico integral de potencia, distribución y señales lógicas de la plataforma **"Smoke"** se detalla en el siguiente plano:
+## 👤 José Montiel
+**Ingeniero Líder de Firmware, Visión Artificial y Control Autónomo**
 <div align="center">
-  <img src="./Esquemas/DIAGRAMAVF.jpg" alt="Esquemático Eléctrico Oficial Smoke" width="850" style="border-radius: 8px; border: 1px solid #444; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
-  <br>
-  <i>Plano esquemático general de conexiones eléctricas de "Smoke" (Archivo: <code>./Esquemas/DIAGRAMAVF.jpg</code>).</i>
+  <img src="./t-fotos/JOSE%20PERFIL.jpeg" alt="José Montiel" width="320" style="border-radius: 12px; border: 1px solid #444; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
 </div>
 
-#### 6.5 Mapeo de Pines de Entrada y Salida (ESP32-S3 Pinout)
+* **Formación Académica:** Estudiante de Ingeniería Electrónica – **Universidad Dr. Rafael Belloso Chacín (URBE)**.
+* **Responsabilidades Técnicas en "Smoke":**
+  * **Desarrollo de Firmware Embebido:** Programación en C++ sobre ESP32-S3 bajo arquitectura no bloqueante con temporizadores de hardware.
+  * **Sistemas Operativos en Tiempo Real:** Implementación de tareas dedicadas en **FreeRTOS** (Core 0 para la integración angular del MPU6050 a 500 Hz y Core 1 para la navegación).
+  * **Control de Rumbo y Estabilidad:** Algoritmo Proporcional-Derivativo (PD) con zona muerta y compensación angular de escape lateral ante muros.
+  * **Visión por Computador:** Calibración y enlace serie UART (115,200 baudios) con la cámara **HuskyLens 2** para la clasificación colorimétrica de obstáculos.
+  * **Tolerancia a Fallas:** Desarrollo del mecanismo de auto-rescate en caliente del bus I2C mediante 9 ciclos de reloj forzados en SCL.
+### 🏆 Historial de Competición:
+* **WRO Venezuela Regional (Temporada 2025):** Participación oficial en la categoría **Future Engineers**, acumulando experiencia en cinemática de pista, algoritmos reactivos y visión de carril.
+---
 
-Para facilitar la trazabilidad técnica y la reproducibilidad del firmware, a continuación se documenta el esquema de asignación de pines GPIO del microcontrolador **ESP32-S3 DevKit**:
-| Subsistema | Componente / Periférico | Pin Físico | Conexión / Función de Firmware |
-| :--- | :--- | :---: | :--- |
-| **🦾 Dirección** | Servomotor TowerPro MG90S | **GPIO 8** | Salida PWM (Librería `ESP32Servo.h`) |
-| **⚙️ Tracción** | Driver L298N – ENA (PWM) | **GPIO 4** | Modulación de ancho de pulso (Velocidad motor) |
-| | Driver L298N – IN1 | **GPIO 5** | Sentido de giro horario (Avance) |
-| | Driver L298N – IN2 | **GPIO 6** | Sentido de giro antihorario (Reversa / Freno) |
-| **👁️ Visión IA** | Cámara DFRobot HuskyLens 2 | **GPIO 9** | **UART RX** (Conectado al pin TX / Verde de la cámara) |
-| | Cámara DFRobot HuskyLens 2 | **GPIO 10** | **UART TX** (Conectado al pin RX / Azul de la cámara) |
-| **🧭 Orientación** | Giroscopio / IMU MPU6050 | **GPIO 16** | Bus I2C – Línea de Datos (**SDA**) |
-| | Giroscopio / IMU MPU6050 | **GPIO 17** | Bus I2C – Línea de Reloj (**SCL**) |
-| **📡 Sensado Perimetral** | HC-SR04 Frontal | **GPIO 42** | Salida de Disparo (**TRIGGER**) |
-| | HC-SR04 Frontal | **GPIO 41** | Entrada de Retorno (**ECHO**) |
-| | HC-SR04 Derecho | **GPIO 38** | Salida de Disparo (**TRIGGER**) |
-| | HC-SR04 Derecho | **GPIO 37** | Entrada de Retorno (**ECHO**) |
-| | HC-SR04 Izquierdo | **GPIO 39** | Salida de Disparo (**TRIGGER**) |
-| | HC-SR04 Izquierdo | **GPIO 40** | Entrada de Retorno (**ECHO**) |
-| **🔘 Interfaz de Usuario**| Pulsador de Inicio (Start Button) | **GPIO 21** | Entrada digital con resistencia **Pull-Down** interna |
-<p align="right"><a href="#inicio">⬆️ Volver al Inicio</a></p>
-
-### 7. Percepción Sensorial y Visión Artificial
-
-La plataforma **"Smoke"** integra un ecosistema sensorial distribuido que combina visión por computador acelerada por hardware (IA embebida) con una red de tiempo de vuelo ultrasónico y telemetría inercial de alta frecuencia.
-```mermaid
-flowchart TD
-    subgraph "Percepción Sensorial Smoke"
-        US_F["📡 HC-SR04 Frontal\n(Gatillo de Giros 90° @ 70cm)"]
-        US_R["📡 HC-SR04 Lateral Der\n(Centrado @ 30cm / Escape 25cm)"]
-        US_L["📡 HC-SR04 Lateral Izq\n(Centrado @ 30cm / Escape 25cm)"]
-        MPU["🧭 IMU MPU6050\n(Yaw Z en Core 0 con FreeRTOS)"]
-        HUSKY["👁️ HuskyLens 2\n(Color Recognition UART @ 115200)"]
-    end
-    US_F & US_R & US_L -->|"Pulsos Eco (Tiempo Vuelo)"| ESP["🧠 ESP32-S3 DevKit"]
-    MPU -->|"Bus I2C con Auto-Rescate"| ESP
-    HUSKY -->|"Protocolo Serial UART (Pines 9/10)"| ESP
-    classDef sens fill:#1f2328,stroke:#58a6ff,stroke-width:1px,color:#c9d1d9;
-    classDef mcu fill:#0366d6,stroke:#24292e,stroke-width:2px,color:#fff;
-    class US_F,US_R,US_L,MPU,HUSKY sens;
-    class ESP mcu;
-```
-
-#### 7.1 Visión Artificial por IA (DFRobot HuskyLens 2)
-
-Para superar el **Desafío de Obstáculos (Obstacle Challenge)**, el vehículo emplea la cámara inteligente **HuskyLens 2** montada rígidamente en el Piso 2, optimizando el ángulo cenital para evitar reflejos de luz sobre el tapiz:
-- **Algoritmo de Detección:** Modo **Reconocimiento de Color (*Color Recognition*)**, entrenado bajo condiciones lumínicas de competencia para clasificar los bloques de tráfico:
-  - **Bloque Rojo (ID 1):** Obliga una trayectoria de evasión hacia la **izquierda**.
-  - **Bloque Verde (ID 2):** Obliga una trayectoria de evasión hacia la **derecha**.
-- **Enlace UART de Alta Velocidad:** A diferencia del bus I2C (que puede presentar bloqueos de reloj ante ruido eléctrico severo), la HuskyLens 2 se comunica a través del puerto serie de hardware (`Serial1` a **115,200 baudios**) en los pines **GPIO 9 (RX)** y **GPIO 10 (TX)**, garantizando un flujo continuo de paquetes de datos a 30 FPS sin pérdidas.
-- **Aislamiento por Software en Ronda Abierta:** Durante el Open Challenge, la cámara permanece encendida pero su hilo de procesamiento se desactiva en el firmware, liberando ancho de banda de procesamiento y garantizando la total reproducibilidad basada en sensado inercial/ultrasónico.
-
-#### 7.2 Orientación Inercial y Fusión en Tiempo Real (MPU6050)
-Ubicado con precisión milimétrica en el **centro geométrico del chasis (Piso 2)** para eliminar componentes de aceleración centrípeta parásita, el sensor inercial **MPU6050** actúa como la referencia absoluta de rumbo angular (*Yaw Heading*):
-#### 1. Arquitectura Multitarea en Core Dedicado (FreeRTOS)
-Para erradicar la deriva (*drift*) provocada por demoras en la lectura del bus, el firmware instancia una tarea independiente en el **Core 0** del ESP32-S3 (`tareaLeerMPU`):
-- Frecuencia de muestreo ultrarrápida: Lectura cada **2 ms ($500 \text{ Hz}$)**.
-- Calibración Automática en Arranque: Al encender el robot, se toman **50 muestras promediadas** para eliminar el offset estático del giroscopio ($gz_{offset}$) antes de liberar los motores.
- **Integración Numérica Discreta del Eje Z:**
-  $$\Delta \theta = (gz - gz_{offset}) \cdot \Delta t$$
-  $$\text{Yaw}_{actual} = \text{Yaw}_{actual} + \Delta \theta \quad (\text{para } |gz| > 0.3^\circ/\text{s})$$
-  
-#### 2. Mecanismo de Tolerancia a Fallas: Auto-Rescate del Bus I2C
-Ante eventuales picos de retorno electromagnético que puedan bloquear la línea SDA en estado bajo (*I2C bus lockup*), el firmware implementa la función de recuperación por hardware `rescatarBusI2C()`:
-- Detecta el congelamiento mediante `Wire.endTransmission() != 0`.
-- Libera la línea SDA forzando manualmente **9 ciclos de reloj en SCL**.
-- Reconfigura y reinicia en caliente la interfaz I2C a **100 kHz** con filtro paso-bajo a 21 Hz, restaurando la telemetría sin necesidad de reiniciar el microcontrolador ni detener el carro.
-
-#### 7.3 Red de Sensores Ultrasónicos HC-SR04 y Filtrado Espacial
-El primer piso alberga tres transductores ultrasónicos para el centrado dinámico en rectas y la detección temprana de viraje:
+## 👤 Jairo Cruz
+**Ingeniero de Diseño Mecánico, Dinámica Vehicular y Manufactura Aditiva**
 <div align="center">
-  
-| Transductor | Ubicación en Chasis | Umbral Clave | Función de Navegación |
-| :--- | :---: | :---: | :--- |
-| **Frontal** | Vértice central delantero | **$\le 70.0 \text{ cm}$** | Gatillo de esquinas: Al cruzar este umbral, inicia la maniobra de giro a 90° e incrementa el contador de esquinas. |
-| **Derecho** | Costado lateral derecho | **$\le 25.0 \text{ cm}$** | Mantenimiento de carril: Si la distancia baja de 25 cm, aplica un offset de escape de $25^\circ$ hacia la izquierda. |
-| **Izquierdo** | Costado lateral izquierdo | **$\le 25.0 \text{ cm}$** | Mantenimiento de carril: Si la distancia baja de 25 cm, aplica un offset de escape de $25^\circ$ hacia la derecha. |
+  <img src="./t-fotos/JAIRO%20PERFIL.jpeg" alt="Jairo Cruz" width="320" style="border-radius: 12px; border: 1px solid #444; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
 </div>
 
-#### 1. Muestreo Rotativo Asíncrono (Anti-Crosstalk)
-Para evitar que los ecos emitidos por un sensor reboten y sean leídos incorrectamente por otro (*interferencia acústica cruzada*), el firmware ejecuta un ciclo de muestreo secuencial cada **50 ms**:
-$$\text{Secuencia: } \text{Frontal} \longrightarrow \text{Derecho} \longrightarrow \text{Frontal} \longrightarrow \text{Izquierdo}$$
-Esta distribución otorga una tasa de refresco del **100% adicional al sensor frontal**, permitiendo detectar el muro terminal a alta velocidad con holgura suficiente para desacelerar y virar.
-#### 2. Ecuación de Tiempo de Vuelo y Rechazo de Outliers
-La distancia se calcula con base en la velocidad de propagación del sonido en el aire ($343 \text{ m/s}$):
-$$d = \frac{t_{pulso} \cdot 0.0343}{2} \quad [\text{cm}]$$
-El temporizador `pulseIn` cuenta con un *timeout* ajustado a **$15,000\ \mu\text{s}$** (equivalente a $\sim 257 \text{ cm}$). Si no se recibe eco o el valor excede el rango válido, la función retorna inmediatamente `999.0 cm`, descartando lecturas espurias que pudieran desestabilizar el servo.
-<p align="right"><a href="#inicio">⬆️ Volver al Inicio</a></p>
-
-### 8. Arquitectura de Firmware y Software
-El software embebido de **"Smoke"** fue desarrollado en **C++ bajo el entorno Arduino IDE**, optimizado específicamente para el microcontrolador de doble núcleo **ESP32-S3**. Para garantizar un control en tiempo real estricto, el código opera bajo una **arquitectura no bloqueante basada en temporizadores de hardware y el sistema operativo en tiempo real FreeRTOS**.
-El firmware de la ronda abierta se encuentra disponible en [`./src/OPENCHALLENGE.ino`](./src/OPENCHALLENGE.ino).
-
-#### 8.1 Máquina de Estados Finitos (FSM - Navegación Autónoma)
-El flujo de control de carrera se rige mediante una máquina de estados finitos que gestiona la transición entre la calibración estática, el guiado reactivo en rectas y las maniobras de viraje en esquinas:
-```mermaid
-flowchart TD
-    BOOT["🔌 Encendido y Bloqueo de Actuadores\n(Motores a 0V / Servo Centrado a 96°)"] --> WAIT_BTN{"🔘 Pulsador GPIO 21\n¿Presionado?"}
-    
-    WAIT_BTN -- No --> WAIT_BTN
-    WAIT_BTN -- Sí --> CALIB["🧭 Calibración MPU6050\n(50 Muestras Estáticas / Tarea FreeRTOS Core 0)"]
-    
-    CALIB --> DRIVE["🏎️ Avance en Recta con Control PD\n(Corrección por Yaw MPU + Escape Lateral US)"]
-    
-    DRIVE --> CHECK_CORNER{"📡 HC-SR04 Frontal\n¿Distancia ≤ 70 cm?"}
-    
-    CHECK_CORNER -- No --> DRIVE
-    CHECK_CORNER -- Sí --> DETECT_DIR{"¿Primera Esquina?\n(Dirección = 0)"}
-    
-    DETECT_DIR -- Sí --> EVAL_SPACE["Comparar US Izq vs Der\n(Guardar sentido: +89° o -89°)"]
-    EVAL_SPACE --> TURN["🔄 Maniobra de Giro 90°\n(Servo a Tope / Conteo Esquina +1)"]
-    DETECT_DIR -- No --> TURN
-    
-    TURN --> CHECK_END{"¿Esquinas ≥ 12?\n(3 Vueltas Completadas)"}
-    
-    CHECK_END -- No --> COOLDOWN["⏱️ Cooldown de Giro (500 ms)\nRetorno a Setpoint"] --> DRIVE
-    CHECK_END -- Sí --> STOP["🛑 Parada de Emergencia\n(Frenado Regenerativo Motor / Servo a 96°)"]
-    classDef state fill:#1f2328,stroke:#58a6ff,stroke-width:1px,color:#c9d1d9;
-    classDef dec fill:#0366d6,stroke:#24292e,stroke-width:2px,color:#fff;
-    classDef stop fill:#d73a49,stroke:#24292e,stroke-width:2px,color:#fff;
-    class BOOT,CALIB,DRIVE,EVAL_SPACE,TURN,COOLDOWN state;
-    class WAIT_BTN,CHECK_CORNER,DETECT_DIR,CHECK_END dec;
-    class STOP stop;
-```
-#### 8.2 Desglose Técnico del Código (`OPENCHALLENGE.ino`)
-<details>
-<summary>▶️ <b>Módulo 1: Bloqueo de Emergencia, Configuración de Pines y FreeRTOS</b></summary>
-<br>
-  
-Para evitar que el robot arranque descontrolado al encenderse, la función `setup()` ejecuta una secuencia de seguridad pasiva inmediata:
-1. **Freno de Motores:** Se configuran los canales PWM forzando la velocidad a cero y los pines `PIN_MOTOR_IN1` y `PIN_MOTOR_IN2` en estado bajo (`LOW`).
-2. **Centrado Mecánico:** El servo MG90S se clava de inmediato en su ángulo neutro (`SERVO_CENTRO = 96°`).
-3. **Lanzamiento de Tarea en Core 0:** Se crea la tarea `tareaLeerMPU` asignada al **Core 0** del ESP32-S3 mediante `xTaskCreatePinnedToCore()`, logrando un bucle inercial de lectura a **500 Hz (cada 2 ms)** totalmente inmune a las demoras del resto del programa.
-</details>
-<br>
-<details>
-<summary>▶️ <b>Módulo 2: Calibración Inercial y Detección Automática de Sentido de Carrera</b></summary>
-<br>
-  
-El vehículo elimina cualquier dependencia de configuración manual antes de soltarlo en la pista:
-- **Calibración Estática:** Al presionar el pulsador de inicio (`PIN_INICIO` en GPIO 21), el ESP32 toma 50 lecturas promediadas del giroscopio MPU6050 para calcular el offset de deriva (`gz_offset`) mientras el carro permanece estático.
-- **Detección Inteligente del Sentido de la Pista (Horario / Antihorario):** En la primera esquina, el sensor ultrasónico frontal detecta el muro terminal a $\le 70\text{ cm}$ y el firmware compara automáticamente las lecturas laterales:
-  - Si el sensor izquierdo registra mayor distancia libre que el derecho (`dist_izquierda >= dist_derecha`), el robot memoriza el sentido **antihorario** (giro a la izquierda).
-  - De lo contrario, memoriza el sentido **horario** (giro a la derecha).
-  - Esta dirección queda bloqueada y guardada en la variable `direccion_giro` para todo el resto de la carrera.
-</details>
-<br>
-<details>
-<summary>▶️ <b>Módulo 3: Controlador PD de Rumbo y Escape Lateral en Rectas</b></summary>
-<br>
-  
-En los tramos rectos, el vehículo combina el rumbo del giroscopio con un sistema de evasión preventiva de colisiones:
-- **Controlador PD Inercial:** Calcula el error entre el rumbo objetivo (`setpoint_yaw`) y la orientación real (`yaw_actual`). Si el error supera la zona muerta de $\pm 2.0^\circ$, aplica corrección proporcional (`Kp = 1.0`) y derivativa hacia la timonería del servo MG90S.
-- **Escape Lateral Reactivo:** Si los ultrasonidos detectan que el vehículo se aproxima peligrosamente a un muro lateral ($\le 25\text{ cm}$), se inyecta un offset angular instantáneo de $\pm 25^\circ$ (`ANGULO_ESCAPE`), alejando al vehículo del muro sin perder el rumbo general del circuito.
-</details>
-<br>
-<details>
-<summary>▶️ <b>Módulo 4: Algoritmo de Giros de 90°, Conteo de Vueltas y Frenado Final</b></summary>
-<br>
-  
-El proceso de negociación de curvas garantiza virajes limpios y parada exacta en meta:
-1. **Gatillo de Curva:** Al detectar muro frontal a $\le 70\text{ cm}$ con espacio lateral despejado ($\ge 70\text{ cm}$), se bloquea el servo a máxima deflexión (`MAX_DEFLEXION = 21°`), se actualiza el setpoint angular en $\pm 89^\circ$ y se incrementa el contador de esquinas (`esquinas_contadas++`).
-2. **Criterio de Salida de Curva:** La maniobra se considera completada cuando el error angular respecto al setpoint es menor a $8.0^\circ$ o si transcurre el tiempo límite de seguridad (`TIMEOUT_GIRO = 2500 ms`).
-3. **Parada Automática tras 3 Vueltas (12 Esquinas):** Al registrar 12 esquinas válidas, el robot activa la secuencia de finalización: rueda un tiempo prudencial (`TIEMPO_PARO_FIN = 1500 ms`) para cruzar la línea de meta, corta el PWM del motor Makeblock, conecta los pines IN1 e IN2 a tierra para inducir frenado regenerativo y clava el servo al centro.
-</details>
-
-### 9. Diario de Ingeniería, Iteraciones y Solución de Fallas
-El desarrollo de la plataforma **"Smoke"** siguió un riguroso **Ciclo de Diseño en Ingeniería (*Engineering Design Process*)**. Lejos de ocultar los fallos experimentados en el laboratorio de INIAR, el equipo documentó cada contratiempo técnico como una oportunidad de aprendizaje y optimización sistemática:
-```mermaid
-flowchart LR
-    P["⚠️ Falla o Limitación\nIdentificada en Pista"] --> A["🔍 Análisis de Causa Raíz\n(Eléctrica / Mecánica / Firmware)"]
-    A --> S["💡 Diseño e Implementación\nde Solución Técnica"]
-    S --> V["✅ Validación Experimental\n(Telemetría y Rendimiento)"]
-    classDef proc fill:#1f2328,stroke:#58a6ff,stroke-width:1px,color:#c9d1d9;
-    class P,A,S,V proc;
-```
-
-| Subsistema | Problema Inicial Identificado | Causa Raíz Técnica | Solución de Ingeniería Aplicada | Impacto en "Smoke" |
-| :--- | :--- | :--- | :--- | :--- |
-| **⚡ Potencia** | **Destrucción de 3 Step-Downs (Origen de "Smoke")** | Retornos inductivos del motor DC y transitorios de conmutación quemaron los reguladores en cascada. | Rediseño a **3 ramas independientes** (XL4015 para lógica, LM2596 para actuadores y XL6009 para motor) + masa común unificada. | **100% de fiabilidad:** Cero caídas de tensión (*brownouts*) y rieles de 5V totalmente limpios. |
-| **⚙️ Tracción** | **Pérdida crítica de torque en el motor Makeblock** | Caída de tensión inherente ($\approx 2.0\text{V}$) en los transistores Darlington BJT del driver L298N. | Incorporación de elevador **XL6009 calibrado a 14.0V** y retiro del jumper interno de 5V del driver. | El motor recibe **12V netos constantes**, alcanzando su velocidad nominal de 185 RPM. |
-| **🦾 Dirección** | **Servomotor atascado y dañado mecánicamente** | El firmware enviaba ángulos que superaban los topes mecánicos del chasis, forzando los piñones bajo bloqueo. | Estandarización con servo **MG90S de piñonería metálica**, limitación por software (`MAX_DEFLEXION = 21°`) y rutina de prueba $\pm 80^\circ$. | Eliminación total de bloqueos mecánicos (*binding*) y virajes precisos y fluidos. |
-| **🔗 Transmisión** | **Incompatibilidad dimensional de ejes** | El motor Makeblock cuenta con eje cilíndrico en "D" y el diferencial LEGO EV3 requiere eje en cruz. | Modelado paramétrico en Fusion 360 e impresión al 100% en **PETG** de un **piñón cónico con entrada en D**. | Transmisión a 90° sin holguras (*backlash* mínimo) y alta resistencia al cizallamiento. |
-| **🏎️ Cinemática** | **Fricción y juego en dirección 100% 3D** | Las piezas pequeñas impresas en FDM acumulaban rugosidad superficial y desgaste en los pivotes. | **Arquitectura híbrida:** Manguetas y barras de enlace oficiales inyectadas LEGO EV3 + brazo de servo custom en PETG. | Dirección suave, sin rozamiento parásito y con rigidez torsional constante en curvas. |
-| **🧭 Telemetría** | **Congelamiento aleatorio del bus I2C (MPU6050)** | Ruido eléctrico inducido en las pistas bloqueaba la línea SDA en estado bajo (*bus lockup*). | Implementación de la rutina de hardware `rescatarBusI2C()` con **9 pulsos de reloj forzados en SCL** en Core 0. | El sistema detecta y recupera el bus en caliente en microsegundos sin reiniciar el carro. |
-| **💻 Firmware** | **Comportamiento errático y asincronía en C++** | Bloqueos temporales en bucles `delay()` y condiciones de carrera al procesar sensores y actuar motores. | Reestructuración no bloqueante con **FreeRTOS en Core 0 para la IMU** y máquina de estados finitos con `millis()`. | Ejecución en tiempo real estricta con refresco inercial a **500 Hz**. |
-| **🔋 Acumulación** | **Decaimiento de velocidad a lo largo de las vueltas** | Baterías convencionales presentaban una curva de descarga con pendiente pronunciada. | Migración a celdas cilíndricas industriales **LiFePO4 IFR32140 (2S2P)** certificadas. | Voltaje de bus estable durante toda la ronda; velocidad y radio de giro idénticos de la vuelta 1 a la 3. |
-<p align="right"><a href="#inicio">⬆️ Volver al Inicio</a></p>
-
-## 🏁 Conclusión y Filosofía de Competencia
-La plataforma **"Smoke"** representa meses de trabajo interdisciplinario, rigor metodológico y aprendizaje en el taller del **Instituto de Inteligencia Artificial y Robótica del estado Zulia (INIAR)**. Cada componente, línea de código y decisión de diseño documentada en este repositorio ha sido probada y validada en pista bajo las normativas internacionales de la **World Robot Olympiad™ 2026**.
+* **Formación Académica:** Estudiante de Ingeniería Electrónica (Mención Automatización y Control).
+* **Responsabilidades Técnicas en "Smoke":**
+  * **Diseño Paramétrico 3D:** Modelado en **Autodesk Fusion 360** del chasis modular de tres niveles, bancada de motor y soportes de sensado.
+  * **Manufactura Aditiva Avanzada:** Optimización de laminado en **Bambu Lab** con filamento **PETG** estructural (orientación de capas, 100% infill en engranajes y tolerancias dimensionales).
+  * **Cinemática y Ensamblaje:** Adaptación híbrida del piñón cónico con entrada D-Shaft al diferencial LEGO EV3, timonería Ackermann y estandarización métrica M3.
+### 🏆 Historial de Competición:
+* **Copa KAI (2023):** Competidor en diseño de chasis ultraligero y robótica móvil.
+* **FIRST Tech Challenge (FTC Championship – Italia 2024):** Integrante de la delegación internacional venezolana; diseño de sistemas de reducción mecánica y ensamblaje de alta precisión.
+* **WRO Venezuela (Temporada 2025):** Competidor en la categoría **RoboSports**, especializándose en rigidez torsional y resistencia a impactos mecánicos.
+---
+## 👤 Ing. Wender Sánchez
+**Mentor Líder y Asesor de Ingeniería Mecánica**
 <div align="center">
-  <b>Desarrollado con dedicación por Team Nexus</b><br>
-  <i>David Ocando • José Montiel • Jairo Cruz</i><br>
-  Mentor: <i>Ing. Wender Sánchez</i>
-  <br><br>
-  <b>Maracaibo, Estado Zulia – Venezuela 🇻🇪</b>
+  <img src="./t-fotos/MENTOR%20PERFIL.jpeg" alt="Ing. Wender Sánchez" width="320" style="border-radius: 12px; border: 1px solid #444; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
 </div>
+
+* **Formación y Perfil:** Ingeniero Mecánico egresado de la **Universidad del Zulia (LUZ)**, con dilatada trayectoria profesional en dinámica de vehículos, cinemática de mecanismos y sistemas de transmisión de potencia.
+* **Acompañamiento Metodológico:** Supervisión técnica en el cálculo analítico de fuerzas, validación de relaciones de transmisión, selección de materiales termoplásticos y apego a la rúbrica internacional de la WRO.
