@@ -1,52 +1,62 @@
 # 🏎️ WRO 2026 Future Engineers – Team Nexus
 <div align="center">
   <img src="./Otro/NEXUS_LOGO.jpg" alt="Team Nexus Autonomous Vehicle" width="650" style="border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-  <br> <br>
   
+  <br><br>
   [![WRO](https://img.shields.io/badge/WRO-Future_Engineers_2026-0052CC.svg?style=for-the-badge&logo=target)](https://wro-association.org/)
   [![Location](https://img.shields.io/badge/Location-Zulia%2C_Venezuela-FFD700.svg?style=for-the-badge&logo=googlemaps&logoColor=black)](https://www.instagram.com/iniar_zulia/)
   [![Institution](https://img.shields.io/badge/Institution-INIAR-008080.svg?style=for-the-badge)](https://www.instagram.com/iniar_zulia/)
   <br>
-  [![MCU](https://img.shields.io/badge/MCU-ESP32--S3-E7352C.svg?style=for-the-badge&logo=espressif&logoColor=white)](https://www.espressif.com/)
-  [![Language](https://img.shields.io/badge/Language-C%2B%2B-00599C.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white)](https://isocpp.org/)
+  [![MCU](https://img.shields.io/badge/MCU-ESP32--S3_Dual--Core-E7352C.svg?style=for-the-badge&logo=espressif&logoColor=white)](https://www.espressif.com/)
+  [![Language](https://img.shields.io/badge/Language-C%2B%2B_Embedded-00599C.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white)](https://isocpp.org/)
   [![CAD](https://img.shields.io/badge/CAD-Autodesk_Fusion_360-E51B24.svg?style=for-the-badge&logo=autodesk)](https://www.autodesk.com/)
-  [![3D Printer](https://img.shields.io/badge/3D_Printer-Bambu_Lab_PETG-00AE42.svg?style=for-the-badge)](https://bambulab.com/)
+  [![Manufacturing](https://img.shields.io/badge/3D_Printer-Bambu_Lab_PETG-00AE42.svg?style=for-the-badge)](https://bambulab.com/)
   <br>
+  [![Schematics](https://img.shields.io/badge/EDA-Fritzing-9B111E.svg?style=for-the-badge)](https://fritzing.org/)
   [![YouTube](https://img.shields.io/badge/YouTube-@NEXUSTEAM--e3d-FF0000.svg?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@NEXUSTEAM-e3d)
   [![Instagram](https://img.shields.io/badge/Instagram-@iniar__zulia-%23E4405F.svg?style=for-the-badge&logo=Instagram&logoColor=white)](https://www.instagram.com/iniar_zulia/)
 
 <a name="inicio"></a>
 </div>
 
+Nuestro prototipo **"Smoke"** es un vehículo autónomo diseñado para la categoría **Future Engineers de la World Robot Olympiad™ (WRO) 2026**. 
+Este documento técnico ha sido elaborado bajo un formato de **libro blanco de ingeniería (*Engineering Whitepaper*)**: no se limita a describir el resultado final, sino que expone de forma analítica y reproducible el **porqué detrás de cada decisión técnica**, los compromisos de diseño (*trade-offs*), los cálculos físicos y la evolución experimental del proyecto. Cualquier equipo o investigador que consulte esta documentación podrá comprender a profundidad los fundamentos cinemáticos, térmicos, eléctricos y de software que rigen el vehículo, permitiendo reproducir o iterar la plataforma de forma integral.
+
 # 📑 Índice 
 
-- [1. Nuestro Equipo & Plataforma "Smoke"](#1-nuestro-equipo--plataforma-smoke) 
-  - [1.1 Integrantes y Asesoría Técnica](#11-integrantes-y-asesoría-técnica)
-  - [1.2 Origen del Robot y Filosofía ("Smoke")](#12-origen-del-robot-y-filosofía-smoke)
-  - [1.3 Estado Actual del Proyecto y Roadmap](#13-estado-actual-del-proyecto-y-roadmap)
-- [2. Videos y Desempeño en Pista](#2-videos-y-desempeño-en-pista)
-  - [2.1 Ronda Abierta (Open Challenge)](#21-ronda-abierta-open-challenge)
-  - [2.2 Ronda de Obstáculos (Obstacle Challenge)](#22-ronda-de-obstáculos-obstacle-challenge)
-- [3. Estructura del Repositorio](#3-estructura-del-repositorio)
-- [4. Lista Maestra de Materiales y Componentes (BOM)](#4-lista-maestra-de-materiales-y-componentes-bom)
-  - [4.1 Electrónica, Potencia y Control](#41-electrónica-potencia-y-control)
-  - [4.2 Mecánica, Actuadores y Chasis](#42-mecánica-actuadores-y-chasis)
-- [5. Apartado Mecánico y Cinemática](#5-apartado-mecánico-y-cinemática)
-  - [5.1 Filosofía de Chasis Modular y Manufactura Aditiva (PETG)](#51-filosofía-de-chasis-modular-y-manufactura-aditiva-petg)
-  - [5.2 Geometría de Dirección Ackermann Híbrida (Servo MG90S)](#52-geometría-de-dirección-ackermann-híbrida-servo-mg90s)
-  - [5.3 Tren de Potencia Trasero (RWD) y Diferencial de Engranajes Cónicos](#53-tren-de-potencia-trasero-rwd-y-diferencial-de-engranajes-cónicos)
-- [6. Apartado Electrónico y Distribución de Potencia](#6-apartado-electrónico-y-distribución-de-potencia)
-  - [6.1 Banco de Baterías LiFePO4 (Configuración 2S2P)](#61-banco-de-baterías-lifepo4-configuración-2s2p)
-  - [6.2 Topología de Tres Ramas de Regulación y Filtrado](#62-topología-de-tres-ramas-de-regulación-y-filtrado)
-  - [6.3 Etapa de Tracción y Compensación de Caída de Tensión (XL6009 + L298N)](#63-etapa-de-tracción-y-compensación-de-caída-de-tensión-xl6009--l298n)
-  - [6.4 Diagrama Esquemático General](#64-diagrama-esquemático-general)
-- [7. Percepción Sensorial y Visión Artificial](#7-percepción-sensorial-y-visión-artificial)
-  - [7.1 Visión Artificial por IA (HuskyLens)](#71-visión-artificial-por-ia-huskylens)
-  - [7.2 Red de Sensores Ultrasónicos HC-SR04](#72-red-de-sensores-ultrasónicos-hc-sr04)
-- [8. Arquitectura de Firmware y Software](#8-arquitectura-de-firmware-y-software)
-  - [8.1 Máquina de Estados Finitos (FSM)](#81-máquina-de-estados-finitos-fsm)
-  - [8.2 Estrategia de Ronda Abierta vs. Ronda de Obstáculos](#82-estrategia-de-ronda-abierta-vs-ronda-de-obstáculos)
-- [9. Diario de Ingeniería, Iteraciones y Solución de Fallas](#9-diario-de-ingeniería-iteraciones-y-solución-de-fallas)
+- [1. Filosofía de Trabajo y Metodología de Co-Diseño](#1-filosofía-de-trabajo-y-metodología-de-co-diseño)
+- [2. Nuestro Equipo (INIAR)](#2-nuestro-equipo-iniar)
+  - [David Ocando](#david-ocando)
+  - [José Montiel](#josé-montiel)
+  - [Jairo Cruz](#jairo-cruz)
+  - [Ing. Wender Sánchez (Mentor)](#ing-wender-sánchez)
+- [3. Estructura del Repositorio (Repository Directory Map)](#3-estructura-del-repositorio-repository-directory-map)
+- [4. Ficha Técnica Oficial de la Plataforma "Smoke"](#4-ficha-técnica-oficial-de-la-plataforma-smoke)
+- [5. Galería de Inspección Técnica 360°](#5-galería-de-inspección-técnica-360)
+- [6. Desempeño en Pista (Videos Oficiales)](#6-desempeño-en-pista-videos-oficiales)
+- [7. Lista Maestra de Materiales y Componentes (BOM)](#7-lista-maestra-de-materiales-y-componentes-bom)
+- [8. Movilidad y Diseño Mecánico](#8-movilidad-y-diseño-mecánico)
+  - [8.1 Arquitectura Modular del Chasis (Tres Pisos en PETG)](#81-arquitectura-modular-del-chasis-tres-pisos-en-petg)
+  - [8.2 Estandarización de Sujeción (Tornillería M3)](#82-estandarización-de-sujeción-tornillería-m3)
+  - [8.3 Geometría de Dirección Ackermann Híbrida](#83-geometría-de-dirección-ackermann-híbrida)
+  - [8.4 Tren de Tracción RWD, Transmisión Cónica y Diferencial](#84-tren-de-tracción-rwd-transmisión-cónica-y-diferencial)
+  - [8.5 Estudio Dinámico: Fuerzas, Torque en Rueda y Aceleración](#85-estudio-dinámico-fuerzas-torque-en-rueda-y-aceleración)
+  - [8.6 Neumáticos Escalonados (Staggered Setup)](#86-neumáticos-escalonados-staggered-setup)
+- [9. Arquitectura Eléctrica y Distribución de Potencia](#9-arquitectura-eléctrica-y-distribución-de-potencia)
+  - [9.1 Banco de Baterías 18650 (Configuración 2S2P)](#91-banco-de-baterías-18650-configuración-2s2p)
+  - [9.2 Topología de Tres Ramas Desacopladas](#92-topología-de-tres-ramas-desacopladas)
+  - [9.3 Compensación Darlington L298N (Boost a 14V) y Masa Común](#93-compensación-darlington-l298n-boost-a-14v-y-masa-común)
+  - [9.4 Protocolo de Encendido Seguro y Control de Usuario](#94-protocolo-de-encendido-seguro-y-control-de-usuario)
+  - [9.5 Esquemático General y Mapeo de Pines (Pinout ESP32-S3)](#95-esquemático-general-y-mapeo-de-pines-pinout-esp32-s3)
+- [10. Percepción Sensorial y Visión Artificial](#10-percepción-sensorial-y-visión-artificial)
+  - [10.1 Visión IA por Hardware (HuskyLens 2)](#101-visión-ia-por-hardware-huskylens-2)
+  - [10.2 Telemetría Inercial en Core Dedicado (MPU6050 + FreeRTOS)](#102-telemetría-inercial-en-core-dedicado-mpu6050--freertos)
+  - [10.3 Red Ultrasónica HC-SR04 con Muestreo Rotativo](#103-red-ultrasónica-hc-sr04-con-muestreo-rotativo)
+- [11. Arquitectura de Software y Lógica de Navegación](#11-arquitectura-de-software-y-lógica-de-navegación)
+  - [11.1 Máquina de Estados Finitos (FSM)](#111-máquina-de-estados-finitos-fsm)
+  - [11.2 Desglose Modular del Firmware (`OPENCHALLENGE.ino`)](#112-desglose-modular-del-firmware-openchallengeino)
+- [12. Diario de Ingeniería, Iteraciones y Solución de Fallas](#12-diario-de-ingeniería-iteraciones-y-solución-de-fallas)
+
 
 
 ## 1. Nuestro Equipo & Plataforma "Smoke"
