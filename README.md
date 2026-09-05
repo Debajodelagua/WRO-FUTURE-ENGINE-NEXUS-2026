@@ -22,13 +22,13 @@
 
 ## 🏆 **REPRESENTANDO A TEAM NEXUS – RUMBO A WRO 2026**
 </div>
+
 Bienvenidos al repositorio oficial de ingeniería de **Team Nexus**, equipo representante del **Instituto de Inteligencia Artificial y Robótica del estado Zulia "Dr. Héctor Rafael Rojas" (INIAR)** en la categoría **Future Engineers** de la **World Robot Olympiad™ (WRO) 2026**.
-Este espacio documenta de manera transparente, rigurosa y reproducible el ciclo completo de diseño, manufactura aditiva, arquitectura eléctrica y algoritmos de control de nuestra plataforma autónoma **"Smoke"**, diseñada para solventar los desafíos de la **Ronda Abierta (Open Challenge)** y la **Ronda de Obstáculos (Obstacle Challenge)**.
----
+Este espacio documenta de manera transparente, rigurosa y reproducible el ciclo completo de diseño, manufactura aditiva en PETG, arquitectura de potencia y algoritmos de control de nuestra plataforma autónoma **"Smoke"**, desarrollada para superar los retos de la **Ronda Abierta (Open Challenge)** y la **Ronda de Obstáculos (Obstacle Challenge)**.
+<br>
 
 > 💡 **Estado del Proyecto:** Integración de sistemas electrónicos, calibración de visión artificial y pruebas de control de movimiento en pista.
 
----
 
 ## 🤖 **Plataforma Oficial: "Smoke"**
 * **Categoría:** WRO Future Engineers 2026.
