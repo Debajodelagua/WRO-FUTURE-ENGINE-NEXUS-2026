@@ -301,3 +301,63 @@ flowchart LR
     classDef comp fill:#1f2328,stroke:#58a6ff,stroke-width:1px,color:#c9d1d9;
     class CIR cir;
     class EJE_TRASERO,RUEDA_INT,RUEDA_EXT comp; 
+```
+
+### 5.3 Tren de Potencia Trasero (RWD) y Transmisión Cónica
+La propulsión de **"Smoke"** utiliza una configuración de **Tracción Trasera (RWD)**. Para transferir la potencia mecánica desde el motor longitudinal Makeblock hacia el eje transversal de las ruedas traseras en un espacio compacto, se diseñó una transmisión cónica a 90° acoplada a un diferencial de satélites:
+<div align="center">
+  <!-- REEMPLAZA EL NOMBRE POR EL ARCHIVO DE TU RENDER DE FUSION 360 -->
+  <img src="./Otro/ENGRANAJEM2.jpg" alt="Render CAD Transmisión Cónica y Diferencial" width="650" style="border-radius: 8px; border: 1px solid #444; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+  <br>
+  <i>Render de ingeniería en Autodesk Fusion 360: Acople del eje en D del motor Makeblock al piñón cónico custom en PETG atacando la corona del diferencial LEGO EV3.</i>
+</div>
+
+#### Adaptación del Eje Motor (D-Shaft a Engranaje Cónico)
+El motorreductor Makeblock cuenta con un eje cilíndrico rebajado (**tipo D o *D-Shaft***), el cual resulta físicamente incompatible con los orificios estándar en cruz del ecosistema LEGO:
+<div align="center">
+  <!-- REEMPLAZA CON LA FOTO O RENDER DEL PIÑÓN CÓNICO CON ENTRADA EN D -->
+  <img src="./Otro/ENGRANAJEM.jpg" alt="Piñón Cónico Personalizado con Eje en D" width="350" style="border-radius: 8px; border: 1px solid #444; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+  <br>
+  <i>Detalle del piñón cónico modelado en Fusion 360 con orificio interior en forma de "D" para el eje del motor Makeblock.</i>
+</div>
+
+- **Solución Técnica:** Modelamos paramétricamente en **Autodesk Fusion 360** un piñón cónico con cavidad interna en forma de "D", compensando la contracción térmica del material con una tolerancia de 0.15 mm.
+- **Manufactura:** Impreso al **100% de densidad de relleno (Infill sólido)** en **PETG** en la Bambu Lab, garantizando alta resistencia a la cizalladura en la base de los dientes ante picos de torque.
+
+#### Soporte del Motor Personalizado (Motor Bracket en PETG)
+Para evitar que la fuerza de reacción del par motor desalinee los engranajes cónicos durante aceleraciones bruscas, se diseñó un bloque de bancada a medida:
+<div align="center">
+  
+| 1. Soporte en Aislado (CAD) | 2. Ensamble en el Chasis |
+| :---: | :---: |
+| <img src="./Otro/SOPORTEM.jpg" width="300" alt="Soporte Motor Makeblock Aislado"> | <!-- REEMPLAZA CON LA FOTO DEL SOPORTE EN CHASIS --> <img src="./models/[FOTO_SOPORTE_MOTOR_CHASIS].png" width="300" alt="Soporte Motor Montado en Chasis"> |
+| *Bancada custom en PETG con orificios métricos* | *Fijación de alta rigidez estructural en Piso 1* |
+</div>
+
+- **Fijación Frontal del Motor:** El motor Makeblock se asegura frontalmente mediante **2 tornillos métricos** directamente roscados a la pared anterior del soporte, bloqueando cualquier desplazamiento longitudinal.
+- **Anclaje al Chasis (Piso 1):** La bancada se fija rígidamente a la placa base del chasis mediante **6 tornillos M3** con tuercas autoblocantes, distribuyendo homogéneamente las fuerzas tangenciales generadas por el ataque de los engranes cónicos.
+
+#### Diferencial Trasero y Estabilización de Semiejes
+El diferencial de 3 piñones cónicos internos (satélites) del kit LEGO EV3 permite que la rueda exterior acelere y la rueda interior reduzca su velocidad en las curvas cerradas de 90°, actuando como un pivote natural y erradicando el subviraje (*understeer*) característico de los ejes bloqueados o rígidos:
+$$\omega_{diferencial} = \frac{\omega_{izq} + \omega_{der}}{2}$$
+<div align="center">
+  
+| A. Diseño CAD de Semiejes | B. Retenedores LEGO (Tope Axial) | C. Ensamble Físico en "Smoke" |
+| :---: | :---: | :---: |
+| <img src="./Otro/MOTANDO1.jpg" width="220" alt="CAD Chasis con Ejes"> | <img src="./Otro/RETENEDORA.jpg" width="220" alt="Retenedores LEGO"> | <!-- FOTO C: FOTO REAL EN EL ROBOT --> <img src="./models/[FOTO_EJE_ROBOT_FISICO].jpg" width="220" alt="Ensamble Trasero Físico"> |
+| *Doble bancada de apoyo por semieje* | *Bushing amarillo para fijación axial* | *Montaje final en chasis con neumáticos* |
+</div>
+
+- **Doble Bancada de Apoyo por Lado:** Para evitar que los semiejes flecten bajo carga, cada lado cuenta con dos puntos de apoyo integrados en el PETG: uno contiguo a la salida del diferencial y otro adyacente a la rueda.
+- **Bujes de Tolerancia y Retenedores Axiales:** Los orificios en el chasis se dimensionaron ligeramente por encima del diámetro del eje de acero/LEGO para asegurar una rotación libre de fricción, asegurando la posición lateral mediante **retenedores amarillos LEGO (*bushings*)** que impiden el desplazamiento axial de las ruedas.
+
+####  Configuración de Neumáticos Escalonados (Staggered Wheels)
+Para optimizar la dinámica del vehículo, se seleccionaron diámetros diferenciados entre el tren delantero y el trasero:
+<div align="center">
+  
+| Tren / Posición | Diámetro Circular | Procedencia | Función Dinámica en "Smoke" |
+| :---: | :---: | :---: | :--- |
+| **Delantero (Dirección)** | **Ø 30 mm** | LEGO EV3 | **Baja inercia rotacional:** Minimiza la masa no suspendida y reduce sustancialmente el esfuerzo de torque requerido por el servomotor MG90S al ejecutar virajes bruscos. |
+| **Trasero (Tracción)** | **Ø 43 mm** | LEGO EV3 | **Mayor contacto y tracción:** Su mayor circunferencia incrementa la velocidad lineal de avance por cada revolución del diferencial y mejora la adherencia en aceleración. |
+</div>
+<p align="right"><a href="#inicio">⬆️ Volver al Inicio</a></p>
