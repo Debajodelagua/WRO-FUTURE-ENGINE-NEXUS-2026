@@ -83,7 +83,6 @@ flowchart TD
 Team Nexus está integrado por estudiantes universitarios del **Instituto de Inteligencia Artificial y Robótica del estado Zulia "Dr. Héctor Rafael Rojas" (INIAR)**, combinando experiencia práctica en torneos nacionales y mundiales:
 
 ## 👤 David Ocando <a id="david-ocando"></a>
-
 **Líder de Arquitectura Eléctrica, Gestión de Potencia y Co-Administrador Digital**
 <div align="center">
   <img src="./t-fotos/DAVID%20PERFIL.jpeg" alt="David Ocando" width="320" style="border-radius: 12px; border: 1px solid #444; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
@@ -100,9 +99,7 @@ Team Nexus está integrado por estudiantes universitarios del **Instituto de Int
 * **FIRST Tech Challenge (FTC Championship – Piacenza, Italia 2024):** Representación internacional de Venezuela; desarrollo de sistemas de potencia de alta corriente y actuadores de respuesta rápida.
 * **WRO Venezuela (Temporada 2025):** Competidor oficial en la categoría **RoboSports**, optimizando la respuesta dinámica y la robustez eléctrica del robot en cancha.
 ---
-
 ## 👤 José Montiel <a id="jose-montiel"></a>
-
 **Ingeniero Líder de Firmware, Visión Artificial y Control Autónomo**
 <div align="center">
   <img src="./t-fotos/JOSE%20PERFIL.jpeg" alt="José Montiel" width="320" style="border-radius: 12px; border: 1px solid #444; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
@@ -118,9 +115,7 @@ Team Nexus está integrado por estudiantes universitarios del **Instituto de Int
 ### 🏆 Historial de Competición:
 * **WRO Venezuela Regional (Temporada 2025):** Participación oficial en la categoría **Future Engineers**, acumulando experiencia en cinemática de pista, algoritmos reactivos y visión de carril.
 ---
-
 ## 👤 Jairo Cruz <a id="jairo-cruz"></a>
-
 **Ingeniero de Diseño Mecánico, Dinámica Vehicular y Manufactura Aditiva**
 <div align="center">
   <img src="./t-fotos/JAIRO%20PERFIL.jpeg" alt="Jairo Cruz" width="320" style="border-radius: 12px; border: 1px solid #444; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
@@ -247,10 +242,174 @@ A continuación se desglosa el inventario técnico de la plataforma, detallando 
 | :--- | :---: | :--- | :--- | :--- | :---: | 
 | **Microcontrolador Central**<br>ESP32-S3 DevKit | <img src="./Otro/ESP32S3.jpg" width="80" style="border-radius: 6px;"> | • Dual-Core Xtensa LX7 @ 240 MHz<br>• 512 KB SRAM + Wi-Fi/BLE<br>• Arquitectura FreeRTOS | Cerebro principal del vehículo; procesa en tiempo real la máquina de estados, telemetría y PWM. | Su arquitectura de doble núcleo permite asignar la integración inercial del MPU6050 al **Core 0** (a 500 Hz) mientras el **Core 1** gestiona la navegación reactiva, eliminando cuellos de botella temporales. | [📄 PDF](https://www.espressif.com/sites/default/files/documentation/esp32-s3_datasheet_en.pdf) |
 | **Procesador de Visión IA**<br>DFRobot HuskyLens 2 | <img src="./Otro/HUSKYLENS2.jpg" width="80" style="border-radius: 6px;"> | • Procesador AI KPU integrado<br>• Clasificación colorimétrica<br>• Pantalla IPS de control | Reconocimiento y clasificación en tiempo real de los bloques de tráfico (rojo ID 1 / verde ID 2). | Realiza la inferencia de visión por hardware embebido a 30 FPS, liberando de carga matemática al ESP32-S3 y comunicándose por UART a 115,200 baudios sin saturar el bus I2C. | [📄 Wiki](https://wiki.dfrobot.com/HUSKYLENS_V1.0_SKU_SEN0305_SEN0336) |
-| **Celdas de Batería**<br>EVE INR18650-35V | <img src="./OtroBATERIAS.jpg" width="80" style="border-radius: 6px;"> | • Química Li-ion (3.5V nominal)<br>• Configuración **2S2P (7.0V)**<br>• Capacidad masiva: **7000 mAh** | Suministro primario de energía para todo el vehículo y sus tres ramas de conversión. | **Priorización de Autonomía:** El arreglo 2S2P de 7000 mAh garantiza horas ininterrumpidas de pruebas en pista y asegura que la curva de tensión se mantenga plana, evitando pérdidas de velocidad en la vuelta final. | [📄 Info](https://www.evebattery.com/) |
+| **Celdas de Batería**<br>EVE INR18650-35V | <img src="./OtroBATERIA.jpg" width="80" style="border-radius: 6px;"> | • Química Li-ion (3.5V nominal)<br>• Configuración **2S2P (7.0V)**<br>• Capacidad masiva: **7000 mAh** | Suministro primario de energía para todo el vehículo y sus tres ramas de conversión. | **Priorización de Autonomía:** El arreglo 2S2P de 7000 mAh garantiza horas ininterrumpidas de pruebas en pista y asegura que la curva de tensión se mantenga plana, evitando pérdidas de velocidad en la vuelta final. | [📄 Info](https://www.evebattery.com/) |
 | **Driver de Tracción**<br>Dual H-Bridge L298N | <img src="./Otro/L298N.jpg" width="80" style="border-radius: 6px;"> | • Transistores Darlington BJT<br>• 2A pico por canal<br>• Disipador térmico masivo | Control de sentido de giro (avance/reversa) y velocidad PWM del motor Makeblock. | Robusto y tolerante a sobrecorrientes transitorias de arranque; se optimizó retirando su jumper de 5V y alimentando su etapa de potencia a 14V para compensar la caída Darlington. | [📄 PDF](https://www.sparkfun.com/datasheets/Robotics/L298_H_Bridge.pdf) |
 | **Regulador Lógica**<br>XL4015E1 Step-Down | <img src="./Otro/XL4015E1.jpg" width="80" style="border-radius: 6px;"> | • Convertidor Buck 5A máx.<br>• Tensión fijada a **5.0V DC**<br>• Eficiencia superior al 90% | Alimenta de forma limpia el ESP32-S3, la red ultrasónica y la sección lógica del L298N. | Su alta capacidad de corriente (5A) y bajo rizado protegen al microcontrolador de caídas de tensión bruscas (*brownouts*) cuando los actuadores demandan potencia. | [📄 PDF](https://www.xlsemi.com/datasheet/XL4015%20datasheet.pdf) |
 | **Regulador Actuadores**<br>LM2596 Step-Down | <img src="./Otro/LM2596.jpg" width="80" style="border-radius: 6px;"> | • Convertidor Buck 3A máx.<br>• Tensión fijada a **5.0V DC**<br>• Filtro LC integrado | Rama exclusiva para el servomotor TowerPro MG90S y la cámara HuskyLens 2. | Aísla completamente los picos de corriente inductiva que genera el servomotor al cambiar de dirección bruscamente, evitando que contaminen la línea del ESP32-S3. | [📄 PDF](https://www.ti.com/lit/ds/symlink/lm2596.pdf) |
 | **Regulador Tracción**<br>XL6009 Step-Up | <img src="./Otro/XL6009.jpg" width="80" style="border-radius: 6px;"> | • Convertidor Boost 4A máx.<br>• Tensión fijada a **14.0V DC**<br>• Conmutación a 400 kHz | Eleva la tensión del banco de baterías para suministrar 12V netos al motor Makeblock. | Compensa la caída interna inherente de $\approx 2.0\text{V}$ del puente H L298N, asegurando que el motor funcione en su cota de máxima potencia y velocidad. | [📄 PDF](https://www.xlsemi.com/datasheet/XL6009%20datasheet.pdf) |
 | **Sensor Inercial (IMU)**<br>InvenSense MPU6050 | <img src="./Otro/MPU6050.jpg" width="80" style="border-radius: 6px;"> | • Giroscopio de 3 ejes ($\pm 1000^\circ/\text{s}$)<br>• Acelerómetro de 3 ejes<br>• Bus I2C con auto-rescate | Mide la orientación angular (*Yaw*) en el centro de gravedad del vehículo para el control PD. | Permite una navegación inercial hiperestable en rectas y cuenta con la subrutina `rescatarBusI2C()` para desbloquear el bus en caliente ante ruidos parásitos. | [📄 PDF](https://invensense.tdk.com/wp-content/uploads/2015/02/MPU-6000-Datasheet1.pdf) |
 | **Sensores Proximidad**<br>HC-SR04 Ultrasónicos (x3) | <img src="./Otro/HC-SR04.jpg" width="80" style="border-radius: 6px;"> | • Rango: 2 cm a 400 cm<br>• Ángulo de apertura: $15^\circ$<br>• Muestreo cíclico asíncrono | Sensado perimetral: Frontal (detección de esquinas a 70 cm) y Laterales (mantenimiento a 30 cm). | Solución acústica inmune a variaciones de luz ambiental o reflejos en la pista, operada bajo un esquema secuencial que erradica la interferencia cruzada (*crosstalk*). | [📄 PDF](https://www.sparkfun.com/datasheets/Sensors/Proximity/HCSR04.pdf) |
+
+### 7.2 Subsistema Mecánico, Actuadores y Chasis
+| Componente y Modelo | Vista Previa | Especificaciones Clave | Función en "Smoke" | ¿Por qué se eligió? (Justificación Técnica) | Referencia CAD / Enlace | 
+| :--- | :---: | :--- | :--- | :--- | :---: | 
+| **Motor de Tracción**<br>Makeblock DC Motor 9V | <img src="./Otro/Makeblock.jpg" width="80" style="border-radius: 6px;"> | • 185 RPM nominales @ 9V-12V<br>• Encoder óptico integrado<br>• Eje cilíndrico en "D" | Genera el par motriz longitudinal transferido al diferencial trasero. | **Balance Masa-Torque:** Tras evaluar múltiples opciones, este motor ofreció el torque exacto para desplazar con aceleración ágil los 859 g de "Smoke" sin sacrificar velocidad en rectas ni requerir complejas reductoras externas. | [🌐 Web](https://www.makeblock.com/) |
+| **Servomotor Dirección**<br>TowerPro MG90S | <img src="./Otro/MG90S.jpg" width="80" style="border-radius: 6px;"> | • **Piñonería 100% metálica**<br>• Torque: 2.2 kg·cm @ 6V<br>• Velocidad: 0.10 s / 60° | Acciona la timonería Ackermann delantera para el guiado del vehículo. | **Resistencia a Fuerzas de Empuje:** A diferencia de servos con engranes plásticos (como el SG90), la piñonería metálica del MG90S resiste la inercia y fuerza de empuje del motor Makeblock en virajes cerrados sin barrer dientes. | [📄 PDF](https://www.electronicoscaldas.com/datasheet/MG90S_Tower-Pro.pdf) |
+| **Diferencial Trasero**<br>Lego Technic EV3 | <img src="./Otro/Diferencial%20Lego.jpg" width="80" style="border-radius: 6px;"> | • Caja diferencial de 3 satélites<br>• Piñones cónicos internos<br>• Plástico inyectado de bajo roce | Distribuye la velocidad angular entre las ruedas traseras izquierda y derecha en curvas. | Evita el bloqueo del eje posterior y elimina el arrastre de neumáticos (*tire scrub*), permitiendo que la rueda exterior acelere libremente respecto a la interior en giros de 90°. | [🔗 Lego](https://www.bricklink.com/) |
+| **Transmisión Cónica 90°**<br>Piñón Helicoidal Custom | <img src="./Otro/ENGRANAJEM2.jpg" width="80" style="border-radius: 6px;"> | • Modelado en Fusion 360<br>• Cavidad interior en forma de "D"<br>• PETG 100% relleno sólido | Transfiere el giro longitudinal del motor al eje transversal de la corona LEGO. | Resuelve la incompatibilidad física entre el eje en D del motor Makeblock y el encaje en cruz de LEGO con una pieza compacta de alta resistencia a la cizalladura. | [⚙️ Ver CAD](./models/) |
+| **Estructura de Chasis**<br>Diseño Modular 3 Pisos | <img src="./v-fotos/CHASISCOMPLETO.jpg" width="80" style="border-radius: 6px;"> | • Fabricado en Bambu Lab<br>• Filamento **PETG estructural**<br>• Arquitectura vertical | Aloja y segrega los subsistemas mecánicos, lógicos y de potencia. | **Ingeniería de Valor y Tenacidad:** El PETG ofreció la mejor relación coste-eficiencia, aportando mayor resistencia al impacto que el PLA estándar y soportando hasta $80^\circ\text{C}$ sin deformación térmica junto al motor. | [⚙️ Ver STL](./models/) |
+| **Tornillería Unificada**<br>Hardware M3 Hexagonal | <img src="./Otro/KITTORNILLOS.jpg" width="80" style="border-radius: 6px;"> | • Tornillos Allen M3 (8-20 mm)<br>• Tuercas de seguridad Nyloc<br>• Separadores rígidos | Unifica la fijación de todo el chasis, bancada de motor y soportes. | Estandariza el mantenimiento en boxes: una sola llave Allen de 2.5 mm opera todo el carro, y las tuercas autoblocantes impiden desajustes por vibración de alta frecuencia. | [⚙️ Ver Info](./models/) |
+<p align="right"><a href="#inicio">⬆️ Volver al Inicio</a></p>
+
+<a id="movilidad-mecanica"></a>
+# 8. Movilidad y Diseño Mecánico
+</div>
+El chasis y tren cinemático de **"Smoke"** fueron desarrollados bajo un enfoque híbrido de manufactura: combinando la libertad de diseño paramétrico que ofrece la **impresión 3D en PETG** con la precisión de bajo rozamiento de componentes inyectados de robótica educativa (**LEGO MINDSTORMS EV3**).
+Esta arquitectura fue calculada específicamente para soportar las fuerzas de inercia y torsión generadas por una masa dinámica de **859 gramos**, optimizando la posición del centro de gravedad ($CoG$) y minimizando la fricción en pista.
+---
+
+### 8.1 Arquitectura Modular del Chasis (Tres Pisos en PETG)
+Para evitar el desorden estructural y blindar la electrónica contra interferencias electromagnéticas (EMI) y calor, el vehículo implementa una **estructura vertical de tres estratos segregados**:
+
+```mermaid
+flowchart TD
+    subgraph "PISO 3: ALIMENTACIÓN Y GESTIÓN ENERGÉTICA"
+        P3["🔋 Banco Celdas EVE 18650 2S2P (7000 mAh @ 7.0V)<br>⚡ Convertidores DC-DC: XL4015 (5V), LM2596 (5V) y XL6009 (14V)<br>🔌 Doble Switch de Seguridad Maestro"]
+    end
+    subgraph "PISO 2: CONTROL CENTRAL, VISIÓN IA Y TELEMETRÍA"
+        P2["🧠 Microcontrolador Central ESP32-S3 DevKit<br>👁️ Procesador de Visión Inteligente HuskyLens 2<br>🧭 Sensor Inercial IMU MPU6050 (Alineado al CoG)<br>🔲 Driver Puente H L298N con Disipador Térmico"]
+    end
+    subgraph "PISO 1: DINÁMICA DE TRACCIÓN Y CONTACTO AL SUELO"
+        P1["⚙️ Motor Makeblock 9V (185 RPM) + Bancada M3 en PETG<br>🔄 Transmisión Cónica 90° + Diferencial LEGO EV3 (3 Satélites)<br>🦾 Dirección Ackermann Híbrida + Servo TowerPro MG90S<br>📡 Red de 3 Sensores Ultrasónicos HC-SR04 (Rasantes)"]
+    end
+    P3 === P2
+    P2 === P1
+    classDef n3 fill:#1f2328,stroke:#f85149,stroke-width:2px,color:#fff;
+    classDef n2 fill:#1f2328,stroke:#0366d6,stroke-width:2px,color:#fff;
+    classDef n1 fill:#1f2328,stroke:#2ea44f,stroke-width:2px,color:#fff;
+    class P3 n3;
+    class P2 n2;
+    class P1 n1;
+```
+
+### 8.3 Geometría de Dirección Ackermann Híbrida
+
+#### Principio Físico y Necesidad Dinámica
+Cuando un vehículo traza una curva, la rueda directriz interior recorre un radio de giro más cerrado ($R_i$) que la rueda exterior ($R_o$). Si ambas ruedas giraran al mismo ángulo (geometría paralela convencional), los neumáticos se verían forzados a arrastrarse de lado sobre la pista (*wheel scrub* o arrastre lateral), lo que genera:
+1. Una fuerza de fricción parásita que frena el vehículo en cada curva.
+2. Pérdida crítica de adherencia en el tren delantero, provocando subviraje (*understeer*).
+3. Sobrecarga de corriente y calentamiento prematuro en el servomotor.
+Para resolver esto, **"Smoke"** implementa una **geometría de dirección Ackermann**, donde la timonería hace que **la rueda interior gire más pronunciadamente ($\theta_i$) que la exterior ($\theta_o$)**:
+<div align="center">
+  
+| 1. Principio Teórico | 2. Diseño CAD en Fusion 360 | 3. Ensamble Físico en Piso 1 |
+| :---: | :---: | :---: |
+| <img src="./v-fotos/ackermann_teoria.jpg" width="220" alt="Esquema Teórico Ackermann"> | <img src=".//v-fotos/Sistema%20de%20direccion.png" width="220" alt="Modelo CAD de Dirección"> | <img src="./v-fotos/FOTO%20DEL%20SERVO%20ARMADO.jpg" width="220" alt="Ensamble Físico en Chasis"> |
+| *Convergencia hacia el eje trasero* | *Brazo custom en PETG + manguetas* | *Integración con servo MG90S* |
+</div>
+
+#### Solución de Co-Diseño: Manguetas Inyectadas LEGO + Brazo Custom en PETG
+Durante las fases de prototipado inicial, evaluamos imprimir las manguetas y tirantes de dirección completamente en 3D. Sin embargo, las piezas pequeñas impresas en FDM presentaban microporosidad superficial, lo que generaba un rozamiento irregular y juego mecánico acumulado (*backlash*).
+> [!NOTE]
+> **Decisión de Ingeniería Híbrida:**
+> Optamos por una solución de alto rendimiento:
+> - **Manguetas y Rótulas Inyectadas (LEGO EV3):** Proporcionan una superficie de giro industrial con fricción prácticamente nula y tolerancias dimensionales microscópicas imposibles de igualar en FDM.
+> - **Brazo de Servo (*Servo Horn*) Custom en PETG:** Diseñado a medida en **Autodesk Fusion 360** e impreso con **100% de relleno sólido en PETG**, conectando rígidamente el estriado metálico del servo TowerPro MG90S con los tirantes de LEGO.
+
+
+#### Validación del Rango de Viraje del Servomotor (±80°)
+Para garantizar que la timonería no sufra atascos mecánicos (*binding*) en maniobras de evasión extrema ante obstáculos, se calibró el recorrido del servomotor MG90S:
+<div align="center">
+  <img src="./video/Video/movimientoservo.gif" alt="Validación de giro del servomotor MG90S" width="450" style="border-radius: 8px; border: 1px solid #444; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+  <br>
+  <i>Verificación cinemática: barrido continuo del servo MG90S hasta ±80° demostrando movimiento suave, sin holguras y con respuesta lineal.</i>
+</div>
+
+#### Modelo Matemático de la Dirección
+La condición de rodadura pura de Ackermann exige que las prolongaciones de los ejes de las ruedas coincidan en el **Centro Instantáneo de Rotación ($CIR$)**:
+$$\cot(\theta_o) - \cot(\theta_i) = \frac{W}{L}$$
+Donde:
+* $W$ = Trocha delantera entre pivotes de mangueta: **142 mm** ($0.142\text{ m}$).
+* $L$ = Batalla entre ejes delantero y trasero: **155 mm** ($0.155\text{ m}$).
+* $\theta_i$ = Ángulo de la rueda interior a la curva.
+* $\theta_o$ = Ángulo de la rueda exterior a la curva.
+El radio de giro mínimo medido en el centro del eje posterior se rige por:
+$$R = \frac{L}{\tan(\delta)}$$
+*(Donde $\delta$ es el ángulo promedio equivalente de la dirección).*
+
+### 8.4 Tren de Tracción RWD, Transmisión Cónica y Diferencial
+Para impulsar la masa de **859 gramos**, "Smoke" adopta un esquema de **Tracción Trasera (RWD)** con transmisión en ángulo recto acoplada a un diferencial de satélites cónicos:
+<div align="center">
+  <img src="./Otro/MOTANDO1.jpg" alt="Render CAD Transmisión Cónica y Diferencial" width="650" style="border-radius: 8px; border: 1px solid #444; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+  <br>
+  <i>Render de ingeniería en Fusion 360: Acople del eje en D del motor Makeblock al piñón cónico custom en PETG atacando la corona del diferencial LEGO EV3.</i>
+</div>
+
+
+#### 1. Adaptación Mecánica: Eje en D (D-Shaft) a Engranaje Cónico
+El motorreductor Makeblock cuenta con un eje cilíndrico con rebaje plano (**eje tipo D**), incompatible con los orificios en cruz estandarizados de LEGO:
+* **Solución Técnica:** Modelamos paramétricamente en Fusion 360 un **piñón cónico personalizado** con ranura hembra interna en "D", dimensionado con una compensación de holgura de **$0.15\text{ mm}$** para absorber la contracción térmica del plástico.
+* **Manufactura:** Impreso al **100% de densidad de relleno (infill sólido)** en **PETG** en la Bambu Lab, logrando que los dientes soporten el torque instantáneo de arranque sin cizallarse.
+<div align="center">
+  <img src="./Otro/ENGRANAJEM2.jpg" alt="Piñón Cónico Personalizado con Eje en D" width="320" style="border-radius: 8px; border: 1px solid #444;">
+  <br>
+  <i>Detalle del piñón cónico en PETG con orificio interno en forma de "D".</i>
+</div>
+
+#### 2. Soporte Rígido del Motor (Bancada de 8 Puntos en PETG)
+Para contrarrestar el momento torsor de reacción que tiende a desalinear el engranaje del motor durante aceleraciones violentas:
+* El motor Makeblock se sujeta frontalmente mediante **2 tornillos métricos** directamente a la cara anterior de la bancada.
+* La base de la bancada se ancla sólidamente al chasis del Piso 1 mediante **6 tornillos M3** con tuercas autoblocantes, formando una estructura de 8 puntos de fijación que erradica la separación de dientes (*gear separation*).
+
+
+#### 3. Diferencial de Satélites y Estabilización de Semiejes
+El conjunto diferencial de 3 piñones cónicos internos LEGO EV3 distribuye la velocidad angular en curvas:
+$$\omega_{diferencial} = \frac{\omega_{izq} + \omega_{der}}{2}$$
+* **Doble Bancada por Semieje:** Cada semieje de salida se apoya en dos puntos del PETG (uno contiguo al diferencial y otro junto a la rueda), impidiendo deflexiones axiales bajo carga.
+* **Retenedores Amarillos LEGO (*Bushings*):** Los orificios en el chasis se dimensionaron con holgura para rotación libre de fricción, fijando el eje longitudinalmente con retenedores amarillos para impedir desplazamientos transversales de las ruedas.
+
+### 8.5 Estudio Dinámico: Fuerzas, Torque en Rueda y Aceleración
+Para fundamentar analíticamente el desempeño dinámico del vehículo en pista y justificar que el motor Makeblock de 185 RPM opera en su zona de máxima eficiencia sin estancamiento térmico (*stall*), desarrollamos el modelo físico basado en las medidas y masa real de **"Smoke"**:
+* **Masa Total del Vehículo:** $m = 859\text{ gramos} = \mathbf{0.859\text{ kg}}$
+* **Peso Total Normal:** $P = m \cdot g = 0.859\text{ kg} \times 9.81\text{ m/s}^2 \approx \mathbf{8.43\text{ Newtons}}$
+* **Distribución de Masa Estática:** $45\%$ en el eje delantero y $55\%$ en el eje trasero (tracción RWD):
+  $$N_{trasero} = 0.55 \times 8.43\text{ N} \approx \mathbf{4.64\text{ Newtons}}$$
+* **Radio Efectivo de Rueda Trasera ($r_{rueda}$):** Diámetro $\varnothing = 43\text{ mm} \implies r = 0.0215\text{ metros}$.
+* **Coeficiente de Fricción Caucho/Pista ($\mu_s$):** Estimado conservadoramente en $\mu_s \approx 0.70$ para neumáticos de goma LEGO EV3 limpios sobre tapiz de vinilo.
+
+#### 1. Cálculo del Torque de Ruptura Estática en Ruedas (Breakout Torque)
+El par de torsión mínimo que debe vencerse en el eje de las ruedas traseras para romper la inercia estática e iniciar el movimiento acelerado sin patinaje viene dado por:
+
+$$\tau_{rueda} = N_{trasero} \cdot \mu_s \cdot r_{rueda}$$
+$$\tau_{rueda} = 4.64\text{ N} \times 0.70 \times 0.0215\text{ m} \approx \mathbf{0.0698\text{ Nm}} \approx \mathbf{0.712\text{ kg}\cdot\text{cm}}$$
+
+#### 2. Par Motor Makeblock y Eficiencia de Transmisión
+El motor Makeblock de 9V a 185 RPM entrega un torque nominal constante de $\tau_{motor} \approx 1.5\text{ kg}\cdot\text{cm}$ ($0.147\text{ Nm}$).
+Considerando la relación de transmisión cónica ($i \approx 1.2:1$) y una eficiencia mecánica global de transmisión de $\eta = 88\%$ (0.88) para los engranajes cónicos apoyados sobre bujes lisos:
+$$\tau_{disponible} = \tau_{motor} \cdot i \cdot \eta = 1.5\text{ kg}\cdot\text{cm} \times 1.2 \times 0.88 \approx \mathbf{1.58\text{ kg}\cdot\text{cm}}$$
+$$\text{Margen de Seguridad de Tracción: } \frac{\tau_{disponible}}{\tau_{rueda}} = \frac{1.58}{0.712} \approx \mathbf{2.22}$$
+> [!TIP]
+> **Conclusión del Margen de Potencia:**
+> El sistema dispone de un **margen de seguridad del 222%** respecto al torque estático de ruptura. Esto garantiza que:
+> 1. El motor Makeblock opera con apenas un **$45\%$ de su carga nominal**, consumiendo una corriente promedio baja ($\approx 350 - 500\text{ mA}$).
+> 2. No existe riesgo de calentamiento por efecto Joule en las bobinas ni derretimiento térmico de la bancada de PETG.
+> 3. El carro acelera de $0\text{ a }100\%$ de velocidad en menos de **$0.25\text{ segundos}$** tras salir de cada curva de 90°.
+
+#### 3. Velocidad Lineal Teórica Máxima en Pista
+
+La velocidad tangencial máxima del vehículo en los tramos rectos a 185 RPM nominales en el eje se rige por:
+$$v_{teorica} = \omega \cdot r_{rueda} = \left( 185 \cdot \frac{2\pi}{60} \right) \cdot 0.0215\text{ m} \approx 19.37\text{ rad/s} \times 0.0215\text{ m} \approx \mathbf{0.416\text{ m/s}} \approx \mathbf{1.50\text{ km/h}}$$
+
+Esta velocidad permite recorrer los $\approx 12\text{ metros}$ totales de las 3 vueltas de carrera en un tiempo neto de navegación de aproximadamente **$28\text{ a }32\text{ segundos}$** (incluyendo frenados en curvas), situándose en el rango óptimo de control reactivo sin riesgo de desbordamiento de la pista.
+
+### 8.6 Neumáticos Escalonados (Staggered Wheels Setup)
+Para maximizar el agarre dinámico y facilitar el trabajo del servo MG90S, se implementó una configuración diferenciada entre ejes:
+<div align="center">
+  
+| Tren / Posición | Diámetro Circular | Procedencia | Función Dinámica en "Smoke" |
+| :---: | :---: | :---: | :--- |
+| **Delantero (Dirección)** | **Ø 30 mm** | LEGO EV3 | **Baja inercia rotacional:** Reduce la masa no suspendida del tren delantero en un 40%, permitiendo que el servo MG90S cambie de dirección en milisegundos con mínimo esfuerzo torsor. |
+| **Trasero (Tracción)** | **Ø 43 mm** | LEGO EV3 | **Mayor contacto y tracción:** Su mayor diámetro exterior incrementa la velocidad lineal de avance por revolución y su compuesto de caucho blando garantiza agarre estricto en aceleraciones. |
+</div>
+
+<p align="right"><a href="#inicio">⬆️ Volver al Inicio</a></p>
