@@ -428,7 +428,7 @@ Para maximizar el agarre dinámico y facilitar el trabajo del servo MG90S, se im
 
 <p align="right"><a href="#inicio">⬆️ Volver al Inicio</a></p>
 
-### 8.6 Configuración de Neumáticos Escalonados (Staggered Wheels Setup)
+### 8.6 Configuración de Neumáticos Escalonados (Staggered Setup)
 La selección de neumáticos en **"Smoke"** no responde a criterios estéticos, sino a una rigurosa optimización de la **dinámica vehicular y la inercia rotacional**:
 <div align="center">
   
