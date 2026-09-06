@@ -137,7 +137,6 @@ Team Nexus está integrado por estudiantes universitarios del **Instituto de Int
 * **WRO Venezuela (Temporada 2025):** Competidor en la categoría **RoboSports**, especializándose en rigidez torsional y resistencia a impactos mecánicos.
 ---
 ## 👤 Ing. Wender Sánchez <a id="wender-sanchez"></a>
-
 **Mentor Líder y Asesor de Ingeniería Mecánica**
 <div align="center">
   <img src="./t-fotos/MENTOR%20PERFIL.jpeg" alt="Ing. Wender Sánchez" width="320" style="border-radius: 12px; border: 1px solid #444; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
@@ -145,3 +144,92 @@ Team Nexus está integrado por estudiantes universitarios del **Instituto de Int
 
 * **Formación y Perfil:** Ingeniero Mecánico egresado de la **Universidad del Zulia (LUZ)**, con dilatada trayectoria profesional en dinámica de vehículos, cinemática de mecanismos y sistemas de transmisión de potencia.
 * **Acompañamiento Metodológico:** Supervisión técnica en el cálculo analítico de fuerzas, validación de relaciones de transmisión, selección de materiales termoplásticos y apego a la rúbrica internacional de la WRO.
+
+<a id="estructura-repo"></a>
+# 3. Estructura del Repositorio (Repository Directory Map)
+Para agilizar la evaluación de los jueces y asegurar la total reproducibilidad internacional del proyecto, todos los recursos de ingeniería están organizados y segregados mediante los siguientes accesos directos:
+| Directorio / Carpeta | Contenido Técnico y Archivos | Acceso Directo |
+| :--- | :--- | :---: |
+| **📁 `models/`** | **Diseño Mecánico CAD:** Archivos de fabricación (`.stl`, `.step`), tolerancias y modelos paramétricos para impresión en Bambu Lab. | [🔗 Explorar Archivos CAD](./models/) |
+| **📁 `schemes/`** | **Ingeniería Eléctrica:** Esquemático oficial `DIAGRAMAVF.jpg`, distribución de buses de potencia y planos de conexión. | [🔗 Ver Planos Eléctricos](./schemes/) |
+| **📁 `src/`** | **Código Fuente y Firmware:** Archivos `OPENCHALLENGE.ino`, librerías embebidas y algoritmos de control no bloqueante en C++. | [🔗 Revisar Código Fuente](./src/) |
+| **📁 `v-photos/`** | **Inspección Técnica 360°:** Registro fotográfico oficial en alta resolución de la plataforma "Smoke" en sus 6 perfiles ortogonales. | [🔗 Ver Galería del Robot](./v-photos/) |
+| **📁 `t-photos/`** | **Identidad del Equipo:** Fotografías oficiales de los miembros de Team Nexus y sesiones de trabajo en el laboratorio de INIAR. | [🔗 Ver Galería del Equipo](./t-photos/) |
+| **📁 `video/`** | **Desempeño en Pista:** Grabación oficial del desafío abierto y clip técnico en bucle `ESQUIVANDOROJOS.gif`. | [🔗 Ver Grabaciones](./video/) |
+| **📁 `Otro/`** | **Recursos y Recursos Gráficos:** Identidad visual, logotipos de patrocinadores y documentación complementaria. | [🔗 Abrir Recursos](./Otro/) |
+<p align="right"><a href="#inicio">⬆️ Volver al Inicio</a></p>
+
+<a id="ficha-tecnica"></a>
+# 4. Ficha Técnica Oficial de la Plataforma "Smoke"
+<div align="center">
+  
+  <img src="./v-photos/perfil_general.jpg" alt="Vehículo Autónomo Smoke" width="550" style="border-radius: 10px; border: 1px solid #444; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+  <br>
+  
+  <i>Plataforma robótica autónoma "Smoke" en configuración de pista para WRO 2026.</i>
+</div>
+<br>
+
+El diseño dimensional y dinámico de **"Smoke"** responde a una búsqueda deliberada de compacidad y bajo momento de inercia rotacional ($I_z$), priorizando la agilidad en curvas cerradas sobre estructuras voluminosas:
+* **📐 Dimensiones Geométricas Reales:** 
+  * Longitud total ($L_{total}$): **225 mm** ($22.5\text{ cm}$)
+  * Anchura de vía con neumáticos ($W_{total}$): **170 mm** ($17.0\text{ cm}$)
+  * Altura máxima a la cúpula de potencia ($H_{total}$): **110 mm** ($11.0\text{ cm}$)
+  * *Conformidad Reglamentaria:* Cumple con amplio margen la restricción dimensional oficial de la WRO ($< 300 \times 200 \times 300\text{ mm}$), dejando un margen de seguridad de $75\text{ mm}$ en longitud y $30\text{ mm}$ en anchura para evitar roces con los muros en giros cerrados.
+* **⚖️ Masa y Balística Dinámica:** 
+  * Masa total verificada en báscula de laboratorio: **859 gramos** ($0.859\text{ kg}$).
+  * Peso total efectivo sobre el tapiz: 
+    $$P = m \cdot g = 0.859\text{ kg} \times 9.81\text{ m/s}^2 \approx \mathbf{8.43\text{ Newtons}}$$
+  * *Ventaja Dinámica del Peso Contenido:* Con apenas 859 g (frente a prototipos convencionales de la categoría que superan los 1150 g), la inercia lineal ($F = m \cdot a$) y centrífuga ($F_c = m \cdot \frac{v^2}{R}$) se reducen en más de un 25%, permitiendo desaceleraciones más tardías antes de la curva y aceleraciones en recta mucho más explosivas sin sobrecalentar el motor Makeblock.
+* **🧠 Unidad Central de Cómputo:** **ESP32-S3 DevKit** (Dual-Core Xtensa LX7 @ 240 MHz, 512 KB SRAM interna) operando bajo **FreeRTOS** para la ejecución concurrente de telemetría inercial y control reactivo.
+* **👁️ Percepción Sensorial y Visión IA:** 
+  * Procesador de visión inteligente **HuskyLens 2** en enlace serie UART por hardware a 115,200 baudios.
+  * Red perimetral de **3 transductores ultrasónicos HC-SR04** ubicados a cota rasante.
+  * Unidad de Medición Inercial (**IMU MPU6050**) concéntrica con el centro de masa del vehículo.
+* **🦾 Dinámica, Dirección y Tracción:** 
+  * Dirección delantera **Ackermann Híbrido** con servomotor digital metálico **TowerPro MG90S**.
+  * Propulsión trasera **RWD** impulsada por un motor DC **Makeblock 9V (185 RPM nominales con encoder de cuadratura integrado)**, acoplado mediante transmisión cónica a 90° de PETG a una caja diferencial de 3 satélites LEGO EV3.
+* **🔋 Subestación Energética:** Banco de celdas cilíndricas de litio **18650 (3.5V / 3500 mAh)** en configuración **2S2P** (tensión de bus nominal de 7.0V y capacidad masiva de **7000 mAh**), con 3 etapas DC-DC de regulación independiente (XL4015, LM2596 y XL6009).
+> [!NOTE]
+> **Origen del Nombre "Smoke":**
+> Durante las primeras fases de validación experimental en el banco de potencia del laboratorio de INIAR, severos retornos inductivos y picos de sobretensión provocados por la conmutación del motor quemaron consecutivamente tres módulos reguladores *Step-Down*, despidiendo una densa columna de humo blanco. 
+> 
+> Lejos de desalentarnos, este suceso marcó el rumbo de nuestra ingeniería: nos impulsó a rediseñar de raíz toda la arquitectura eléctrica, aislando la lógica de la potencia mediante 3 ramas independientes y unificando el plano de masas. Bautizar al vehículo como **"Smoke"** rinde tributo a la resiliencia en el taller: cada falla es un aprendizaje indispensable para alcanzar la máxima fiabilidad en pista.
+<p align="right"><a href="#inicio">⬆️ Volver al Inicio</a></p>
+
+<a id="fotos-360"></a>
+
+# 5. Galería de Inspección Técnica 360°
+Para verificar la simetría estructural, la concentricidad del centro de masa ($CoG$), la rigidez de la manufactura aditiva en PETG y el despeje libre sobre el tapiz (*ground clearance*), se documentan los **6 perfiles de inspección ortogonal reglamentarios**:
+| 📸 Perfil de Inspección | 🖼️ Registro Visual | 🔍 Criterio de Verificación Técnica de Ingeniería |
+| :--- | :---: | :--- |
+| **Vista Frontal**<br>*(Front View)* | <img width="380" alt="Perfil Delantero" src="./v-photos/frontal.jpg" /> | • Evalúa la orientación e inclinación angular del procesador de visión **HuskyLens 2** en el Piso 2.<br>• Muestra la posición del sensor ultrasónico central delantero para el frenado ante esquinas a 70 cm.<br>• Inspección del paralelismo de las manguetas de dirección LEGO y el despeje del parachoques. |
+| **Vista Trasera**<br>*(Rear View)* | <img width="380" alt="Perfil Trasero" src="./v-photos/trasera.jpg" /> | • Evidencia el anclaje del motor Makeblock sobre su bancada de PETG reforzada con 8 tornillos M3.<br>• Muestra el ensamble de la transmisión cónica atacando la corona del diferencial LEGO EV3.<br>• Verificación de los retenedores axiales amarillos LEGO que evitan el desplazamiento de las ruedas de tracción de 43 mm. |
+| **Vista Superior**<br>*(Top View)* | <img width="380" alt="Perfil Superior" src="./v-photos/superior.jpg" /> | • Evalúa el balance transversal de masas: banco 18650 (2S2P) a la par de los módulos Buck/Boost.<br>• Inspección de la posición concéntrica del sensor inercial **MPU6050** en el centro geométrico del chasis.<br>• Muestra la segregación y peinado del cableado de potencia y señales lógicas hacia el ESP32-S3. |
+| **Vista Inferior**<br>*(Bottom View)* | <img width="380" alt="Perfil Inferior" src="./v-photos/inferior.jpg" /> | • Comprueba la superficie lisa del primer piso en PETG para minimizar la resistencia aerodinámica.<br>• Verificación del *ground clearance* ($\ge 15\text{ mm}$) para evitar cualquier roce en el paso por desniveles del tapiz.<br>• Muestra las cavidades hexagonales empotradas para tuercas de seguridad autoblocantes M3. |
+| **Vista Lateral Derecha**<br>*(Right View)* | <img width="380" alt="Perfil Derecho" src="./v-photos/derecha.jpg" /> | • Evidencia la separación vertical física estricta entre el Piso 1 (tracción), Piso 2 (lógica) y Piso 3 (potencia).<br>• Muestra la orientación perpendicular del sensor ultrasónico lateral derecho para el centrado a 30 cm.<br>• Inspección del escalonamiento de neumáticos: Ø 30 mm directrices y Ø 43 mm motrices. |
+| **Vista Lateral Izquierda**<br>*(Left View)* | <img width="380" alt="Perfil Izquierdo" src="./v-photos/izquierda.jpg" /> | • Permite verificar el acceso a la interfaz de usuario: doble switch maestro y pulsador de arranque GPIO 21.<br>• Disposición del sensor ultrasónico lateral izquierdo.<br>• Evidencia la ventilación pasiva del disipador de aluminio del driver L298N y los reguladores de potencia. |
+<p align="right"><a href="#inicio">⬆️ Volver al Inicio</a></p>
+
+<a id="videos-oficiales"></a>
+# 6. Desempeño en Pista (Videos Oficiales)
+Para validar de forma fehaciente el cumplimiento del reglamento internacional, se presentan los registros audiovisuales de la plataforma "Smoke" operando en pista reglamentaria:
+### 6.1 Ronda Abierta (Open Challenge - Recorrido Completo de 3 Vueltas)
+Demostración del vehículo completando de manera 100% autónoma las 12 esquinas reglamentarias (3 vueltas continuas), navegando mediante la fusión de la red ultrasónica perimetral y la telemetría inercial del MPU6050:
+<div align="center">
+  <a href="https://youtu.be/ooOyRUvQE2Y" target="_blank">
+    <img src="https://img.youtube.com/vi/ooOyRUvQE2Y/maxresdefault.jpg" alt="Video Ronda Abierta Team Nexus" width="550" style="border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); border: 1px solid #444;">
+    <br>
+    <b>▶️ Ver en YouTube: Ronda Abierta Oficial – Team Nexus (WRO 2026)</b>
+  </a>
+</div>
+<br>
+
+### 6.2 Ronda de Obstáculos (Obstacle Challenge - Evasión Colorimétrica)
+Registro técnico de la clasificación en tiempo real de los bloques de tráfico (rojos y verdes) mediante el procesador de visión integrado de la **HuskyLens 2** en enlace UART, inyectando la maniobra de viraje evasivo hacia el servomotor MG90S:
+<div align="center">
+  <img src="./video/ESQUIVANDOROJOS.gif" alt="Evasión Dinámica de Bloque Rojo" width="500" style="border-radius: 10px; border: 1px solid #444; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+  <br>
+  <i>Maniobra autónoma de detección y esquiva ante bloque reglamentario rojo (ID 1).</i>
+</div>
+<p align="right"><a href="#inicio">⬆️ Volver al Inicio</a></p>
