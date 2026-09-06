@@ -101,7 +101,8 @@ Team Nexus está integrado por estudiantes universitarios del **Instituto de Int
 * **WRO Venezuela (Temporada 2025):** Competidor oficial en la categoría **RoboSports**, optimizando la respuesta dinámica y la robustez eléctrica del robot en cancha.
 ---
 
-## 👤 José Montiel
+## 👤 José Montiel <a id="jose-montiel"></a>
+
 **Ingeniero Líder de Firmware, Visión Artificial y Control Autónomo**
 <div align="center">
   <img src="./t-fotos/JOSE%20PERFIL.jpeg" alt="José Montiel" width="320" style="border-radius: 12px; border: 1px solid #444; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
@@ -118,7 +119,8 @@ Team Nexus está integrado por estudiantes universitarios del **Instituto de Int
 * **WRO Venezuela Regional (Temporada 2025):** Participación oficial en la categoría **Future Engineers**, acumulando experiencia en cinemática de pista, algoritmos reactivos y visión de carril.
 ---
 
-## 👤 Jairo Cruz
+## 👤 Jairo Cruz <a id="jairo-cruz"></a>
+
 **Ingeniero de Diseño Mecánico, Dinámica Vehicular y Manufactura Aditiva**
 <div align="center">
   <img src="./t-fotos/JAIRO%20PERFIL.jpeg" alt="Jairo Cruz" width="320" style="border-radius: 12px; border: 1px solid #444; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
@@ -134,7 +136,8 @@ Team Nexus está integrado por estudiantes universitarios del **Instituto de Int
 * **FIRST Tech Challenge (FTC Championship – Italia 2024):** Integrante de la delegación internacional venezolana; diseño de sistemas de reducción mecánica y ensamblaje de alta precisión.
 * **WRO Venezuela (Temporada 2025):** Competidor en la categoría **RoboSports**, especializándose en rigidez torsional y resistencia a impactos mecánicos.
 ---
-## 👤 Ing. Wender Sánchez
+## 👤 Ing. Wender Sánchez <a id="wender-sanchez"></a>
+
 **Mentor Líder y Asesor de Ingeniería Mecánica**
 <div align="center">
   <img src="./t-fotos/MENTOR%20PERFIL.jpeg" alt="Ing. Wender Sánchez" width="320" style="border-radius: 12px; border: 1px solid #444; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
