@@ -29,7 +29,7 @@ Este documento técnico ha sido elaborado bajo un formato de **libro blanco de i
   - [David Ocando](#david-ocando)
   - [José Montiel](#josé-montiel)
   - [Jairo Cruz](#jairo-cruz)
-  - [Ing. Wender Sánchez (Mentor)](#ing-wender-sánchez)
+  - [Ing. Wender Sánchez (Mentor)](#ing-wender-sanchez)
 - [3. Estructura del Repositorio (Repository Directory Map)](#3-estructura-del-repositorio-repository-directory-map)
 - [4. Ficha Técnica Oficial de la Plataforma "Smoke"](#4-ficha-técnica-oficial-de-la-plataforma-smoke)
 - [5. Galería de Inspección Técnica 360°](#5-galería-de-inspección-técnica-360)
