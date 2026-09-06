@@ -82,7 +82,8 @@ flowchart TD
 # 2. Nuestro Equipo (INIAR)
 Team Nexus está integrado por estudiantes universitarios del **Instituto de Inteligencia Artificial y Robótica del estado Zulia "Dr. Héctor Rafael Rojas" (INIAR)**, combinando experiencia práctica en torneos nacionales y mundiales:
 
-## 👤 David Ocando
+## 👤 David Ocando <a id="david-ocando"></a>
+
 **Líder de Arquitectura Eléctrica, Gestión de Potencia y Co-Administrador Digital**
 <div align="center">
   <img src="./t-fotos/DAVID%20PERFIL.jpeg" alt="David Ocando" width="320" style="border-radius: 12px; border: 1px solid #444; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
