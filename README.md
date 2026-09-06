@@ -242,7 +242,7 @@ A continuación se desglosa el inventario técnico de la plataforma, detallando 
 | :--- | :---: | :--- | :--- | :--- | :---: | 
 | **Microcontrolador Central**<br>ESP32-S3 DevKit | <img src="./Otro/ESP32S3.jpg" width="80" style="border-radius: 6px;"> | • Dual-Core Xtensa LX7 @ 240 MHz<br>• 512 KB SRAM + Wi-Fi/BLE<br>• Arquitectura FreeRTOS | Cerebro principal del vehículo; procesa en tiempo real la máquina de estados, telemetría y PWM. | Su arquitectura de doble núcleo permite asignar la integración inercial del MPU6050 al **Core 0** (a 500 Hz) mientras el **Core 1** gestiona la navegación reactiva, eliminando cuellos de botella temporales. | [📄 PDF](https://www.espressif.com/sites/default/files/documentation/esp32-s3_datasheet_en.pdf) |
 | **Procesador de Visión IA**<br>DFRobot HuskyLens 2 | <img src="./Otro/HUSKYLENS2.jpg" width="80" style="border-radius: 6px;"> | • Procesador AI KPU integrado<br>• Clasificación colorimétrica<br>• Pantalla IPS de control | Reconocimiento y clasificación en tiempo real de los bloques de tráfico (rojo ID 1 / verde ID 2). | Realiza la inferencia de visión por hardware embebido a 30 FPS, liberando de carga matemática al ESP32-S3 y comunicándose por UART a 115,200 baudios sin saturar el bus I2C. | [📄 Wiki](https://wiki.dfrobot.com/HUSKYLENS_V1.0_SKU_SEN0305_SEN0336) |
-| **Celdas de Batería**<br>EVE INR18650-35V | <img src="./OtroBATERIA.jpg" width="80" style="border-radius: 6px;"> | • Química Li-ion (3.5V nominal)<br>• Configuración **2S2P (7.0V)**<br>• Capacidad masiva: **7000 mAh** | Suministro primario de energía para todo el vehículo y sus tres ramas de conversión. | **Priorización de Autonomía:** El arreglo 2S2P de 7000 mAh garantiza horas ininterrumpidas de pruebas en pista y asegura que la curva de tensión se mantenga plana, evitando pérdidas de velocidad en la vuelta final. | [📄 Info](https://www.evebattery.com/) |
+| **Celdas de Batería**<br>EVE INR18650-35V | <img src="./Otro/BATERIA.jpg" width="80" style="border-radius: 6px;"> | • Química Li-ion (3.5V nominal)<br>• Configuración **2S2P (7.0V)**<br>• Capacidad masiva: **7000 mAh** | Suministro primario de energía para todo el vehículo y sus tres ramas de conversión. | **Priorización de Autonomía:** El arreglo 2S2P de 7000 mAh garantiza horas ininterrumpidas de pruebas en pista y asegura que la curva de tensión se mantenga plana, evitando pérdidas de velocidad en la vuelta final. | [📄 Info](https://www.evebattery.com/) |
 | **Driver de Tracción**<br>Dual H-Bridge L298N | <img src="./Otro/L298N.jpg" width="80" style="border-radius: 6px;"> | • Transistores Darlington BJT<br>• 2A pico por canal<br>• Disipador térmico masivo | Control de sentido de giro (avance/reversa) y velocidad PWM del motor Makeblock. | Robusto y tolerante a sobrecorrientes transitorias de arranque; se optimizó retirando su jumper de 5V y alimentando su etapa de potencia a 14V para compensar la caída Darlington. | [📄 PDF](https://www.sparkfun.com/datasheets/Robotics/L298_H_Bridge.pdf) |
 | **Regulador Lógica**<br>XL4015E1 Step-Down | <img src="./Otro/XL4015E1.jpg" width="80" style="border-radius: 6px;"> | • Convertidor Buck 5A máx.<br>• Tensión fijada a **5.0V DC**<br>• Eficiencia superior al 90% | Alimenta de forma limpia el ESP32-S3, la red ultrasónica y la sección lógica del L298N. | Su alta capacidad de corriente (5A) y bajo rizado protegen al microcontrolador de caídas de tensión bruscas (*brownouts*) cuando los actuadores demandan potencia. | [📄 PDF](https://www.xlsemi.com/datasheet/XL4015%20datasheet.pdf) |
 | **Regulador Actuadores**<br>LM2596 Step-Down | <img src="./Otro/LM2596.jpg" width="80" style="border-radius: 6px;"> | • Convertidor Buck 3A máx.<br>• Tensión fijada a **5.0V DC**<br>• Filtro LC integrado | Rama exclusiva para el servomotor TowerPro MG90S y la cámara HuskyLens 2. | Aísla completamente los picos de corriente inductiva que genera el servomotor al cambiar de dirección bruscamente, evitando que contaminen la línea del ESP32-S3. | [📄 PDF](https://www.ti.com/lit/ds/symlink/lm2596.pdf) |
@@ -428,7 +428,7 @@ Para maximizar el agarre dinámico y facilitar el trabajo del servo MG90S, se im
 
 <p align="right"><a href="#inicio">⬆️ Volver al Inicio</a></p>
 
-### 8.6 Configuración de Neumáticos Escalonados (Staggered Setup)
+### 8.6 Neumáticos Escalonados (Staggered Setup)
 La selección de neumáticos en **"Smoke"** no responde a criterios estéticos, sino a una rigurosa optimización de la **dinámica vehicular y la inercia rotacional**:
 <div align="center">
   
@@ -465,3 +465,368 @@ Para el eje motriz (RWD), se requería maximizar dos variables opuestas: velocid
   $$F_{max} = \mu_s \cdot N_{trasero} = 0.70 \times 4.64\text{ N} \approx \mathbf{3.25\text{ Newtons}}$$
   La banda de rodadura de caucho natural vulcanizado de LEGO EV3 (ancho de $14\text{ mm}$) ofrece una mayor área de huella de contacto (*tire contact patch*), asegurando que el torque transmitido por la transmisión cónica ($\approx 0.0698\text{ Nm}$) se convierta íntegramente en aceleración lineal sin derrapes parásitos en la salida de las curvas.
 <p align="right"><a href="#inicio">⬆️ Volver al Inicio</a></p>
+
+# 9. Arquitectura Eléctrica y Distribución de Potencia
+La concepción del sistema eléctrico de **"Smoke"** parte de una lección técnica aprendida en el laboratorio: para lograr un vehículo de alta fiabilidad, es indispensable desacoplar galvánica y físicamente las cargas dinámicas e inductivas de los actuadores de las líneas de alimentación del microcontrolador y los sensores.
+
+### 9.1 Banco de Baterías 18650 (Configuración 2S2P)
+
+El suministro energético de la plataforma se basa en celdas de iones de litio industriales de alta densidad energética marca **EVE**, modelo **INR18650-35V**:
+<div align="center">
+  <img src="./schemes/baterias_lifepo4.png" alt="Banco de Baterías 18650 2S2P" width="380" style="border-radius: 8px; border: 1px solid #444; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+  <br>
+  <i>Banco de celdas cilíndricas EVE INR18650-35V en configuración 2S2P montadas en el Piso 3.</i>
+</div>
+
+* **Topología Eléctrica (2S2P):** 
+  Dos ramas en paralelo compuestas por dos celdas en serie cada una:
+  $$V_{bus\_nominal} = 2 \times 3.5\text{V} = \mathbf{7.0\text{V DC}} \quad (V_{max} = 8.4\text{V a plena carga})$$
+  $$C_{total} = 2 \times 3500\text{ mAh} = \mathbf{7000\text{ mAh}} \quad (\mathbf{7.0\text{ Ah}})$$
+  $$E_{disponible} = 7.0\text{V} \times 7.0\text{ Ah} = \mathbf{49.0\text{ Watt-hora (Wh)}}$$
+#### ¿Por qué elegimos esta configuración? (Justificación de Autonomía)
+En las competencias WRO, los equipos suelen utilizar pequeñas baterías LiPo de 1000 a 1500 mAh para ahorrar unos pocos gramos. Sin embargo, esto acarrea un grave inconveniente: la curva de descarga decae rápidamente tras 2 o 3 minutos de prueba, alterando la velocidad del motor Makeblock y descalibrando los radios de giro del código.
+* **Estabilidad de Tensión Prolongada:** Con **7000 mAh** de capacidad, el consumo medio de "Smoke" ($\approx 800 - 1200\text{ mA}$ con todos los sistemas activos) representa apenas una tasa de descarga de $\approx 0.15\text{C}$.
+* **Repetibilidad en Pista:** El vehículo puede rodar de forma continua durante más de **4 horas de entrenamiento intensivo** en el taller de INIAR sin que el voltaje del bus decaiga sensiblemente, garantizando que el comportamiento dinámico sea idéntico entre la primera y la última manga de competencia.
+
+<a id="tres-ramas"></a>
+
+### 9.2 Topología de Tres Ramas Desacopladas
+Para erradicar definitivamente los retornos inductivos y picos transitorios que destruyeron los primeros reguladores en el taller, el bus principal de 7.0V se bifurca en **tres etapas de conversión DC-DC especializadas**:
+```mermaid
+flowchart TD
+    BAT[("🔋 Banco Celdas EVE 18650\n2S2P (7.0V / 7000 mAh)")] --> SW1["🔌 Switch Maestro 1\n(Corte General de Regulación)"]
+    
+    %% Rama A: Potencia Auxiliar
+    SW1 --> BUCK_SERVO["⚡ Step-Down LM2596\n(Regulado a 5.0V / 3A máx)"]
+    BUCK_SERVO --> SERVO["🦾 Servomotor TowerPro MG90S"]
+    BUCK_SERVO --> HUSKY["👁️ Cámara Inteligente HuskyLens 2"]
+    %% Rama B: Control y Lógica
+    SW1 --> BUCK_LOGIC["⚡ Step-Down XL4015E1\n(Regulado a 5.0V / 5A máx)"]
+    BUCK_LOGIC --> SW2["🔌 Switch Maestro 2\n(Alimentación Exclusiva MCU)"]
+    SW2 --> MCU["🧠 ESP32-S3 DevKit"]
+    BUCK_LOGIC --> US["📡 3x Sensores HC-SR04"]
+    BUCK_LOGIC --> L298N_VSS["🔲 Lógica L298N (Pin Vss)"]
+    %% Rama C: Potencia de Tracción
+    SW1 --> BOOST["⚡ Step-Up XL6009\n(Regulado a 14.0V / 4A máx)"]
+    BOOST --> L298N_VS["🔲 Potencia L298N (Pin Vs)"]
+    L298N_VS -->|"-2.0V Caída Darlington (12.0V Netos)"| MOTOR["⚙️ Motor Makeblock DC"]
+    %% Control de Inicio
+    BTN["🔘 Botón de Inicio (GPIO 21)\nPull-Down Interno"] -.->|"Gatillo de Rutina"| MCU
+    classDef bat fill:#2ea44f,stroke:#24292e,stroke-width:2px,color:#fff;
+    classDef reg fill:#0366d6,stroke:#24292e,stroke-width:2px,color:#fff;
+    classDef dev fill:#1f2328,stroke:#58a6ff,stroke-width:1px,color:#c9d1d9;
+    classDef sw fill:#d73a49,stroke:#24292e,stroke-width:2px,color:#fff;
+    class BAT bat;
+    class BUCK_SERVO,BUCK_LOGIC,BOOST reg;
+    class SERVO,HUSKY,MCU,US,L298N_VSS,L298N_VS,MOTOR dev;
+    class SW1,SW2,BTN sw;  
+```
+<a id="compensacion-l298n"></a>
+### 9.3 Compensación Darlington L298N (Boost a 14V) y Masa Común
+#### 1. Justificación de la Elevación a 14V con el Módulo XL6009
+El driver clásico **L298N** implementa transistores bipolares de unión (BJT) en configuración Darlington para sus etapas de conmutación en puente H. Por física de semiconductores, estos transistores presentan una caída de tensión saturación colector-emisor interna inevitable:
+$$V_{drop} = V_{CE(sat)} \approx 1.8\text{V} - 2.2\text{V}$$
+Si el driver se conectara directamente a los 7.0V de la batería, el motor Makeblock apenas recibiría:
+$$V_{motor} = 7.0\text{V} - 2.0\text{V} \approx 5.0\text{V}$$
+Esto provocaría una pérdida crítica de torque de arranque y reduciría su velocidad angular a menos de 100 RPM.
+> [!TIP]
+> **Cálculo de la Tensión de Compensación:**
+> Para entregar los **12.0V netos de máxima eficiencia al motor Makeblock**:
+> 1. Se retiró físicamente el puente (*jumper*) integrado de 5V del módulo L298N, desacoplando su regulador lineal interno 78M05 para evitar recalentamientos térmicos innecesarios.
+> 2. Se calibró el módulo elevador **XL6009** a:
+>    $$V_{Boost} = V_{nominal} + V_{drop} = 12.0\text{V} + 2.0\text{V} = \mathbf{14.0\text{V DC}}$$
+> 3. El pin $V_{ss}$ lógico del chip se alimenta directamente desde los 5V limpios del regulador XL4015, garantizando una conmutación lógica rápida y libre de ruido electromagnético.
+
+#### 2. Beneficios de la Tierra Común Unificada (Common Ground Plane)
+Todos los polos negativos (GND) del banco de baterías 18650, los tres convertidores DC-DC, el driver L298N, los sensores ultrasónicos, el servo y el microcontrolador ESP32-S3 están **interconectados eléctricamente en un nodo de masa común**:
+* **Referencia Equipotencial Cero:** Erradica bucles de tierra (*ground loops*) y tensiones parásitas flotantes que podrían provocar reinicios espontáneos en el procesador.
+* **Integridad de Buses de Comunicación Serial (UART e I2C):** Al compartir un plano de 0V idéntico, las líneas de datos de alta velocidad (`Serial1` a 115,200 baudios de la HuskyLens 2 y las señales PWM del servo a 50 Hz) mantienen sus umbrales de nivel lógico $V_{IL}$ y $V_{IH}$ sin distorsiones ni lecturas corruptas.
+
+<a id="protocolo-encendido"></a>
+
+### 9.4 Protocolo de Encendido Seguro y Control de Usuario
+Para prevenir arranques involuntarios o movimientos erráticos del robot en el momento de la manipulación en pista, se diseñó una secuencia de encendido de tres pasos:
+1. **Switch Maestro 1 (Alimentación de Convertidores):** Conecta el banco de celdas 18650 a los tres reguladores (XL4015, LM2596 y XL6009), permitiendo que las tensiones de 5V y 14V se estabilicen antes de energizar la lógica.
+2. **Switch Maestro 2 (Encendido Exclusivo del MCU):** Habilita la línea de 5V hacia el **ESP32-S3**, asegurando que el microcontrolador bootee en un riel perfectamente filtrado y sin transitorios de encendido.
+3. **Pulsador Físico de Inicio (Start Button en GPIO 21):** 
+   * Una vez encendido, el vehículo permanece totalmente inmóvil en el punto de salida con los actuadores bloqueados por software.
+   * El pin GPIO 21 se encuentra configurado con una **resistencia Pull-Down interna**. Al pulsar el botón, se inyecta un nivel alto de $3.3\text{V}$, disparando la rutina de calibración inercial y arrancando la navegación autónoma.
+  
+<a id="esquematico-pinout"></a>
+### 9.5 Esquemático General y Mapeo de Pines (Pinout ESP32-S3)
+El conexionado eléctrico integral de potencia, distribución de buses y líneas de control de **"Smoke"** fue desarrollado en **Fritzing** y se encuentra disponible en alta resolución en [`./Esquemas/DIAGRAMAVF.jpg`](./Esquemas/DIAGRAMAVF.jpg):
+<div align="center">
+  <img src="./Esquemas/DIAGRAMAVF.jpg" alt="Esquemático Eléctrico Oficial Smoke" width="850" style="border-radius: 8px; border: 1px solid #444; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+  <br>
+  <i>Plano esquemático oficial de conexiones eléctricas de la plataforma autónoma "Smoke".</i>
+</div>
+
+
+#### Mapeo de Pines de Entrada y Salida (ESP32-S3 GPIO Allocation)
+| Subsistema | Componente / Periférico | Pin Físico | Modo de Operación / Protocolo de Firmware |
+| :--- | :--- | :---: | :--- |
+| **🦾 Dirección** | Servomotor TowerPro MG90S | **GPIO 8** | Salida PWM a 50 Hz (Resolución de 12 bits con `ESP32Servo.h`) |
+| **⚙️ Tracción** | Driver L298N – ENA (Velocidad) | **GPIO 4** | Modulación PWM a 1000 Hz (`ledcAttach` con ciclo de trabajo de 8 bits) |
+| | Driver L298N – IN1 (Sentido) | **GPIO 5** | Salida digital: Estado ALTO (`HIGH`) para giro de avance |
+| | Driver L298N – IN2 (Sentido) | **GPIO 6** | Salida digital: Estado BAJO (`LOW`) para avance / ALTO para freno |
+| **👁️ Visión IA** | Cámara DFRobot HuskyLens 2 | **GPIO 9** | **UART RX** (Conectado al cable Verde / TX de la cámara) |
+| | Cámara DFRobot HuskyLens 2 | **GPIO 10** | **UART TX** (Conectado al cable Azul / RX de la cámara) |
+| **🧭 Orientación** | Sensor Inercial IMU MPU6050 | **GPIO 16** | Bus I2C – Línea de Datos bidireccional (**SDA** a 100 kHz) |
+| | Sensor Inercial IMU MPU6050 | **GPIO 17** | Bus I2C – Línea de Reloj (**SCL** con auto-rescate en hardware) |
+| **📡 Ultrasonido** | HC-SR04 Frontal (Curvas) | **GPIO 42** | Salida de Disparo (**TRIGGER**) – Pulso de $10\ \mu\text{s}$ |
+| | HC-SR04 Frontal (Curvas) | **GPIO 41** | Entrada de Retorno (**ECHO**) – Medición por tiempo de vuelo |
+| | HC-SR04 Derecho (Centrado) | **GPIO 38** | Salida de Disparo (**TRIGGER**) |
+| | HC-SR04 Derecho (Centrado) | **GPIO 37** | Entrada de Retorno (**ECHO**) |
+| | HC-SR04 Izquierdo (Centrado) | **GPIO 39** | Salida de Disparo (**TRIGGER**) |
+| | HC-SR04 Izquierdo (Centrado) | **GPIO 40** | Entrada de Retorno (**ECHO**) |
+| **🔘 Control Usuario** | Pulsador de Arranque en Pista | **GPIO 21** | Entrada digital con resistencia **Pull-Down** interna activada |
+<p align="right"><a href="#inicio">⬆️ Volver al Inicio</a></p>
+
+<a id="percepcion-sensorial"></a>
+# 10. Percepción Sensorial y Visión Artificial
+La arquitectura sensorial de **"Smoke"** opera bajo un esquema de **fusión sensorial distribuida**: combina visión artificial acelerada por hardware embebido para la clasificación semántica de obstáculos, con una red acústica de tiempo de vuelo para el mantenimiento de carril y telemetría inercial de alta frecuencia en tiempo real.
+```mermaid
+flowchart TD
+    subgraph "ECOSISTEMA DE PERCEPCIÓN SENSORIAL SMOKE"
+        US_F["📡 HC-SR04 Frontal\n(Gatillo de Curvas 90° @ 70 cm)"]
+        US_R["📡 HC-SR04 Lateral Derecho\n(Centrado @ 30 cm / Escape @ 25 cm)"]
+        US_L["📡 HC-SR04 Lateral Izquierdo\n(Centrado @ 30 cm / Escape @ 25 cm)"]
+        MPU["🧭 IMU MPU6050 (Alineado al CoG)\n(Integración Yaw en Core 0 con FreeRTOS @ 500 Hz)"]
+        HUSKY["👁️ HuskyLens 2 (IA KPU)\n(Reconocimiento de Color UART @ 115200 Baudios)"]
+    end
+    US_F & US_R & US_L -->|"Pulsos de Eco (Tiempo de Vuelo)"| ESP["🧠 Microcontrolador ESP32-S3"]
+    MPU -->|"Bus I2C (Con Auto-Rescate de 9 Ciclos)"| ESP
+    HUSKY -->|"Paquetes Seriales UART (GPIO 9 / 10)"| ESP
+    classDef sens fill:#1f2328,stroke:#58a6ff,stroke-width:1px,color:#c9d1d9;
+    classDef mcu fill:#0366d6,stroke:#24292e,stroke-width:2px,color:#fff;
+    class US_F,US_R,US_L,MPU,HUSKY sens;
+    class ESP mcu;
+```
+<a id="vision-ia"></a>
+### 10.1 Visión IA por Hardware (HuskyLens 2)
+Para superar el **Desafío de Obstáculos (Obstacle Challenge)**, el vehículo emplea el procesador de visión inteligente **HuskyLens 2** montado rígidamente en el Piso 2:
+* **Inferencia Embebida en Hardware:** La cámara incorpora un procesador neuronal especializado (KPU) que ejecuta algoritmos de visión por computador internamente a **30 FPS**. Esto descarga al ESP32-S3 de tener que procesar matrices de píxeles pesadas, permitiéndole concentrar el 100% de sus ciclos de reloj en el control dinámico de la dirección y tracción.
+* **Clasificación Colorimétrica Entrenada:** Se configuró en el algoritmo de **Reconocimiento de Color (*Color Recognition*)**, calibrando las firmas cromáticas bajo la iluminación real del recinto para identificar:
+  * **Bloque Rojo (ID 1):** Inyecta una consigna de viraje evasivo hacia el flanco **izquierdo** del carril.
+  * **Bloque Verde (ID 2):** Inyecta una consigna de viraje evasivo hacia el flanco **derecho** del carril.
+* **Justificación de la Comunicación UART (115,200 Baudios) vs. I2C:**
+  En las fases iniciales de prueba, se evaluó conectar la cámara mediante el bus I2C compartiendo líneas con el MPU6050. Sin embargo, ante el tráfico denso de paquetes de imagen, el bus I2C presentaba colisiones y bloqueos de reloj (*clock stretching lockup*).
+  * **Solución de Ingeniería:** Se migró la HuskyLens 2 hacia un enlace serie UART por hardware dedicado (`Serial1`) en los pines **GPIO 9 (RX)** y **GPIO 10 (TX)** a **115,200 baudios**. Esta línea punto a punto es inmune a colisiones de bus y transfiere las coordenadas $(X, Y)$ y dimensiones $(W, H)$ de los bloques sin pérdidas.
+* **Desacoplamiento en Ronda Abierta:** Durante el Open Challenge, la cámara se mantiene encendida pero su hilo de lectura se deshabilita por software en el firmware, asegurando que la navegación reactiva no consuma procesamiento innecesario.
+
+<a id="telemetria-inercial"></a>
+### 10.2 Telemetría Inercial en Core Dedicado (MPU6050 + FreeRTOS)
+El mantenimiento de trayectoria rectilínea y la verificación de giros exactos de 90° se fundamentan en el sensor inercial **InvenSense MPU6050**, ubicado matemáticamente en el **centro de gravedad ($CoG$) del vehículo (Piso 2)**:
+#### 1. Arquitectura Multitarea en Core 0 con FreeRTOS
+Para erradicar la deriva angular (*drift*) provocada por demoras en los bucles del código principal, el firmware instancia una tarea dedicada e independiente en el **Core 0** del ESP32-S3 (`tareaLeerMPU`):
+* **Frecuencia de Muestreo de 500 Hz:** La tarea inercial se ejecuta con un período estricto de **$2\text{ ms}$**, operando de forma totalmente asíncrona e inmune a las pausas que generan la emisión de pulsos ultrasónicos o la telemetría serial.
+* **Calibración Automática de Deriva Estática:** Al encender el robot y presionar el botón de arranque (GPIO 21), el ESP32 permanece inmóvil durante $100\text{ ms}$ y toma **50 lecturas promediadas** del giroscopio en el eje Z para calcular el offset estático ($gz_{offset}$), restándolo en cada iteración.
+* **Integración Numérica Discreta del Ángulo Yaw:**
+  La orientación angular respecto al rumbo inicial se actualiza integrando la velocidad angular en el eje Z:
+  
+ $$\Delta \theta = (gz - gz_{offset}) \cdot \Delta t \quad [\text{grados}]$$
+ 
+$$\text{Yaw}_{actual} = \text{Yaw}_{actual} + \Delta \theta \quad (\text{para } |gz| > 0.3^\circ/\text{s})$$
+  
+#### 2. Tolerancia a Fallas en Hardware: Subrutina de Auto-Rescate I2C
+Uno de los problemas más críticos en robótica móvil ocurre cuando un pico inductivo proveniente del motor cuelga el bus I2C, dejando la línea SDA clavada en estado bajo (*I2C bus lockup*):
+* **Detección Automática:** La función `leerMPUSeguro()` verifica el estado de transmisión; si `Wire.endTransmission() != 0`, detecta inmediatamente que el bus colapsó.
+* **Mecanismo de Recuperación en Caliente (`rescatarBusI2C`):**
+  1. Libera el puerto I2C y conmuta temporalmente los pines a modo GPIO digital.
+  2. Genera **9 pulsos de reloj manuales en la línea SCL** para forzar a cualquier periférico esclavo bloqueado a liberar la línea SDA.
+  3. Reconfigura y reinicia el bus Wire a **100 kHz** con un ancho de banda de filtrado paso-bajo de 21 Hz en el MPU6050.
+* **Impacto Operativo:** Esta rutina recupera la telemetría inercial en menos de $150\ \mu\text{s}$, permitiendo que el robot continúe su carrera en pista sin necesidad de reiniciarse ni perder el setpoint de rumbo.
+
+### 10.3 Red Ultrasónica HC-SR04 con Muestreo Rotativo
+La detección perimetral de proximidad se basa en tres transductores ultrasónicos **HC-SR04** ubicados en el primer piso del chasis a una altura rasante de **$25\text{ mm}$**:
+<div align="center">
+  
+| Transductor | Orientación en Chasis | Umbral Crítico | Función de Navegación Reactiva |
+| :--- | :---: | :---: | :--- |
+| **Frontal** | Eje longitudinal proa | **$\le 70.0\text{ cm}$** | **Gatillo de Curvas:** Detecta la aproximación a la pared terminal para activar el viraje a 90° e incrementar el conteo de esquinas. |
+| **Lateral Derecho** | Perpendicular estribor | **$\le 25.0\text{ cm}$** | **Escape Lateral:** Si la distancia baja de 25 cm, inyecta un offset angular de $25^\circ$ hacia la izquierda para alejarse del muro. |
+| **Lateral Izquierdo** | Perpendicular babor | **$\le 25.0\text{ cm}$** | **Escape Lateral:** Si la distancia baja de 25 cm, inyecta un offset angular de $25^\circ$ hacia la derecha para alejarse del muro. |
+</div>
+
+#### 1. Muestreo Rotativo Asíncrono (Eliminación de Eco Cruzado / Anti-Crosstalk)
+Si dos o más sensores ultrasónicos dispararan al mismo tiempo, los rebotes acústicos en las esquinas provocarían que un sensor reciba el eco emitido por otro (*interferencia acústica cruzada o crosstalk*), generando lecturas falsas de proximidad.
+Para erradicar esto, el firmware ejecuta un ciclo de muestreo secuencial no bloqueante cada **50 ms** (`TIEMPO_SONAR_MS = 50`):
+$$\text{Ciclo Rotativo: } \text{Turno 0 (Frontal)} \longrightarrow \text{Turno 1 (Derecho)} \longrightarrow \text{Turno 2 (Frontal)} \longrightarrow \text{Turno 3 (Izquierdo)}$$
+> [!TIP]
+> **Ventaja de la Secuencia Asíncrona:**
+> Este patrón otorga una **tasa de refresco del doble de frecuencia al sensor frontal** (se lee cada 50 ms intercalado), mientras que los laterales se leen cada 100 ms. Esto garantiza que el vehículo detecte el muro terminal a alta velocidad con tiempo suficiente para iniciar la maniobra de giro antes de colisionar.
+
+#### 2. Ecuación de Tiempo de Vuelo y Rechazo de Outliers
+La distancia hacia las paredes se determina calculando el tiempo de vuelo de ida y vuelta del paquete acústico ultrasónico de 40 kHz en el aire ($v_{sonido} \approx 343\text{ m/s}$ a 20°C):
+$$d = \frac{t_{pulso} \cdot 0.0343}{2} \quad [\text{cm}]$$
+* **Timeout de Hardware a $15,000\ \mu\text{s}$:** La función `pulseIn` cuenta con un tiempo límite calibrado de $15,000\ \mu\text{s}$ (equivalente a una distancia máxima de $\approx 257\text{ cm}$).
+* **Filtrado de Ecos Espurios:** Si el eco rebota fuera del cono de recepción o no regresa a tiempo, la función descarta la lectura y retorna automáticamente `999.0 cm`, impidiendo que valores nulos generen virajes erráticos en el servomotor.
+<p align="right"><a href="#inicio">⬆️ Volver al Inicio</a></p>
+
+
+<a id="arquitectura-software"></a>
+
+# 11. Arquitectura de Software y Lógica de Navegación
+El software embebido de **"Smoke"** fue desarrollado en **C++ bajo el entorno Arduino IDE**, optimizado específicamente para el microcontrolador de doble núcleo **ESP32-S3**. 
+Para garantizar un control en tiempo real estricto, el código opera bajo una **arquitectura asíncrona no bloqueante gobernada por el sistema operativo en tiempo real FreeRTOS y temporizadores de hardware (`millis()`)**, evitando por completo el uso de funciones bloqueantes tipo `delay()` en los bucles de carrera.
+El código fuente oficial de la ronda abierta se encuentra alojado en [`./src/OPENCHALLENGE.ino`](./src/OPENCHALLENGE.ino).
+
+<a id="fsm-navegacion"></a>
+
+### 11.1 Máquina de Estados Finitos (FSM)
+El flujo de control de carrera se rige mediante una máquina de estados finitos determinista que administra las transiciones entre la calibración estática, el guiado reactivo en rectas y las maniobras de viraje en esquinas:
+```mermaid
+flowchart TD
+    BOOT["🔌 BOOT_SAFETY:\nBloqueo Pasivo de Actuadores\n(Motor a 0V / Servo Centrado a 96°)"] --> WAIT_BTN{"🔘 WAIT_START:\n¿Pulsador GPIO 21\nPresionado?"}
+    
+    WAIT_BTN -- No --> WAIT_BTN
+    WAIT_BTN -- Sí --> CALIB["🧭 CALIB_MPU:\nCalibración Offset IMU MPU6050\n(50 Muestras / Tarea FreeRTOS Core 0 @ 500 Hz)"]
+    
+    CALIB --> DRIVE["🏎️ NAV_STRAIGHT:\nAvance con Controlador PD de Rumbo\n(Corrección por Yaw MPU + Escape Lateral US)"]
+    
+    DRIVE --> CHECK_CORNER{"📡 HC-SR04 Frontal\n¿Distancia ≤ 70 cm?"}
+    
+    CHECK_CORNER -- No --> DRIVE
+    CHECK_CORNER -- Sí --> DETECT_DIR{"¿Primera Esquina?\n(direccion_giro == 0)"}
+    
+    DETECT_DIR -- Sí --> EVAL_SPACE["EVAL_SENSE:\nComparar US Izq vs Der\n(Fijar Sentido Horario / Antihorario)"]
+    EVAL_SPACE --> TURN["🔄 CORNER_TURN:\nManiobra de Viraje a 90°\n(Servo Deflexión ±21° / Setpoint ±89°)"]
+    DETECT_DIR -- No --> TURN
+    
+    TURN --> CHECK_END{"¿Esquinas ≥ 12?\n(3 Vueltas Completas)"}
+    
+    CHECK_END -- No --> COOLDOWN["⏱️ COOLDOWN_GIRO:\nPausa de Inmunidad (500 ms)\nRetorno a Setpoint"] --> DRIVE
+    CHECK_END -- Sí --> STOP["🛑 END_RACE:\nParada Segura tras Cruce de Meta\n(Frenado Regenerativo Motor / Servo a 96°)"]
+    classDef state fill:#1f2328,stroke:#58a6ff,stroke-width:1px,color:#c9d1d9;
+    classDef dec fill:#0366d6,stroke:#24292e,stroke-width:2px,color:#fff;
+    classDef stop fill:#d73a49,stroke:#24292e,stroke-width:2px,color:#fff;
+    class BOOT,CALIB,DRIVE,EVAL_SPACE,TURN,COOLDOWN state;
+    class WAIT_BTN,CHECK_CORNER,DETECT_DIR,CHECK_END dec;
+    class STOP stop;
+```
+<a id="desglose-firmware"></a>
+<a id="desglose-firmware"></a>
+### 11.2 Desglose Modular del Firmware (`OPENCHALLENGE.ino`)
+El firmware del vehículo se encuentra estructurado en cuatro módulos funcionales que operan de forma asíncrona mediante temporizadores de hardware:
+---
+#### 1. Módulo de Seguridad en Arranque y Multitarea FreeRTOS
+Para evitar que el robot sufra arranques violentos e incontrolados al energizar el microcontrolador, la función `setup()` ejecuta una secuencia de seguridad pasiva inmediata que bloquea los actuadores antes de inicializar las comunicaciones:
+* **Freno de Motores:** Se configuran los canales PWM forzando la velocidad a cero y los pines `PIN_MOTOR_IN1` y `PIN_MOTOR_IN2` en estado bajo (`LOW`).
+* **Centrado Mecánico:** El servo MG90S se clava de inmediato en su ángulo neutro (`SERVO_CENTRO = 96°`).
+* **Despliegue de Tarea en Core 0:** Se crea la tarea `tareaLeerMPU` asignada al **Core 0** del ESP32-S3 mediante `xTaskCreatePinnedToCore()`, garantizando un bucle inercial a **500 Hz (cada 2 ms)** totalmente inmune a las demoras del resto del programa.
+```cpp
+// --- Fragmento Setup: Bloqueo de seguridad pasiva ---
+pinMode(PIN_MOTOR_IN1, OUTPUT); 
+pinMode(PIN_MOTOR_IN2, OUTPUT);
+digitalWrite(PIN_MOTOR_IN1, LOW); 
+digitalWrite(PIN_MOTOR_IN2, LOW);
+// Bloquear velocidad PWM a cero
+ledcAttach(PIN_MOTOR_PWM, 1000, 8); 
+ledcWrite(PIN_MOTOR_PWM, 0); 
+// Centrar inmediatamente el servomotor
+ledcAttach(PIN_SERVO, 50, 12); 
+escribirServoGrados(SERVO_CENTRO);
+// Lanzamiento de tarea en tiempo real en Core 0 para el MPU6050
+xTaskCreatePinnedToCore(tareaLeerMPU, "TareaMPU", 4096, NULL, 2, &TareaMPU, 0);
+```
+#### 2. Módulo de Calibración Dinámica y Detección Automática de Sentido de Carrera
+El vehículo elimina cualquier dependencia de configuración manual previa a la carrera, detectando de forma autónoma el sentido del circuito reglamentario:
+* **Calibración Estática en Salida:** Al presionar el pulsador de inicio (`PIN_INICIO` en GPIO 21), el ESP32 recolecta 50 muestras estáticas de la velocidad angular en Z para determinar el offset de deriva (`gz_offset`) mientras el chasis permanece en reposo.
+* **Decisión Autónoma de Sentido (Horario / Antihorario):** En la primera curva (`direccion_giro == 0`), el sensor ultrasónico frontal detecta el muro a $\le 70\text{ cm}$ y el firmware compara automáticamente las lecturas laterales para fijar el sentido de carrera:
+```cpp
+// Detección autónoma del sentido de pista en la primera esquina
+if (direccion_giro == 0) {
+  if (dist_izquierda >= dist_derecha) {
+    direccion_giro = 1; // Sentido Antihorario (Pista con giros a la Izquierda)
+    Serial.println(">>> PRIMERA ESQUINA: MÁS ESPACIO A LA IZQ. GUARDANDO GIRO A LA IZQUIERDA.");
+  } else {
+    direccion_giro = -1; // Sentido Horario (Pista con giros a la Derecha)
+    Serial.println(">>> PRIMERA ESQUINA: MÁS ESPACIO A LA DER. GUARDANDO GIRO A LA DERECHA.");
+  }
+}
+```
+#### 3. Módulo Controlador PD de Rumbo y Subrutina de Escape Lateral
+Durante el tránsito por los tramos rectos de la pista, el firmware ejecuta un lazo de control cada **1 ms** (`TIEMPO_LECTURA_MS = 1`):
+* **Controlador Proporcional-Derivativo (PD):** Compara el rumbo objetivo (`setpoint_efectivo`) contra el ángulo inercial integrado (`yaw_actual`). Si el error angular supera la **zona muerta de $\pm 2.0^\circ$**, modula la timonería del servomotor MG90S con constantes $K_p = 1.0$ y $K_d = 0.0$.
+* **Escape Lateral Reactivo:** Los sensores ultrasónicos laterales vigilan la proximidad a las paredes. Si la distancia en cualquiera de los flancos cae por debajo del umbral de seguridad de **$25.0\text{ cm}$** (`DISTANCIA_MIN_LATERAL`), el firmware inyecta un offset angular instantáneo de $\pm 25^\circ$ (`ANGULO_ESCAPE`), alejando al vehículo del muro sin perder la referencia global de rumbo.
+```cpp
+// Lazo de control PD inercial
+float setpoint_efectivo = setpoint_yaw + offset_lateral;
+float error = setpoint_efectivo - yaw_actual;
+// Zona muerta para evitar oscilaciones de alta frecuencia en el servo
+if (abs(error) < ZONA_MUERTA) { 
+  error = 0.0; 
+  error_anterior = 0.0; 
+}
+float derivada = (error - error_anterior) / dt;
+error_anterior = error;
+float correccion = (Kp * error) + (Kd * derivada);
+correccion = constrain(correccion, -MAX_DEFLEXION, MAX_DEFLEXION);
+// Subrutina de escape lateral reactivo ante aproximación a muros
+if (dist_derecha < DISTANCIA_MIN_LATERAL)   offset_lateral -= ANGULO_ESCAPE;
+if (dist_izquierda < DISTANCIA_MIN_LATERAL) offset_lateral += ANGULO_ESCAPE;
+```
+#### 4. Módulo de Negociación de Curvas de 90°, Conteo de Vueltas y Frenado en Meta
+El viraje en las esquinas reglamentarias se ejecuta bajo una rutina sincronizada de precisión:
+1. **Disparo de Giro:** Al detectar muro frontal a $\le 70\text{ cm}$ con espacio lateral despejado ($\ge 70\text{ cm}$), el servomotor se posiciona en máxima deflexión angular (`MAX_DEFLEXION = 21°`), se actualiza el setpoint en $\pm 89^\circ$ y se incrementa el contador de esquinas (`esquinas_contadas++`).
+2. **Criterio de Salida de Curva:** La maniobra se considera completada cuando el error angular respecto al setpoint es menor a $8.0^\circ$ o si transcurre el tiempo límite de seguridad (`TIMEOUT_GIRO = 2500 ms`), retornando al modo de avance rectilíneo con un período de enfriamiento (*cooldown*) de $500\text{ ms}$.
+3. **Parada Automática tras 3 Vueltas (12 Esquinas):** Al registrar 12 esquinas válidas, el robot activa el estado de fin de carrera: mantiene la inercia durante $1500\text{ ms}$ para cruzar holgadamente la línea de meta, corta el PWM del motor Makeblock, conecta los pines IN1 e IN2 a nivel bajo para inducir frenado regenerativo y clava el servo al centro.
+```cpp
+// Registro de esquinas y activación de fin de carrera tras 12 giros
+if (esquinas_contadas >= 12 && !carrera_terminada) {
+  carrera_terminada = true;
+  tiempo_fin_carrera = tiempo_actual;
+  Serial.println(">>> 12 ESQUINAS ALCANZADAS. APAGANDO EN EL TIEMPO SETEADO...");
+}
+// Secuencia de parada final tras cruzar la línea de meta
+if (carrera_terminada && !motor_frenado) {
+  if (tiempo_actual - tiempo_fin_carrera >= TIEMPO_PARO_FIN) {
+    digitalWrite(PIN_MOTOR_IN1, LOW);
+    digitalWrite(PIN_MOTOR_IN2, LOW);
+    ledcWrite(PIN_MOTOR_PWM, 0);       // Corte de potencia al motor
+    escribirServoGrados(SERVO_CENTRO); // Centrado de timonería a 96°
+    motor_frenado = true;
+    Serial.println("\n=== 12 ESQUINAS COMPLETADAS - MOTOR APAGADO ===");
+  }
+}
+```
+
+<a id="diario-ingenieria"></a>
+# 12. Diario de Ingeniería, Iteraciones y Solución de Fallas
+El desarrollo de la plataforma **"Smoke"** siguió estrictamente el **Ciclo de Diseño en Ingeniería (*Engineering Design Process*)**. En lugar de asumir un diseño teórico infalible, el equipo utilizó cada obstáculo experimental surgido en las jornadas de trabajo en el laboratorio de INIAR como una oportunidad de aprendizaje técnico y optimización sistemática:
+```mermaid
+flowchart LR
+    P["⚠️ 1. Identificación de Falla\nen Banco o Pista"] --> A["🔍 2. Análisis de Causa Raíz\n(Física / Eléctrica / Firmware)"]
+    A --> S["💡 3. Diseño e Implementación\nde Solución de Ingeniería"]
+    S --> V["✅ 4. Validación Experimental\n(Telemetría y Repetibilidad)"]
+    V --> P
+    classDef proc fill:#1f2328,stroke:#58a6ff,stroke-width:1px,color:#c9d1d9;
+    class P,A,S,V proc;
+```
+
+| Subsistema | Problema Inicial Identificado | Causa Raíz Técnica | Solución de Ingeniería Aplicada | Impacto Técnico en "Smoke" |
+| :--- | :--- | :--- | :--- | :--- |
+| **⚡ Potencia** | **Destrucción de 3 Step-Downs (Origen del nombre "Smoke")** | Picos de sobretensión transitoria y retornos inductivos generados por el frenado del motor DC quemaron tres módulos en cascada. | Rediseño a **3 ramas independientes** (XL4015 para lógica a 5V, LM2596 para actuadores a 5V y XL6009 para tracción a 14V) + **Masa Común Unificada**. | **100% de fiabilidad eléctrica:** Cero reinicios involuntarios (*brownouts*) y rieles de alimentación libres de rizado parásito. |
+| **⚙️ Tracción** | **Pérdida crítica de torque y velocidad en motor Makeblock** | Caída interna inherente ($\Delta V \approx 2.0\text{V}$) en los transistores Darlington BJT del driver L298N, dejando al motor con apenas 5V. | Elevación del bus de tracción a **14.0V con el Step-Up XL6009** y retiro del jumper integrado de 5V para desacoplar su regulador lineal interno. | El motor recibe **12.0V netos constantes**, alcanzando su velocidad nominal de 185 RPM con torque máximo de salida. |
+| **🦾 Dirección** | **Servomotor atascado y avería de piñonería interna** | El firmware enviaba consignas angulares que superaban los topes mecánicos del chasis, forzando los engranes plásticos bajo bloqueo continuo (*stall*). | Estandarización con servomotor **TowerPro MG90S de piñonería metálica**, limitación por software (`MAX_DEFLEXION = 21°`) y rutina de prueba $\pm 80^\circ$. | Erradicación total de bloqueos mecánicos (*binding*) y virajes fluidos con respuesta lineal en menos de 0.10 segundos. |
+| **🔗 Transmisión** | **Incompatibilidad dimensional de ejes motor y diferencial** | El motor Makeblock posee un eje cilíndrico con rebaje plano (**eje en D**) y el diferencial LEGO EV3 exige acople estandarizado en cruz. | Modelado paramétrico en Fusion 360 e impresión al **100% de relleno en PETG** de un **piñón cónico con cavidad hembra en D**. | Transmisión a 90° sin holguras (*backlash* mínimo), con alta resistencia a la cizalladura en la base de los dientes. |
+| **🏎️ Cinemática** | **Fricción irregular y juego mecánico en dirección 100% 3D** | Las manguetas y tirantes impresos en FDM presentaban microporosidad superficial entre capas, induciendo holgura acumulada en las ruedas. | **Arquitectura híbrida:** Manguetas y barras de enlace oficiales moldeadas por inyección LEGO EV3 + brazo de servo custom en PETG. | Dirección hiperprecisa, sin fricción parásita y con rigidez torsional constante que elimina el subviraje (*understeer*). |
+| **🧭 Telemetría** | **Congelamiento aleatorio del bus I2C (IMU MPU6050)** | Picos inductivos severos en las proximidades del cableado bloqueaban la línea SDA en nivel bajo (*I2C bus lockup*). | Implementación de la rutina de hardware `rescatarBusI2C()` con **9 pulsos de reloj manuales en SCL** en el Core 0. | El sistema detecta la falla y recupera la telemetría en caliente en menos de $150\ \mu\text{s}$ sin detener la marcha del carro. |
+| **💻 Firmware** | **Comportamiento asíncrono e irregular en C++ nativo inicial** | Condiciones de carrera (*race conditions*) y demoras bloqueantes por funciones `delay()` al procesar los tres sensores ultrasónicos simultáneamente. | Reestructuración asíncrona con **FreeRTOS en Core 0 para el MPU6050** y temporizadores no bloqueantes (`millis()`) en Core 1. | Control en tiempo real estricto con lectura inercial fija a **500 Hz** y muestreo rotativo ultrasónico cada 50 ms. |
+| **🔋 Almacenamiento**| **Decaimiento progresivo de velocidad en mangas largas** | Baterías comerciales anteriores presentaban una curva de descarga con pendiente pronunciada, alterando los tiempos de giro. | Migración al banco de celdas industriales **EVE INR18650-35V (2S2P / 7000 mAh)** con alta densidad energética. | Curva de tensión sumamente plana a lo largo de las 3 vueltas de carrera; comportamiento idéntico entre la vuelta 1 y la vuelta 12. |
+
+<a id="conclusion-cierre"></a>
+## 🏁 Conclusión y Filosofía de Competencia
+La plataforma autónoma **"Smoke"** representa meses de trabajo interdisciplinario, rigor analítico y aprendizaje práctico en el taller del **Instituto de Inteligencia Artificial y Robótica del estado Zulia (INIAR)**. 
+Cada pieza modelada en Autodesk Fusion 360, cada componente del esquemático desarrollado en Fritzing y cada línea de código en C++ embebido documentada en este repositorio ha sido calculada, probada y validada en pista bajo los más exigentes estándares de la **World Robot Olympiad™ 2026**.
+<div align="center">
+  <br>
+  <b>Desarrollado con dedicación y pasión por la robótica por Team Nexus</b><br>
+  <i>David Ocando • José Montiel • Jairo Cruz</i><br>
+  Mentor Líder: <i>Ing. Wender Sánchez</i>
+  <br><br>
+  <b>Instituto de Inteligencia Artificial y Robótica del estado Zulia (INIAR)</b><br>
+  <b>Maracaibo, Estado Zulia – Venezuela 🇻🇪</b>
+  <br><br>
+  <a href="#inicio">⬆️ Volver al Inicio del Documento</a>
+</div>
