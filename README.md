@@ -55,7 +55,10 @@ Este documento técnico ha sido elaborado bajo un formato de **libro blanco de i
 - [11. Arquitectura de Software y Lógica de Navegación](#11-arquitectura-de-software-y-lógica-de-navegación)
   - [11.1 Máquina de Estados Finitos (FSM)](#111-máquina-de-estados-finitos-fsm)
   - [11.2 Desglose Modular del Firmware (`OPENCHALLENGE.ino`)](#112-desglose-modular-del-firmware-openchallengeino)
-- [12. Diario de Ingeniería, Iteraciones y Solución de Fallas](#12-diario-de-ingeniería-iteraciones-y-solución-de-fallas)
+- [12. Herramientas de Simulación y Sorteo (Randomizadores Web WRO)](#randomizadores-web)
+  - [12.1 Randomizador Oficial – Ronda Abierta (Open Challenge)](#randomizador-abierta)
+  - [12.2 Randomizador Oficial – Ronda de Obstáculos (Obstacle Challenge)](#randomizador-cerrada)
+- [13. Diario de Ingeniería, Iteraciones y Solución de Fallas](#13-diario-de-ingeniería-iteraciones-y-solución-de-fallas)
 
 
 # 1. Filosofía de Trabajo y Metodología de Co-Diseño
@@ -792,9 +795,51 @@ if (carrera_terminada && !motor_frenado) {
   }
 }
 ```
+<a id="randomizadores-web"></a>
+# 12. Herramientas de Entrenamiento y Simulación (Randomizadores Web)
+Para asegurar que los algoritmos de navegación y visión artificial de **"Smoke"** sean verdaderamente autónomos y no dependan de una configuración fija de pista, el equipo desarrolló y desplegó dos aplicaciones web especializadas de código abierto bajo la plataforma **Netlify**.
+Estas herramientas replican con exactitud matemática los algoritmos de sorteo reglamentarios de los jueces de la **World Robot Olympiad™**, permitiendo entrenar al robot bajo condiciones aleatorias impredecibles en el laboratorio de INIAR y poniendo a disposición de la comunidad internacional un entorno de simulación accesible desde cualquier dispositivo móvil o navegador.
+<div align="center">
+  
+| Herramienta Web | Despliegue en Vivo | Propósito de Entrenamiento Reglamentario |
+| :--- | :---: | :--- |
+| **🎲 Randomizador Ronda Abierta**<br>*(Open Challenge)* | [![Netlify Status](https://img.shields.io/badge/Netlify-En_Línea-00C7B7.svg?style=for-the-badge&logo=netlify&logoColor=white)](https://teamnexussorteoabierta.netlify.app) | Sortea de forma pseudoaleatoria el sentido de giro de la pista (horario o antihorario) y la celda de posicionamiento inicial del vehículo sobre la recta de salida. |
+| **🎲 Randomizador Ronda Cerrada**<br>*(Obstacle Challenge)* | [![Netlify Status](https://img.shields.io/badge/Netlify-En_Línea-00C7B7.svg?style=for-the-badge&logo=netlify&logoColor=white)](https://teamnexussorteocerrada.netlify.app) | Sortea la distribución espacial de los 6 pilares de tráfico reglamentarios (rojos y verdes) garantizando que se cumplan las distancias mínimas entre obstáculos y zonas de cruce exigidas por la WRO. |
+</div>
+
+<a id="randomizador-abierta"></a>
+### 12.1 Randomizador Oficial – Ronda Abierta (Open Challenge)
+Esta aplicación simula el sorteo previo al inicio de la manga abierta, garantizando que el firmware pruebe su capacidad de **detección autónoma de sentido en la primera curva** sin asistencia humana:
+<div align="center">
+  
+  <a href="https://teamnexussorteoabierta.netlify.app" target="_blank">
+    <img src="https://img.shields.io/badge/Abrir_App-Randomizador_Abierta-0052CC?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Link App Abierta">
+  </a>
+  <br><br>
+  <b>🔗 Enlace Web Directo:</b> <a href="https://teamnexussorteoabierta.netlify.app" target="_blank">https://teamnexussorteoabierta.netlify.app</a>
+</div>
+
+* **Variables Sorteada:** Sentido de circulación de carrera (Horario / Antihorario) y posición de la línea de partida.
+* **Impacto en el Robot:** Obliga a "Smoke" a confiar exclusivamente en su rutina de comparación de distancias ultrasónicas (`dist_izquierda` vs `dist_derecha`) al encarar el primer muro a 70 cm para decidir hacia dónde virar.
+
+<a id="randomizador-cerrada"></a>
+
+### 12.2 Randomizador Oficial – Ronda de Obstáculos (Obstacle Challenge)
+Para el desafío de obstáculos, las reglas de la WRO exigen que los bloques rojos y verdes se coloquen en ubicaciones sorteadas minutos antes de la largada. Nuestra aplicación genera configuraciones válidas instantáneamente respetando las restricciones del manual de competencia:
+<div align="center">
+  <a href="https://teamnexussorteocerrada.netlify.app" target="_blank">
+    <img src="https://img.shields.io/badge/Abrir_App-Randomizador_Cerrada-2ea44f?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Link App Cerrada">
+  </a>
+  <br><br>
+  <b>🔗 Enlace Web Directo:</b> <a href="https://teamnexussorteocerrada.netlify.app" target="_blank">https://teamnexussorteocerrada.netlify.app</a>
+</div>
+
+* **Generación de Obstáculos Válidos:** Distribuye aleatoriamente los bloques rojos (ID 1 - paso obligatorio por la derecha) y verdes (ID 2 - paso obligatorio por la izquierda) asegurando que ninguna trayectoria resulte matemáticamente imposible o bloqueada por muros.
+* **Validación de la HuskyLens 2:** Permite al equipo colocar los bloques en pista en segundos durante las sesiones de prueba, sometiendo al algoritmo de visión por computador a cientos de combinaciones distintas para garantizar que nunca confunda un color o sufra un punto ciego.
+<p align="right"><a href="#inicio">⬆️ Volver al Inicio</a></p>
 
 <a id="diario-ingenieria"></a>
-# 12. Diario de Ingeniería, Iteraciones y Solución de Fallas
+# 13. Diario de Ingeniería, Iteraciones y Solución de Fallas
 El desarrollo de la plataforma **"Smoke"** siguió estrictamente el **Ciclo de Diseño en Ingeniería (*Engineering Design Process*)**. En lugar de asumir un diseño teórico infalible, el equipo utilizó cada obstáculo experimental surgido en las jornadas de trabajo en el laboratorio de INIAR como una oportunidad de aprendizaje técnico y optimización sistemática:
 ```mermaid
 flowchart LR
