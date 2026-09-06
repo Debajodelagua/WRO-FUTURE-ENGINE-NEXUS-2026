@@ -130,7 +130,7 @@ Team Nexus está integrado por estudiantes universitarios del **Instituto de Int
 * **Copa KAI (2023):** Competidor en diseño de chasis ultraligero y robótica móvil.
 * **FIRST Tech Challenge (FTC Championship – Italia 2024):** Integrante de la delegación internacional venezolana; diseño de sistemas de reducción mecánica y ensamblaje de alta precisión.
 * **WRO Venezuela (Temporada 2025):** Competidor en la categoría **RoboSports**, especializándose en rigidez torsional y resistencia a impactos mecánicos.
----
+
 ## 👤 Ing. Wender Sánchez <a id="wender-sanchez"></a>
 **Mentor Líder y Asesor de Ingeniería Mecánica**
 <div align="center">
@@ -276,7 +276,7 @@ Para evitar el desorden estructural y blindar la electrónica contra interferenc
 ```mermaid
 flowchart TD
     subgraph "PISO 3: ALIMENTACIÓN Y GESTIÓN ENERGÉTICA"
-        P3["🔋 Banco Celdas EVE 18650 2S2P (7000 mAh @ 7.0V)<br>⚡ Convertidores DC-DC: XL4015 (5V), LM2596 (5V) y XL6009 (14V)<br>🔌 Doble Switch de Seguridad Maestro"]
+        P3["🔋 Banco Celdas EVE 18650 2S2P (7000 mAh 7.0V)<br>⚡ Convertidores DC-DC: XL4015 (5V), LM2596 (5V) y XL6009 (14V)<br>🔌 Doble Switch de Seguridad Maestro"]
     end
     subgraph "PISO 2: CONTROL CENTRAL, VISIÓN IA Y TELEMETRÍA"
         P2["🧠 Microcontrolador Central ESP32-S3 DevKit<br>👁️ Procesador de Visión Inteligente HuskyLens 2<br>🧭 Sensor Inercial IMU MPU6050 (Alineado al CoG)<br>🔲 Driver Puente H L298N con Disipador Térmico"]
@@ -590,11 +590,11 @@ La arquitectura sensorial de **"Smoke"** opera bajo un esquema de **fusión sens
 ```mermaid
 flowchart TD
     subgraph "ECOSISTEMA DE PERCEPCIÓN SENSORIAL SMOKE"
-        US_F["📡 HC-SR04 Frontal\n(Gatillo de Curvas 90° @ 70 cm)"]
-        US_R["📡 HC-SR04 Lateral Derecho\n(Centrado @ 30 cm / Escape @ 25 cm)"]
-        US_L["📡 HC-SR04 Lateral Izquierdo\n(Centrado @ 30 cm / Escape @ 25 cm)"]
-        MPU["🧭 IMU MPU6050 (Alineado al CoG)\n(Integración Yaw en Core 0 con FreeRTOS @ 500 Hz)"]
-        HUSKY["👁️ HuskyLens 2 (IA KPU)\n(Reconocimiento de Color UART @ 115200 Baudios)"]
+        US_F["📡 HC-SR04 Frontal\n(Gatillo de Curvas 90° 70 cm)"]
+        US_R["📡 HC-SR04 Lateral Derecho\n(Centrado 30 cm / Escape  25 cm)"]
+        US_L["📡 HC-SR04 Lateral Izquierdo\n(Centrado 30 cm / Escape  25 cm)"]
+        MPU["🧭 IMU MPU6050 (Alineado al CoG)\n(Integración Yaw en Core 0 con FreeRTOS  500 Hz)"]
+        HUSKY["👁️ HuskyLens 2 (IA KPU)\n(Reconocimiento de Color UART  115200 Baudios)"]
     end
     US_F & US_R & US_L -->|"Pulsos de Eco (Tiempo de Vuelo)"| ESP["🧠 Microcontrolador ESP32-S3"]
     MPU -->|"Bus I2C (Con Auto-Rescate de 9 Ciclos)"| ESP
@@ -682,7 +682,7 @@ flowchart TD
     BOOT["🔌 BOOT_SAFETY:\nBloqueo Pasivo de Actuadores\n(Motor a 0V / Servo Centrado a 96°)"] --> WAIT_BTN{"🔘 WAIT_START:\n¿Pulsador GPIO 21\nPresionado?"}
     
     WAIT_BTN -- No --> WAIT_BTN
-    WAIT_BTN -- Sí --> CALIB["🧭 CALIB_MPU:\nCalibración Offset IMU MPU6050\n(50 Muestras / Tarea FreeRTOS Core 0 @ 500 Hz)"]
+    WAIT_BTN -- Sí --> CALIB["🧭 CALIB_MPU:\nCalibración Offset IMU MPU6050\n(50 Muestras / Tarea FreeRTOS Core 0  500 Hz)"]
     
     CALIB --> DRIVE["🏎️ NAV_STRAIGHT:\nAvance con Controlador PD de Rumbo\n(Corrección por Yaw MPU + Escape Lateral US)"]
     
