@@ -291,6 +291,20 @@ flowchart TD
     class P2 n2;
     class P1 n1;
 ```
+### 8.2 Estandarización de Sujeción (Tornillería M3)
+Uno de los criterios esenciales para garantizar la fiabilidad del vehículo ante vibraciones de alta frecuencia provocadas por el motor Makeblock y los impactos en pista fue la **unificación total de fijaciones bajo métrica M3**:
+<div align="center">
+  <img src="./models/kit_tornillos_m3.jpg" alt="Kit de Tornillería y Fijaciones M3" width="450" style="border-radius: 8px; border: 1px solid #444;">
+  <br>
+  <i>Kit estandarizado de tornillería métrica M3, tuercas de seguridad autoblocantes y columnas pasantes.</i>
+</div>
+
+* **Tornillería Métrica M3:** Se estandarizó el uso de tornillos de acero grado 10.9 con cabeza Allen en longitudes calibradas de **8, 12, 16 y 20 mm** para componentes internos, permitiendo que una sola llave Allen de 2.5 mm opere todo el vehículo en boxes.
+* **Columnas Pasantes de 35 mm para Rigidez Inter-Pisos:** 
+  Para unir rígidamente los tres pisos del chasis sin depender de pequeñas uniones intermedias que pudieran falsearse con el movimiento, se implementaron **tornillos largos pasantes M3 de 35 mm**:
+  * Estos tornillos atraviesan separadores cilíndricos en PETG que fijan con precisión la luz vertical entre niveles: un espacio libre de **$15\text{ mm}$ entre el Piso 1 y el Piso 2** (para dar cabida rasante al motor y servo), y un despeje de **$19\text{ mm}$ entre el Piso 2 y el Piso 3** (para albergar el disipador del L298N, la HuskyLens 2 y el cableado de la IMU).
+  * Este diseño en columna pasante distribuye las cargas de flexión a lo largo de toda la altura del vehículo ($110\text{ mm}$), evitando el pandeo estructural.
+* **Tuercas de Seguridad Autoblocantes (Nyloc):** Cada unión crítica y remate de las columnas de 35 mm incorpora tuercas con inserto elástico de nylon alojadas en cavidades hexagonales empotradas en el PETG, eliminando por completo la posibilidad de aflojamiento por resonancia mecánica.
 
 ### 8.3 Geometría de Dirección Ackermann Híbrida
 
@@ -412,4 +426,42 @@ Para maximizar el agarre dinámico y facilitar el trabajo del servo MG90S, se im
 | **Trasero (Tracción)** | **Ø 43 mm** | LEGO EV3 | **Mayor contacto y tracción:** Su mayor diámetro exterior incrementa la velocidad lineal de avance por revolución y su compuesto de caucho blando garantiza agarre estricto en aceleraciones. |
 </div>
 
+<p align="right"><a href="#inicio">⬆️ Volver al Inicio</a></p>
+
+### 8.6 Configuración de Neumáticos Escalonados (Staggered Wheels Setup)
+La selección de neumáticos en **"Smoke"** no responde a criterios estéticos, sino a una rigurosa optimización de la **dinámica vehicular y la inercia rotacional**:
+<div align="center">
+  
+| 1. Tren Delantero (Dirección) | 2. Tren Trasero (Tracción) | 3. Comparativa de Escalonamiento |
+| :---: | :---: | :---: |
+| <img src="./v-fotos/RUEDASDELANTERAS.jpg" width="220" alt="Ruedas Delanteras Smoke" style="border-radius: 8px; border: 1px solid #444;"> | <img src="./v-fotos/RUEDASTRASERAS.jpg" width="220" alt="Ruedas Traseras Smoke" style="border-radius: 8px; border: 1px solid #444;"> | <img src="./v-fotos/RUEDAS.jpg" width="220" alt="Comparativa de Neumáticos" style="border-radius: 8px; border: 1px solid #444;"> |
+| *Ø 30 mm – LEGO EV3* | *Ø 43 mm – LEGO EV3* | *Diferencial de diámetro y banda de rodadura* |
+</div>
+
+
+#### 1. Justificación Dinámica del Tren Delantero (Ø 30 mm): Reducción del Momento de Inercia
+El servomotor de dirección MG90S debe vencer dos resistencias para virar: la fricción de giro del caucho contra el tapiz y el momento de inercia rotacional de la propia rueda alrededor del pivote de la mangueta ($I_z$). 
+El momento de inercia de un cuerpo rotacional respecto a su eje de masa se rige por:
+$$I = \frac{1}{2} m \cdot r^2$$
+Al reducir el radio de la rueda de $r_{trasera} = 21.5\text{ mm}$ a $r_{delantera} = 15.0\text{ mm}$, y considerando que la masa de la rueda de 30 mm es aproximadamente un $55\%$ menor ($m_{del} \approx 8.5\text{ g}$ frente a $m_{tras} \approx 19.0\text{ g}$):
+
+$$\frac{I_{delantera}}{I_{trasera}} = \frac{m_{del} \cdot r_{del}^2}{m_{tras} \cdot r_{tras}^2} = \frac{0.0085 \cdot (0.015)^2}{0.0190 \cdot (0.0215)^2} \approx \mathbf{0.218} \quad (\approx 78.2\% \text{ de reducción})$$
+
+> [!TIP]
+> **Impacto en el Servo MG90S:**
+> El tren delantero presenta una **reducción del 78% en la resistencia inercial rotacional**. Esto permite que el servo alcance su velocidad angular máxima ($0.10\text{ s}/60^\circ$) sin experimentar caídas de par ni sobrecorrientes en maniobras evasivas bruscas de $\pm 21^\circ$.
+
+
+#### 2. Justificación Dinámica del Tren Trasero (Ø 43 mm): Maximización de Tracción y Velocidad
+Para el eje motriz (RWD), se requería maximizar dos variables opuestas: velocidad punta de avance y adherencia en aceleración sin patinaje.
+* **Mayor Velocidad Lineal por Revolución ($v$):**
+  La velocidad tangencial de avance es directamente proporcional al radio del neumático:
+  
+  $$v = \omega_{eje} \cdot r_{rueda}$$
+  El neumático de $43\text{ mm}$ ($r = 0.0215\text{ m}$) otorga un **$43.3\%$ más de avance por cada giro del motor** que si hubiéramos utilizado ruedas de $30\text{ mm}$, alcanzando $0.416\text{ m/s}$ ($1.50\text{ km/h}$)
+  sin forzar las revoluciones del motor Makeblock.
+* **Fuerza Máxima de Tracción sin Deslizamiento ($F_{max}$):**
+  La fuerza tractiva que las ruedas traseras pueden transferir al suelo antes de que el caucho rompa adherencia estática y comience a patinar se calcula como:
+  $$F_{max} = \mu_s \cdot N_{trasero} = 0.70 \times 4.64\text{ N} \approx \mathbf{3.25\text{ Newtons}}$$
+  La banda de rodadura de caucho natural vulcanizado de LEGO EV3 (ancho de $14\text{ mm}$) ofrece una mayor área de huella de contacto (*tire contact patch*), asegurando que el torque transmitido por la transmisión cónica ($\approx 0.0698\text{ Nm}$) se convierta íntegramente en aceleración lineal sin derrapes parásitos en la salida de las curvas.
 <p align="right"><a href="#inicio">⬆️ Volver al Inicio</a></p>
