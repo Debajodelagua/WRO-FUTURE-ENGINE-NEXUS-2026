@@ -158,7 +158,7 @@ Para agilizar la evaluación de los jueces y asegurar la total reproducibilidad 
 # 4. Ficha Técnica Oficial de la Plataforma "Smoke"
 <div align="center">
   
-  <img src="./v-photos/perfil_general.jpg" alt="Vehículo Autónomo Smoke" width="550" style="border-radius: 10px; border: 1px solid #444; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+  <img src="./v-fotos/SMOKE.jpg" alt="Vehículo Autónomo Smoke" width="550" style="border-radius: 10px; border: 1px solid #444; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
   <br>
   
   <i>Plataforma robótica autónoma "Smoke" en configuración de pista para WRO 2026.</i>
@@ -266,7 +266,7 @@ A continuación se desglosa el inventario técnico de la plataforma, detallando 
 </div>
 El chasis y tren cinemático de **"Smoke"** fueron desarrollados bajo un enfoque híbrido de manufactura: combinando la libertad de diseño paramétrico que ofrece la **impresión 3D en PETG** con la precisión de bajo rozamiento de componentes inyectados de robótica educativa (**LEGO MINDSTORMS EV3**).
 Esta arquitectura fue calculada específicamente para soportar las fuerzas de inercia y torsión generadas por una masa dinámica de **859 gramos**, optimizando la posición del centro de gravedad ($CoG$) y minimizando la fricción en pista.
----
+
 
 ### 8.1 Arquitectura Modular del Chasis (Tres Pisos en PETG)
 Para evitar el desorden estructural y blindar la electrónica contra interferencias electromagnéticas (EMI) y calor, el vehículo implementa una **estructura vertical de tres estratos segregados**:
@@ -294,7 +294,7 @@ flowchart TD
 ### 8.2 Estandarización de Sujeción (Tornillería M3)
 Uno de los criterios esenciales para garantizar la fiabilidad del vehículo ante vibraciones de alta frecuencia provocadas por el motor Makeblock y los impactos en pista fue la **unificación total de fijaciones bajo métrica M3**:
 <div align="center">
-  <img src="./models/kit_tornillos_m3.jpg" alt="Kit de Tornillería y Fijaciones M3" width="450" style="border-radius: 8px; border: 1px solid #444;">
+  <img src="./Otro/KITTORNILLOS.jpg" alt="Kit de Tornillería y Fijaciones M3" width="450" style="border-radius: 8px; border: 1px solid #444;">
   <br>
   <i>Kit estandarizado de tornillería métrica M3, tuercas de seguridad autoblocantes y columnas pasantes.</i>
 </div>
@@ -471,9 +471,9 @@ La concepción del sistema eléctrico de **"Smoke"** parte de una lección técn
 
 ### 9.1 Banco de Baterías 18650 (Configuración 2S2P)
 
-El suministro energético de la plataforma se basa en celdas de iones de litio industriales de alta densidad energética marca **EVE**, modelo **INR18650-35V**:
+El suministro energético de la plataforma se basa en celdas de iones de litio industriales de alta densidad energética marca **EVE**, modelo **INR18650-35V**
 <div align="center">
-  <img src="./schemes/baterias_lifepo4.png" alt="Banco de Baterías 18650 2S2P" width="380" style="border-radius: 8px; border: 1px solid #444; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+  <img src="./v-fotos/2S2P.jpg" alt="Banco de Baterías 18650 2S2P" width="380" style="border-radius: 8px; border: 1px solid #444; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
   <br>
   <i>Banco de celdas cilíndricas EVE INR18650-35V en configuración 2S2P montadas en el Piso 3.</i>
 </div>
