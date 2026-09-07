@@ -55,6 +55,11 @@ Este documento técnico ha sido elaborado bajo un formato de **libro blanco de i
 - [11. Arquitectura de Software y Lógica de Navegación](#11-arquitectura-de-software-y-lógica-de-navegación)
   - [11.1 Máquina de Estados Finitos (FSM)](#111-máquina-de-estados-finitos-fsm)
   - [11.2 Desglose Modular del Firmware (`OPENCHALLENGE.ino`)](#112-desglose-modular-del-firmware-openchallengeino)
+  - [11.3 Arquitectura para Obstacle Challenge (`OBSTACLECHALLENGE.ino`)](#estrategia-obstaculos)
+      - [11.3.1 Módulo 1: Concurrencia Multihilo en FreeRTOS y Odometría Inercial (Core 0)](#obstaculos-modulo1-inercial)
+      - [11.3.2 Módulo 2: Visión IA, Filtrado Espacial de Borde y Modo Cazador](#obstaculos-modulo2-cazador)
+      - [11.3.3 Módulo 3: Pre-Alineación en S y Coreografía Evasiva en 5 Fases](#obstaculos-modulo3-coreografia)
+      - [11.3.4 Módulo 4: Bloqueo Global de Sentido de Pista y Fusión Sensorial](#obstaculos-modulo4-bloqueo-fsm)
 - [12. Herramientas de Simulación y Sorteo (Randomizadores Web WRO)](#randomizadores-web)
   - [12.1 Randomizador Oficial – Ronda Abierta (Open Challenge)](#randomizador-abierta)
   - [12.2 Randomizador Oficial – Ronda de Obstáculos (Obstacle Challenge)](#randomizador-cerrada)
@@ -237,17 +242,17 @@ Registro técnico de la clasificación en tiempo real de los bloques de tráfico
 
 <a id="videos-oficiales"></a>
 
-### 6.2 Ronda de Obstáculos (Obstacle Challenge - Detección y Evasión en Pista)
-Demostración técnica del vehículo autónomo **"Smoke"** detectando e interpretando los bloques de tráfico en tiempo real mediante el procesador de visión **HuskyLens 2** acoplado al lazo cinemático del ESP32-S3:
+<a id="video-obstacle"></a>
+
+### 6.2 Video de Demostración: Obstacle Challenge (Ronda Cerrada)
+Demostración del algoritmo de visión por IA con **HuskyLens 2** reconociendo obstáculos por color (rojo/verde), cazando el bloque de forma proporcional y ejecutando la coreografía evasiva en 5 etapas con realineación angular:
 <div align="center">
-  
   <a href="https://youtu.be/E-C2RvofRqQ" target="_blank">
-    <img src="https://img.youtube.com/vi/E-C2RvofRqQ/maxresdefault.jpg" alt="Video Ronda de Obstáculos Team Nexus" width="550" style="border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); border: 1px solid #444;">
-    <br>
-    <b>▶️ Ver en YouTube: Prueba de Evasión de Obstáculos – Team Nexus (WRO 2026)</b>
+    <img src="https://img.youtube.com/vi/E-C2RvofRqQ/hqdefault.jpg" alt="Video Demostración Obstacle Challenge Nexus" width="700" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.3);"/>
   </a>
+  <p><em>▶️ Clic en la imagen para reproducir la prueba de evasión de obstáculos en YouTube</em></p>
 </div>
-<p align="right"><a href="#inicio">⬆️ Volver al Inicio</a></p>
+
 
 # 7. Lista Maestra de Materiales y Componentes (BOM)
 
@@ -810,6 +815,451 @@ if (carrera_terminada && !motor_frenado) {
 }
 ```
 <a id="randomizadores-web"></a>
+
+<a id="estrategia-obstaculos"></a>
+### 11.3 Arquitectura de Software para Obstacle Challenge (`OBSTACLECHALLENGE.ino`)
+La ronda de obstáculos (Obstacle Challenge) eleva exponencialmente la complejidad del sistema respecto a la ronda abierta: el vehículo ya no solo debe navegar dentro del carril delimitado por las paredes, sino también **detectar, clasificar y evadir dinámicamente obstáculos cúbicos de color rojo y verde** distribuidos de forma aleatoria a lo largo de las tres vueltas reglamentarias.
+Para cumplir con las normas de la WRO Future Engineers 2026:
+- **Obstáculo Rojo (ID 1):** Obliga a pasar por su flanco derecho (dejando el obstáculo a la izquierda del robot).
+- **Obstáculo Verde (ID 2):** Obliga a pasar por su flanco izquierdo (dejando el obstáculo a la derecha del robot).
+El firmware `OBSTACLECHALLENGE.ino` adopta una arquitectura de **control híbrido concurrente**: un lazo inercial de alta frecuencia gobernado por FreeRTOS en el **Core 0**, enlazado a un planificador reactivo en el **Core 1** que interconecta la visión por IA de la HuskyLens 2, el algoritmo proporcional de aproximación ("Modo Cazador"), un secuenciador de maniobra evasiva determinista en 5 etapas y un cerrojo de sentido de carrera para evitar desorientaciones en pista.
+```mermaid
+flowchart TD
+    A([Inicio de Ronda Cerrada]) --> B[Navegación Base en Recta]
+    B --> C{¿HuskyLens detecta Bloque?}
+    C -- No --> B
+    C -- Sí --> D[Filtrado Espacial de Borde: X < 10 o X > 630]
+    D --> E{¿Pasa Máscara de Exclusión?}
+    E -- No --> B
+    E -- Sí --> F["Modo Cazador Proporcional (KP = 0.05)"]
+    F --> G{¿Ancho Bloque >= 180 px?}
+    G -- No --> F
+    G -- Sí --> H{¿Desviación Angular > 200°?}
+    H -- Sí --> I[Pre-Alineación en S: Retroceso 2 Fases]
+    H -- No --> J[Frenado Activo de Inercia 500 ms]
+    I --> J
+    J --> K["Coreografía Evasiva en 5 Etapas (Escape / Retorno / Reversa)"]
+    K --> L[Ventana de Inmunidad Ultrasónica 1500 ms]
+    L --> M[Bloqueo Permanente de Sentido Global de Carrera]
+    M --> B
+```
+<a id="obstaculos-modulo1-inercial"></a>
+#### 11.3.1 Módulo 1: Concurrencia Multihilo en FreeRTOS y Odometría Inercial Discreta (Core 0)
+En la ronda de obstáculos, la ESP32-S3 debe atender dos exigencias temporales en conflicto:
+1. **Flujo perceptual asíncrono y bloqueante:** La comunicación con la cámara HuskyLens 2 vía UART a 115200 baudios y el muestreo por tiempo de vuelo de los tres sensores ultrasónicos (HC-SR04) introducen latencias variables de entre 15 ms y 60 ms por ciclo.
+2. **Integración angular continua:** El cálculo del rumbo (Yaw) a través de la velocidad angular del giróscopo requiere una tasa de refresco ultra estricta y periódica; cualquier variación en el intervalo de integración produce una deriva acumulada inaceptable que desorientaría al vehículo durante las maniobras de evasión.
+Para resolver este desacoplo, se implementa una arquitectura simétrica en **FreeRTOS** fijando la tarea inercial al núcleo secundario (**Core 0**), mientras el hilo principal (`loopTask`) opera en el **Core 1** con un stack extendido a 16 KB (`SET_LOOP_TASK_STACK_SIZE(16384)`).
+---
+##### 1. Formulación Matemática de la Odometría Inercial Discreta
+La orientación angular instantánea $\theta(t)$ en el plano de la pista se obtiene mediante la discretización de la integral de velocidad angular sobre el eje Z:
+
+$$\theta_k = \theta_{k-1} + (\omega_{z,k} - b_z) \cdot \Delta t_k \cdot \left(\frac{180^\circ}{\pi}\right)$$
+Donde:
+
+- $\theta_k$: Ángulo de rumbo actual (Yaw) en grados sexagesimales ($^\circ$).
+- $\omega_{z,k}$: Velocidad angular cruda leída del registro `gyro.z` en radianes por segundo (rad/s).
+- $b_z$: Sesgo estático del giróscopo (calculado durante la rutina de calibración previa al arranque mediante el promedio de $N = 2000$ muestras estacionarias):
+$$b_z = \frac{1}{N} \sum_{i=1}^{N} \omega_{z,i}$$
+
+- $\Delta t_k = t_k - t_{k-1}$: Paso de integración temporal real medido en microsegundos mediante `micros()`.
+- **Filtro de Banda Muerta (Deadband):** Para eliminar la acumulación de ruido gaussiano de baja amplitud cuando el robot se encuentra detenido o en avance rectilíneo, se aplica una función no lineal de supresión de umbral:
+$$\omega_{z,\text{filtrada}} = \begin{cases} 0 & \text{si } |\omega_{z,k} - b_z| < U_r \\ (\omega_{z,k} - b_z) & \text{en otro caso} \end{cases}$$
+
+Donde el umbral de ruido configurado es:
+$$U_r = 0.015 \text{ rad/s} \quad (\approx 0.859^\circ/\text{s})$$
+
+
+##### 2. Asignación de Pines e Inicialización de Periféricos
+| Periférico | Pin Físico (GPIO) | Protocolo / Modo | Función en Ronda Cerrada |
+| :--- | :--- | :--- | :--- |
+| **MPU6050 SDA** | `GPIO 16` | I2C Fast-Mode (400 kHz) | Línea bidireccional de datos inerciales. |
+| **MPU6050 SCL** | `GPIO 17` | I2C Fast-Mode (400 kHz) | Señal de reloj sincronizada de la IMU. |
+| **HuskyLens RX** | `GPIO 13` | Serial2 UART (115200 baud) | Recepción de paquetes de visión por IA. |
+| **HuskyLens TX** | `GPIO 12` | Serial2 UART (115200 baud) | Transmisión de peticiones a la cámara. |
+| **Servo MG90S** | `GPIO 8` | PWM @ 50 Hz (LEDC) | Actuador del sistema de dirección Ackermann. |
+| **Motor DC PWM** | `GPIO 15` | PWM @ 10 kHz (LEDC) | Control de velocidad modulada del tren motriz. |
+| **Puente H IN1** | `GPIO 5` | GPIO Output | Sentido de giro tracción trasera. |
+| **Puente H IN2** | `GPIO 6` | GPIO Output | Sentido de giro tracción trasera. |
+| **Pulsador Inicio** | `GPIO 21` | GPIO Input Pullup | Disparo de calibración y cuenta regresiva. |
+| **Trig Frontal** | `GPIO 42` | GPIO Output | Pulso de disparo ultrasónico frontal. |
+| **Echo Frontal** | `GPIO 41` | GPIO Input | Medición de ancho de pulso frontal. |
+| **Trig / Echo Der**| `GPIO 38 / 37` | Input / Output | Telemetría perimetral derecha. |
+| **Trig / Echo Izq**| `GPIO 39 / 40` | Input / Output | Telemetría perimetral izquierda. |
+---
+##### 3. Implementación en C++ / FreeRTOS (`Core 0`)
+```cpp
+#include <Adafruit_MPU6050.h>
+#include <Adafruit_Sensor.h>
+#include <Wire.h>
+#include <DFRobot_HuskylensV2.h> 
+// Instancias de los dispositivos de percepción
+Adafruit_MPU6050 mpu;
+HuskylensV2 huskylens;           
+// Ampliación del stack de FreeRTOS para la tarea principal en Core 1
+SET_LOOP_TASK_STACK_SIZE(16384);
+// --- Mapa de Entradas / Salidas ---
+const int PIN_SERVO     = 8;
+const int PIN_MOTOR_PWM = 15;
+const int PIN_MOTOR_IN1 = 5;
+const int PIN_MOTOR_IN2 = 6;
+const int PIN_INICIO    = 21;
+const int PIN_SDA = 16;
+const int PIN_SCL = 17;
+const int RX_HUSKY = 13;
+const int TX_HUSKY = 12;
+const int PIN_TRIG_FRONTAL   = 42;
+const int PIN_ECHO_FRONTAL   = 41;
+const int PIN_TRIG_DERECHO   = 38;
+const int PIN_ECHO_DERECHO   = 37;
+const int PIN_TRIG_IZQUIERDO = 39;
+const int PIN_ECHO_IZQUIERDO = 40;
+// Variables globales de odometría protegidas para concurrencia
+volatile float angulo_actual = 0.0;
+float sesgo_giroscopio_z = 0.0;
+const float UMBRAL_RUIDO_RADS = 0.015; // Banda muerta (~0.86 deg/s)
+// --- Tarea Crítica de Muestreo Inercial en Core 0 (500 Hz) ---
+void tareaLeerMPU(void *pvParameters) {
+  unsigned long tiempo_previo = micros();
+  
+  for (;;) {
+    sensors_event_t a, g, temp;
+    mpu.getEvent(&a, &g, &temp);
+    
+    unsigned long tiempo_actual = micros();
+    float dt = (tiempo_actual - tiempo_previo) / 1000000.0;
+    tiempo_previo = tiempo_actual;
+    // Descuento de sesgo de calibración
+    float gz = g.gyro.z - sesgo_giroscopio_z;
+    // Aplicación del filtro de banda muerta no lineal
+    if (abs(gz) > UMBRAL_RUIDO_RADS) {
+      angulo_actual += (gz * RAD_TO_DEG) * dt;
+    }
+    // Retardo periódico estricto de 2 ms (frecuencia de integración = 500 Hz)
+    vTaskDelay(pdMS_TO_TICKS(2));
+  }
+}
+void calibrarMPU() {
+  const int NUM_MUESTRAS = 2000;
+  float acumulador = 0.0;
+  
+  for (int i = 0; i < NUM_MUESTRAS; i++) {
+    sensors_event_t a, g, temp;
+    mpu.getEvent(&a, &g, &temp);
+    acumulador += g.gyro.z;
+    delayMicroseconds(1000);
+  }
+  sesgo_giroscopio_z = acumulador / NUM_MUESTRAS;
+}
+void setup() {
+  // Inicialización de buses de comunicación
+  Wire.begin(PIN_SDA, PIN_SCL);
+  Wire.setClock(400000); // Modo I2C rápido
+  Serial2.begin(115200, SERIAL_8N1, RX_HUSKY, TX_HUSKY);
+  pinMode(PIN_INICIO, INPUT_PULLUP);
+  
+  // Configuración de la IMU MPU6050
+  if (mpu.begin()) {
+    mpu.setGyroRange(MPU6050_RANGE_500_DEG);
+    mpu.setFilterBandwidth(MPU6050_BAND_21_HZ); // Filtro pasabajas analógico interno
+    calibrarMPU();
+  }
+  // Enlace con la cámara HuskyLens 2
+  while (!huskylens.begin(Serial2)) {
+    delay(100);
+  }
+  // Creación y fijación del hilo de odometría en Core 0
+  xTaskCreatePinnedToCore(
+    tareaLeerMPU,       // Función ejecutora
+    "TareaInercial_C0", // Etiqueta descriptiva
+    4096,               // Profundidad de pila
+    NULL,               // Parámetros de entrada
+    1,                  // Prioridad de ejecución
+    NULL,               // Handle de la tarea
+    0                   // Afinidad de procesador: Núcleo 0
+  );
+}
+```
+
+<a id="obstaculos-modulo2-cazador"></a>
+#### 11.3.2 Módulo 2: Percepción de Visión Artificial, Filtrado Espacial de Borde y Modo Cazador Proporcional
+En el Obstacle Challenge de la WRO, la cámara neuronal **HuskyLens 2** opera en modo *Color Recognition* (reconocimiento de color por redes neuronales convolucionales embebidas), clasificando los pilares de la pista en dos clases semánticas:
+- **ID 1 (Rojo):** Señalización reglamentaria que obliga al robot a dejar el obstáculo a su izquierda (evasión por la derecha).
+- **ID 2 (Verde):** Señalización reglamentaria que obliga al robot a dejar el obstáculo a su derecha (evasión por la izquierda).
+Sin embargo, ejecutar una evasión ciega en cuanto el objeto aparece en el campo de visión periférico produce colisiones contra las paredes laterales de la pista. Para garantizar una aproximación determinista, el sistema implementa un preprocesamiento espacial en dos etapas: **Filtrado de Bordes Ciegos** y el **Algoritmo de Caza Proporcional**.
+
+
+##### 1. Modelado Matemático y Filtrado Óptico
+El sensor óptico de la HuskyLens entrega las coordenadas de los bloques delimitadores (*bounding boxes*) en una matriz de resolución de $640 \times 480 \text{ px}$.
+           
+###### A. Filtro de Falsos Positivos en Borde de Pista
+En curvas cerradas, las paredes de madera blanca reflejan tonalidades o capturan pilares de secciones contiguas de la pista en el extremo del sensor. Si se procesa un obstáculo rojo muy pegado al borde izquierdo absoluto ($X < 10$), el robot intentaría esquivar hacia el centro de la pista cuando en realidad el obstáculo está fuera de carril. Por tanto, se define una máscara de exclusión espacial:
+
+$$\text{Validez}(\text{Bloque}) = \begin{cases} \text{FALSO} & \text{si } (\text{ID} = 1 \land X_c < 10) \lor (\text{ID} = 2 \land X_c > 630) \\ \text{VERDADERO} & \text{en cualquier otro caso} \end{cases}$$
+
+###### B. Ley de Control del Modo Cazador Proporcional (Centrado Dinámico)
+En lugar de esquivar de inmediato con una trayectoria curva incierta, el vehículo primero **apunta directamente hacia el centro del obstáculo** para enfrentar la maniobra en ángulo perfectamente normal ($90^\circ$ respecto a la cara del pilar).
+El error de desalineación horizontal respecto al centro óptico ($X_{\text{ref}} = 320 \text{ px}$) se define como:
+
+$$e_X(t) = X_c(t) - X_{\text{ref}}$$
+La corrección aplicada sobre el ángulo de la servodirección Ackermann ($\theta_{\text{servo}}$) se rige por un controlador Proporcional puro:
+
+$$\Delta \theta(t) = K_p \cdot e_X(t)$$
+
+$$\theta_{\text{servo}}(t) = \text{constrain}\left(\theta_0 + \Delta \theta(t), \, \theta_{\min}, \, \theta_{\max}\right)$$
+
+Donde:
+
+- $\theta_0 = 90^\circ$ (Ruedas directrices en paralelo al chasis).
+- $K_p = 0.05^\circ/\text{px}$ (Ganancia experimental que evita oscilaciones bruscas a alta velocidad).
+- Límites de saturación: $\theta_{\min} = 60^\circ$ y $\theta_{\max} = 120^\circ$ (recorrido restringido de $\pm 30^\circ$ para evitar cabeceo dinámico excesivo).
+
+###### C. Estimación de Proximidad por Proyección de Ancho ($W$)
+La distancia relativa $D_{\text{rel}}$ entre la cámara y el pilar es inversamente proporcional al ancho proyectado en píxeles ($W$) según el modelo pinhole:
+
+$$D_{\text{rel}} \approx \frac{f \cdot W_{\text{real}}}{W_{\text{px}}}$$
+
+En lugar de computar divisiones de punto flotante en tiempo real, se define un umbral geométrico de activación de evasión:
+
+$$W_{\text{px}} \ge 180 \text{ px}$$
+Cuando el ancho del bloque alcanza $180\text{ px}$, el frontal del vehículo se sitúa a aproximadamente $12\text{ cm}$ del pilar, garantizando suficiente espacio para desacelerar y quebrar la dirección antes del contacto físico.
+
+##### 2. Implementación en C++ (`Core 1`)
+```cpp
+// Parámetros de Calibración Óptica y Control
+const int CENTRO_OPTICO_X       = 320;
+const int UMBRAL_ANCHO_EVASION  = 180;  // Ancho en píxeles para gatillar evasión
+const float KP_CENTRAR          = 0.05; // Ganancia proporcional de seguimiento
+const int ANGULO_CENTRO         = 90;   // Punto medio de dirección (grados)
+// Límites mecánicos de guiado en aproximación
+const int ANGULO_MIN_CAZA       = 60;
+const int ANGULO_MAX_CAZA       = 120;
+void procesarVisionHuskyLens() {
+  // Petición no bloqueante de bloques analizados por la red neuronal
+  if (huskylens.request()) {
+    while (huskylens.available()) {
+      HUSKYLENSResult bloque = huskylens.read();
+      // 1. Filtrado Espacial de Bordes Ciegos (Rechazo de reflejos laterales)
+      if (bloque.ID == 1 && bloque.xCenter < 10)  continue; // Ignora rojo en extremo izq
+      if (bloque.ID == 2 && bloque.xCenter > 630) continue; // Ignora verde en extremo der
+      // 2. Discriminación de Identificador Válido (ID 1: Rojo / ID 2: Verde)
+      if (bloque.ID == 1 || bloque.ID == 2) {
+        
+        // Cálculo del error de centrado en el plano focal
+        float error_x = bloque.xCenter - CENTRO_OPTICO_X;
+        
+        // Ley de control proporcional para la servodirección
+        int deflexion = (int)(error_x * KP_CENTRAR);
+        int angulo_consigna = constrain(ANGULO_CENTRO + deflexion, ANGULO_MIN_CAZA, ANGULO_MAX_CAZA);
+        
+        // Actuación en servodirección Ackermann
+        ajustarServo(angulo_consigna);
+        // 3. Verificación de Disparo de Evasión por Tamaño de Bounding Box
+        if (bloque.width >= UMBRAL_ANCHO_EVASION) {
+          // Bloque suficientemente cerca: detener aproximación y ejecutar evasión
+          frenarMotor();
+          ejecutarSecuenciaEvasion(bloque.ID);
+          return; // Salida inmediata para transferir control a la coreografía
+        }
+      }
+    }
+  }
+}
+```
+<a id="obstaculos-modulo3-coreografia"></a>
+
+#### 11.3.3 Módulo 3: Pre-Alineación en S ante Desviación Angular y Coreografía Evasiva en 5 Fases
+Cuando el robot alcanza el umbral de disparo ($W \ge 180\text{ px}$), la aproximación proporcional termina y el control se transfiere a un secuenciador cinemático determinista. En esta fase, el vehículo enfrenta dos retos críticos:
+1. **Desviación angular residual:** Si el obstáculo fue avistado inmediatamente después de salir de una curva de $90^\circ$, el chasis puede mantener un cabeceo angular residual respecto al eje longitudinal de la recta. Intentar esquivar en diagonal sin antes rectificar el chasis causaría un barrido lateral incontrolado contra las paredes de la pista.
+2. **Espacio útil de carril:** La pista reglamentaria mide entre $800\text{ mm}$ y $1000\text{ mm}$ de ancho libre. Un pilar centrado deja un pasillo útil de apenas $350\text{ mm}$ por flanco. El radio de giro Ackermann y los tiempos de avance deben calibrarse para sobrepasar el pilar sin impactarlo con las ruedas traseras ni rozar el parachoques contra la pared exterior.
+
+##### 1. Modelado Cinemático y Secuenciador Temporal
+###### A. Verificación de Desviación Angular y Reversa en S
+Antes de quebrar la dirección hacia el lado de evasión, el firmware evalúa el ángulo inercial acumulado ($\theta_{\text{actual}}$) obtenido por la MPU6050:
+
+$$\Delta \theta_d = |\theta_{\text{actual}} - \theta_{\text{recta}}|$$\
+
+Si la desviación angular excede el umbral de seguridad:
+$$\Delta \theta_d > 200^\circ$$
+
+El chasis ejecuta una maniobra de **Pre-Alineación en S en dos fases de retroceso**:
+- **Fase A (Retroceso con contravolante):** $\theta_{\text{servo}} = 90^\circ - 55^\circ = 35^\circ$ en reversa durante $450\text{ ms}$, forzando al eje trasero a pivotar alejándose de la zona de riesgo.
+- **Fase B (Compensación de salida):** $\theta_{\text{servo}} = 90^\circ + 55^\circ = 145^\circ$ en reversa durante $400\text{ ms}$, devolviendo el eje longitudinal a una orientación estrictamente normal a la pista.
+
+###### B. Coreografía Evasiva en 5 Fases Temporizadas
+Una vez alineado, el sistema ejecuta la maniobra según el identificador de color:
+
+$$S_d = \begin{cases} +1 & \text{si ID} = 1 \text{ (Rojo } \rightarrow \text{ Esquivar por Derecha)} \\ -1 & \text{si ID} = 2 \text{ (Verde } \rightarrow \text{ Esquivar por Izquierda)} \end{cases}$$
+
+El ángulo de giro de la servodirección Ackermann para cada maniobra se establece a su deflexión angular de saturación ($\Delta \delta = \pm 55^\circ$):
+
+$$\delta_{\text{salida}} = 90^\circ + (55^\circ \cdot S_d)$$
+
+$$\delta_{\text{retorno}} = 90^\circ - (55^\circ \cdot S_d)$$
+
+| Etapa | Maniobra Dinámica | Ángulo Servo ($\delta$) | Potencia Motor | Duración | Objetivo Físico |
+| :---: | :--- | :---: | :---: | :---: | :--- |
+| **0** | **Frenado Activo** | $90^\circ$ (Centro) | $PWM = 0$ (Freno) | $500\text{ ms}$ | Disipar toda inercia lineal longitudinal antes del viraje. |
+| **1** | **Apertura Diagonal** | $90^\circ \pm 55^\circ$ | $PWM_{\text{evasion}}$ | $900\text{ ms}$ | Desplazar el vector de velocidad fuera del ancho del obstáculo. |
+| **2** | **Paso Recto Longitudinal** | $90^\circ$ (Centro) | $PWM_{\text{evasion}}$ | $100\text{ ms}$ | Rebasar la cota de fondo del pilar ($100\text{ mm}$). |
+| **3** | **Retorno Diagonal** | $90^\circ \mp 55^\circ$ | $PWM_{\text{evasion}}$ | $1200\text{ ms}$ | Reinsertar el chasis hacia la línea media del carril. |
+| **4** | **Reversa de Desenganche** | $90^\circ$ (Centro) | $-PWM_{\text{base}}$ | $1000\text{ ms}$ | Eliminar efecto látigo y despejar distancia frontal con paredes. |
+
+##### 2. Implementación en C++ (`Core 1`)
+```cpp
+// Parámetros de Calibración Cinemática de la Coreografía
+const int DEFLEXION_EVASION_GRADOS = 55;
+const int VELOCIDAD_EVASION        = 180; // PWM modulado para evasión
+const int VELOCIDAD_BASE           = 160; // PWM nominal de tramo recto
+// --- Rutina de Pre-Alineación en S ante Entrada Angular Desfasada ---
+void preAlineacionCurvaS() {
+  // Fase 1: Retroceso con quiebre inverso
+  ajustarServo(ANGULO_CENTRO - DEFLEXION_EVASION_GRADOS);
+  moverMotor(-VELOCIDAD_BASE);
+  vTaskDelay(pdMS_TO_TICKS(450));
+  // Fase 2: Contravolanteo en reversa para paralelizar chasis
+  ajustarServo(ANGULO_CENTRO + DEFLEXION_EVASION_GRADOS);
+  vTaskDelay(pdMS_TO_TICKS(400));
+  
+  // Parada de estabilización
+  frenarMotor();
+  vTaskDelay(pdMS_TO_TICKS(200));
+}
+// --- Secuenciador Determinista de Evasión en 5 Etapas ---
+void ejecutarSecuenciaEvasion(int idColor) {
+  // 1 = Evasión a Derecha (Obstáculo Rojo), -1 = Evasión a Izquierda (Obstáculo Verde)
+  int factor_direccion = (idColor == 1) ? 1 : -1;
+  // Verificación de desalineación angular crítica respecto al tramo
+  if (abs(angulo_actual) > 200.0) {
+    preAlineacionCurvaS();
+  }
+  // --- Etapa 0: Frenado de Inercia ---
+  frenarMotor();
+  ajustarServo(ANGULO_CENTRO);
+  vTaskDelay(pdMS_TO_TICKS(500));
+  // --- Etapa 1: Apertura Diagonal (Escape) ---
+  int angulo_escape = ANGULO_CENTRO + (DEFLEXION_EVASION_GRADOS * factor_direccion);
+  ajustarServo(angulo_escape);
+  moverMotor(VELOCIDAD_EVASION);
+  vTaskDelay(pdMS_TO_TICKS(900));
+  // --- Etapa 2: Sobrepaso Recto Longitudinal ---
+  ajustarServo(ANGULO_CENTRO);
+  vTaskDelay(pdMS_TO_TICKS(100));
+  // --- Etapa 3: Retorno Diagonal al Centro de Pista ---
+  int angulo_retorno = ANGULO_CENTRO - (DEFLEXION_EVASION_GRADOS * factor_direccion);
+  ajustarServo(angulo_retorno);
+  moverMotor(VELOCIDAD_EVASION);
+  vTaskDelay(pdMS_TO_TICKS(1200));
+  // --- Etapa 4: Reversa de Recolocación y Desenganche ---
+  ajustarServo(ANGULO_CENTRO);
+  moverMotor(-VELOCIDAD_BASE);
+  vTaskDelay(pdMS_TO_TICKS(1000));
+  
+  // Parada final antes de retornar al control reactivo principal
+  frenarMotor();
+  vTaskDelay(pdMS_TO_TICKS(300));
+}
+```
+<a id="obstaculos-modulo4-bloqueo-fsm"></a>
+
+#### 11.3.4 Módulo 4: Bloqueo Global de Sentido de Pista (`direccion_global_pista`) y Fusión Sensorial Reactiva
+Durante las maniobras bruscas de evasión descritas en el módulo anterior, el robot se desplaza transversalmente hacia las paredes de la pista. Esta proximidad extrema a los límites laterales genera dos perturbaciones críticas en los sensores ultrasónicos:
+1. **Falsas Detecciones de Esquina:** Un sensor lateral que lee una distancia reducida mientras el vehículo esquiva puede interpretar erróneamente que se encuentra en un callejón sin salida o en una esquina, provocando giros prematuros de $90^\circ$ a mitad de una recta.
+2. **Inversión Involuntaria de Sentido:** Si la coreografía de retorno diagonal o la reversa de recolocación desorienta momentáneamente el algoritmo de navegación, el vehículo corre el riesgo de girar en U y comenzar a circular en sentido opuesto al sorteado por el juez de carrera, lo que conllevaría una descalificación inmediata de la ronda.
+Para blindar la integridad del recorrido se implementa el algoritmo de **Bloqueo Global de Sentido de Carrera** acoplado a la máquina de estados finitos (FSM) de navegación reactiva.
+
+##### 1. Modelado Lógico y Máquina de Estados de la Ronda Cerrada
+El sentido de carrera es estacionario y único durante las tres vueltas (12 esquinas en total).
+Máquina de Estados con Bloqueo de Sentido
+
+###### A. Determinación y Fijación del Sentido Global
+En la primera curva reglamentaria ($k = 1$), el robot evalúa el diferencial de espacio lateral libre medido por los sensores ultrasónicos izquierdo ($D_{\text{izq}}$) y derecho ($D_{\text{der}}$):
+$$\Delta D = D_{\text{der}} - D_{\text{izq}}$$
+
+- Si $\Delta D > U_c$: **Sentido Horario (+1)** (giro hacia la derecha).
+- 
+- Si $\Delta D < -U_c$: **Sentido Antihorario (-1)** (giro hacia la izquierda).
+- 
+Donde $U_c$ representa el umbral de corredor libre ($45\text{ cm}$). Una vez asignada la variable `direccion_global_pista`, se activa un cerrojo lógico permanente:
+> **Regla de Bloqueo Inmutable:** Para cualquier esquina posterior ($k > 1$), el giro permitido queda restringido estrictamente al valor almacenado en `direccion_global_pista`.
+###### B. Ventana de Inmunidad Post-Evasión (Cegado Temporal)
+Inmediatamente después de que concluye la Fase 4 de la coreografía evasiva (reversa de desenganche), el vehículo se encuentra aún estabilizando su vector de rumbo. Se abre una ventana de inmunidad temporal:
+
+$$\Delta t_{\text{inmunidad}} = 1500\text{ ms}$$
+
+Durante este intervalo, las lecturas de los sensores ultrasónicos laterales son ignoradas por la máquina de estados de conteo de esquinas, evitando falsos incrementos en el contador de vueltas mientras el robot se recentra en el carril.
+
+##### 2. Implementación en C++ (`Core 1`)
+```cpp
+// Variables Globales de Navegación y Sentido
+int conteo_esquinas           = 0;
+int direccion_global_pista    = 0;     // 1: Horario (CW), -1: Antihorario (CCW), 0: No bloqueado
+unsigned long tiempo_fin_evasion = 0;
+const unsigned long TIEMPO_INMUNIDAD_MS = 1500;
+// Constantes de Umbral Ultrasónico (cm)
+const float UMBRAL_PARED_FRONTAL = 25.0;
+const float UMBRAL_CORREDOR_LIBRE = 45.0;
+// Lectura por tiempo de vuelo filtrada del sensor ultrasónico
+float leerDistanciaUltrasonico(int pinTrig, int pinEcho) {
+  digitalWrite(pinTrig, LOW);
+  delayMicroseconds(2);
+  digitalWrite(pinTrig, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(pinTrig, LOW);
+  
+  long duracion = pulseIn(pinEcho, HIGH, 25000); // Timeout a 25 ms (~4.2 m max)
+  if (duracion == 0) return 400.0; // Fuera de rango o sin eco
+  return (duracion * 0.0343) / 2.0;
+}
+void controlarNavegacionConBloqueo() {
+  unsigned long ahora = millis();
+  
+  // 1. Lectura de telemetría perimetral
+  float dist_frontal = leerDistanciaUltrasonico(PIN_TRIG_FRONTAL, PIN_ECHO_FRONTAL);
+  float dist_der     = leerDistanciaUltrasonico(PIN_TRIG_DERECHO, PIN_ECHO_DERECHO);
+  float dist_izq     = leerDistanciaUltrasonico(PIN_TRIG_IZQUIERDO, PIN_ECHO_IZQUIERDO);
+  // 2. Condición de Detección de Esquina Frontal
+  if (dist_frontal <= UMBRAL_PARED_FRONTAL) {
+    
+    // Si estamos dentro de la ventana de inmunidad post-evasión, no doblar en falso
+    if (ahora - tiempo_fin_evasion < TIEMPO_INMUNIDAD_MS) {
+      // Forzar avance moderado para despejar el obstáculo esquivado
+      ajustarServo(ANGULO_CENTRO);
+      moverMotor(VELOCIDAD_BASE);
+      return;
+    }
+    conteo_esquinas++;
+    // Bloqueo de Sentido en la Primera Esquina de la Ronda
+    if (conteo_esquinas == 1) {
+      if (dist_der > dist_izq) {
+        direccion_global_pista = 1;  // Circuito Horario (Giro a la derecha)
+      } else {
+        direccion_global_pista = -1; // Circuito Antihorario (Giro a la izquierda)
+      }
+    }
+    // 3. Ejecución Segura de Giro Forzado según Sentido Bloqueado
+    ejecutarGiroEsquinaSeguro(direccion_global_pista);
+  } else {
+    // Navegación normal asistida por visión en tramo recto
+    procesarVisionHuskyLens();
+  }
+}
+void ejecutarGiroEsquinaSeguro(int sentido) {
+  frenarMotor();
+  vTaskDelay(pdMS_TO_TICKS(150));
+  // Ángulo de viraje forzado según el sentido global inmutable
+  int angulo_giro = ANGULO_CENTRO + (55 * sentido);
+  ajustarServo(angulo_giro);
+  moverMotor(VELOCIDAD_BASE);
+  // Giro angular continuo guiado por el giróscopo de Core 0 hasta acumular 90 grados
+  float angulo_inicial = angulo_actual;
+  while (abs(angulo_actual - angulo_inicial) < 85.0) {
+    vTaskDelay(pdMS_TO_TICKS(10)); // Cede tiempo al scheduler
+  }
+  // Fin de curva: rectificar ruedas al centro
+  ajustarServo(ANGULO_CENTRO);
+}
+```
+
 # 12. Herramientas de Entrenamiento y Simulación (Randomizadores Web)
 Para asegurar que los algoritmos de navegación y visión artificial de **"Smoke"** sean verdaderamente autónomos y no dependan de una configuración fija de pista, el equipo desarrolló y desplegó dos aplicaciones web especializadas de código abierto bajo la plataforma **Netlify**.
 Estas herramientas replican con exactitud matemática los algoritmos de sorteo reglamentarios de los jueces de la **World Robot Olympiad™**, permitiendo entrenar al robot bajo condiciones aleatorias impredecibles en el laboratorio de INIAR y poniendo a disposición de la comunidad internacional un entorno de simulación accesible desde cualquier dispositivo móvil o navegador.
