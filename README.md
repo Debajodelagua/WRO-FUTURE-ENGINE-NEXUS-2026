@@ -102,7 +102,7 @@ Team Nexus está integrado por estudiantes universitarios del **Instituto de Int
 * **FIRST Tech Challenge (FTC Championship – Piacenza, Italia 2024):** Representación internacional de Venezuela; desarrollo de sistemas de potencia de alta corriente y actuadores de respuesta rápida.
 * **WRO Venezuela (Temporada 2025):** Competidor oficial en la categoría **RoboSports**, optimizando la respuesta dinámica y la robustez eléctrica del robot en cancha.
 ---
-## 👤 José Montiel <a id="jose-montiel"></a>
+## 👤 José Montiel <a id="josé-montiel"></a>
 **Ingeniero Líder de Firmware, Visión Artificial y Control Autónomo**
 <div align="center">
   <img src="./t-fotos/JOSE%20PERFIL.jpeg" alt="José Montiel" width="320" style="border-radius: 12px; border: 1px solid #444; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
@@ -134,7 +134,7 @@ Team Nexus está integrado por estudiantes universitarios del **Instituto de Int
 * **FIRST Tech Challenge (FTC Championship – Italia 2024):** Integrante de la delegación internacional venezolana; diseño de sistemas de reducción mecánica y ensamblaje de alta precisión.
 * **WRO Venezuela (Temporada 2025):** Competidor en la categoría **RoboSports**, especializándose en rigidez torsional y resistencia a impactos mecánicos.
 
-## 👤 Ing. Wender Sánchez <a id="wender-sanchez"></a>
+## 👤 Ing. Wender Sánchez <a id="ing-wender-sanchez"></a>
 **Mentor Líder y Asesor de Ingeniería Mecánica**
 <div align="center">
   <img src="./t-fotos/MENTOR%20PERFIL.jpeg" alt="Ing. Wender Sánchez" width="320" style="border-radius: 12px; border: 1px solid #444; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
@@ -234,6 +234,20 @@ Registro técnico de la clasificación en tiempo real de los bloques de tráfico
 <p align="right"><a href="#inicio">⬆️ Volver al Inicio</a></p>
 
 <a id="bom-componentes"> </a>
+
+<a id="videos-oficiales"></a>
+
+### 6.2 Ronda de Obstáculos (Obstacle Challenge - Detección y Evasión en Pista)
+Demostración técnica del vehículo autónomo **"Smoke"** detectando e interpretando los bloques de tráfico en tiempo real mediante el procesador de visión **HuskyLens 2** acoplado al lazo cinemático del ESP32-S3:
+<div align="center">
+  
+  <a href="https://youtu.be/E-C2RvofRqQ" target="_blank">
+    <img src="https://img.youtube.com/vi/E-C2RvofRqQ/maxresdefault.jpg" alt="Video Ronda de Obstáculos Team Nexus" width="550" style="border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); border: 1px solid #444;">
+    <br>
+    <b>▶️ Ver en YouTube: Prueba de Evasión de Obstáculos – Team Nexus (WRO 2026)</b>
+  </a>
+</div>
+<p align="right"><a href="#inicio">⬆️ Volver al Inicio</a></p>
 
 # 7. Lista Maestra de Materiales y Componentes (BOM)
 
