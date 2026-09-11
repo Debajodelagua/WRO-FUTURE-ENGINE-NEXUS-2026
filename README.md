@@ -23,7 +23,7 @@ Nuestro prototipo **"Smoke"** es un vehículo autónomo diseñado para la catego
 Este documento técnico ha sido elaborado bajo un formato de **libro blanco de ingeniería (*Engineering Whitepaper*)**: no se limita a describir el resultado final, sino que expone de forma analítica y reproducible el **porqué detrás de cada decisión técnica**, los compromisos de diseño (*trade-offs*), los cálculos físicos y la evolución experimental del proyecto. Cualquier equipo o investigador que consulte esta documentación podrá comprender a profundidad los fundamentos cinemáticos, térmicos, eléctricos y de software que rigen el vehículo, permitiendo reproducir o iterar la plataforma de forma integral.
 
 <a id="indice-general"></a>
-## 📑 Índice General: Pilares del Proyecto
+## 📑 Índice General: Módulos de Ingeniería del Proyecto
 
 - [Introducción y Datos del Equipo](#introduccion-equipo)
   - [Filosofía de Trabajo y Metodología de Co-Diseño](#filosofia-trabajo)
@@ -34,7 +34,7 @@ Este documento técnico ha sido elaborado bajo un formato de **libro blanco de i
 
 ---
 
-### [Pilar 1: Movilidad y Diseño Mecánico](#pilar-1-movilidad)
+### [Módulo 1: Movilidad y Diseño Mecánico](#modulo-1-movilidad)
 - 1.1 [Chasis Modular Multicapa en PETG y Distribución de Masa](#chasis-petg)
 - 1.2 [Estructura Rígida, Tornillería Pasante M3 y Separación de Niveles](#separacion-niveles)
 - 1.3 [Geometría de Dirección Ackermann Híbrida y Validación de Barrido](#geometria-ackermann)
@@ -45,7 +45,7 @@ Este documento técnico ha sido elaborado bajo un formato de **libro blanco de i
 
 ---
 
-### [Pilar 2: Arquitectura de Energía y Sensores](#pilar-2-energia-sensores)
+### [Módulo 2: Arquitectura de Energía y Sensores](#modulo-2-energia-sensores)
 - 2.1 [Topología de Alimentación Desacoplada en 3 Ramas Independientes](#topologia-alimentacion)
 - 2.2 [Presupuesto Energético y Cuadro de Consumo de Corriente (*Power Budget*)](#presupuesto-energetico)
 - 2.3 [Banco de Baterías EVE 18650 2S2P (7.0V - 7.4V, 7000 mAh) y Autonomía Teórica](#baterias-18650)
@@ -59,7 +59,7 @@ Este documento técnico ha sido elaborado bajo un formato de **libro blanco de i
 
 ---
 
-### [Pilar 3: Arquitectura de Software y Estrategia para Superar Obstáculos](#pilar-3-software)
+### [Módulo 3: Arquitectura de Software y Control Autónomo](#modulo-3-software)
 - 3.1 [Arquitectura General y Máquina de Estados Finitos (FSM)](#fsm-general)
 - 3.2 [Estrategia de Seguimiento de Carril: Open Challenge (`NUMERO4.ino`)](#software-open-challenge)
   - 3.2.1 [Inicialización, Concurrencia y Configuración de Periféricos](#software-setup)
@@ -75,7 +75,7 @@ Este documento técnico ha sido elaborado bajo un formato de **libro blanco de i
 
 ---
 
-### [Pilar 4: Pensamiento Sistémico, Limitaciones y Decisiones de Ingeniería](#pilar-4-pensamiento-sistemico)
+### [Módulo 4: Pensamiento Sistémico y Gestión Integral de Riesgos](#modulo-4-pensamiento-sistemico)
 - 4.1 [Interacción Dinámica entre Subsistemas y Filosofía Holística](#interaccion-subsistemas)
 - 4.2 [Restricciones Explícitas del Sistema y Compromisos de Diseño (*Trade-offs*)](#restricciones-compromisos)
 - 4.3 [Matriz Comparativa: «Por qué elegimos X en lugar de Y»](#matriz-porque-x-en-lugar-de-y)
@@ -85,7 +85,7 @@ Este documento técnico ha sido elaborado bajo un formato de **libro blanco de i
 
 ---
 
-### [Pilar 5: Reproducibilidad, Guía de Construcción y Calidad de GitHub](#pilar-5-reproducibilidad)
+### [Módulo 5: Reproducibilidad, Guía de Construcción y Control de Calidad](#modulo-5-reproducibilidad)
 - 5.1 [Lista Maestra de Materiales (BOM) y Mini-Datasheets de Componentes](#bom)
 - 5.2 [Guía de Construcción Paso a Paso del Robot (*Step-by-Step Build Guide*)](#guia-construccion)
 - 5.3 [Entorno de Software, Versiones de Librerías y Procedimiento de Flasheo](#entorno-software)
@@ -260,7 +260,7 @@ Demostración técnica de la clasificación en tiempo real de los bloques de tr�
 <p align="right"><a href="#indice-general">⬆️ Volver al Índice</a></p>
 
 
-# ⚙️ Pilar 1: Movilidad y Diseño Mecánico <a id="pilar-1-movilidad"></a>
+# 🏎️ Módulo 1: Movilidad y Diseño Mecánico <a id="modulo-1-movilidad"></a><a id="pilar-1-movilidad"></a>
 
 El chasis y tren cinemático de **"Smoke"** fueron desarrollados bajo un enfoque híbrido de manufactura: combinando la libertad de diseño paramétrico que ofrece la **impresión 3D en PETG** con la precisión de bajo rozamiento de componentes inyectados de robótica educativa (**LEGO MINDSTORMS EV3**).
 Esta arquitectura fue calculada específicamente para soportar las fuerzas de inercia y torsión generadas por una masa dinámica de **859 gramos**, optimizando la posición del centro de gravedad ($CoG$) y minimizando la fricción en pista.
@@ -318,13 +318,38 @@ Para resolver esto, **"Smoke"** implementa una **geometría de dirección Ackerm
 | <img src="./v-fotos/ackermann_teoria.jpg" width="220" alt="Esquema Teórico Ackermann"> | <img src="./v-fotos/Sistema%20de%20direccion.png" width="220" alt="Modelo CAD de Dirección"> | <img src="./v-fotos/FOTO%20DEL%20SERVO%20ARMADO.jpg" width="220" alt="Ensamble Físico en Chasis"> |
 | *Convergencia hacia el eje trasero* | *Brazo custom en PETG + manguetas* | *Integración con servo MG90S* |
 
-### 1.3.2 Solución de Co-Diseño: Manguetas Inyectadas LEGO + Brazo Custom en PETG
+### 1.3.2 Solución de Co-Diseño: Manguetas Inyectadas LEGO + Brazo de Servo (*Servo Horn*) Custom en PETG
 Durante las fases de prototipado inicial, evaluamos imprimir las manguetas y tirantes de dirección completamente en 3D. Sin embargo, las piezas pequeñas impresas en FDM presentaban microporosidad superficial, lo que generaba un rozamiento irregular y juego mecánico acumulado (*backlash*).
+
 > [!NOTE]
 > **Decisión de Ingeniería Híbrida:**
 > Optamos por una solución de alto rendimiento:
 > - **Manguetas y Rótulas Inyectadas (LEGO EV3):** Proporcionan una superficie de giro industrial con fricción prácticamente nula y tolerancias dimensionales microscópicas imposibles de igualar en FDM.
 > - **Brazo de Servo (*Servo Horn*) Custom en PETG:** Diseñado a medida en **Autodesk Fusion 360** e impreso con **100% de relleno sólido en PETG**, conectando rígidamente el estriado metálico del servo TowerPro MG90S con los tirantes de LEGO.
+
+#### Rediseño Estructural de la Veleta del Servomotor (`Modelos/Servor Arm.stl`)
+El servomotor comercial TowerPro MG90S incluye por defecto una colección de veletas (*servo horns*) estándar fabricadas en nylon blanco moldeado por inyección fina. No obstante, en las pruebas dinámicas preliminares con el vehículo a plena masa (**859 gramos**), la veleta comercial demostró ser un punto crítico de vulnerabilidad cinemática:
+
+| Criterio de Comparación | Veleta Comercial Estándar (Nylon MG90S) | Veleta Personalizada Nexus en Fusion 360 (`Servor Arm.stl`) |
+| :--- | :--- | :--- |
+| **Material y Densidad** | Nylon comercial flexible (~1.5 mm de espesor). | **PETG Estructural al 100% de relleno sólido (*infill 100%*)**. |
+| **Espesor y Nervaduras** | Paredes delgadas propensas a pandeo elástico bajo torsión. | **Espesor reforzado a 3.5 mm** con nervaduras axiales de rigidización geométrica. |
+| **Acople con la Timonería** | Orificio circular pasante delgado ($\varnothing 1.0\text{ mm}$); tornillo con holgura. | **Alojamiento paramétrico de precisión milimétrica para rótula/pin LEGO EV3**. |
+| **Juego Mecánico (*Backlash*)** | Histéresis angular progresiva ($> 4^\circ$) tras 50 ciclos de giro en pista. | **Cero juego mecánico (*Zero-backlash*, $< 0.5^\circ$)**, manteniendo el centro calibrado en $96^\circ$. |
+| **Transmisión de Par** | Deformación elástica que absorbe parte del torque del servo. | Transmisión rígida e instantánea del par del servo a las manguetas de dirección. |
+
+> 🛡️ **Mitigación de Riesgo de Ingeniería:**
+> **Para mitigar el riesgo de histéresis cinemática, holgura acumulada (*backlash*) y flexión elástica bajo esfuerzos dinámicos de viraje rápido**, el equipo rediseñó en **Autodesk Fusion 360** la veleta del servomotor ([`Modelos/Servor Arm.stl`](./Modelos/Servor%20Arm.stl)), modelándola con paredes de 3.5 mm de grosor, nervaduras de refuerzo y cavidad de anclaje de tolerancia cero para la rótula LEGO EV3. Esto garantiza que cada microsegundo de señal PWM se traduzca de forma lineal y determinista en ángulo de rueda sin deriva.
+
+<div align="center">
+  <img src="./v-fotos/Sistema%20de%20direccion.png" alt="Conjunto de Dirección y Veleta Custom en Autodesk Fusion 360" width="500" style="border-radius: 8px; border: 1px solid #444; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+  <br>
+  <i>Render de ensamble en Autodesk Fusion 360: Integración del servomotor MG90S con la veleta personalizada en PETG ('Modelos/Servor Arm.stl', visible en la zona inferior acoplando el pin de dirección) y los elementos de articulación LEGO EV3.</i>
+</div>
+
+> [!NOTE]
+> **Disponibilidad del Archivo CAD 3D de Manufactura:**
+> El modelo tridimensional listo para impresión 3D se encuentra alojado en el repositorio bajo la ruta [`Modelos/Servor Arm.stl`](./Modelos/Servor%20Arm.stl). *(Nota técnica: Los archivos STL son mallas poligonales de fabricación aditiva y no son renderizados nativamente como imagen en GitHub Markdown; por este motivo, se incluye la vista renderizada exportada desde Fusion 360).*
 
 ### 1.3.3 Validación del Rango de Viraje del Servomotor (±80°)
 Para garantizar que la timonería no sufra atascos mecánicos (*binding*) en maniobras de evasión extrema ante obstáculos, se calibró el recorrido del servomotor MG90S:
@@ -369,6 +394,9 @@ Para contrarrestar el momento torsor de reacción que tiende a desalinear el eng
 * El motor Makeblock se sujeta frontalmente mediante **2 tornillos métricos M3** directamente a la cara anterior de la bancada.
 * La base de la bancada se ancla sólidamente al chasis del Piso 1 mediante **6 tornillos M3** con tuercas autoblocantes, formando una estructura de 8 puntos de fijación que erradica la separación de dientes (*gear separation*).
 
+> 🛡️ **Mitigación de Riesgo de Ingeniería:**
+> **Para mitigar el riesgo de desalineación axial (*gear separation*), vibración destructiva y cizallamiento** de los dientes plásticos del piñón cónico bajo el par reactivo instantáneo de aceleración, el motor Makeblock se ancló mediante una bancada envolvente en PETG fijada con 8 tornillos pasantes M3 y tuercas autoblocantes, garantizando un engrane rígido y constante con la corona del diferencial LEGO EV3.
+
 ### 1.4.3 Diferencial de Satélites y Estabilización de Semiejes
 El conjunto diferencial de 3 piñones cónicos internos LEGO EV3 distribuye la velocidad angular en curvas:
 $$\omega_{diferencial} = \frac{\omega_{izq} + \omega_{der}}{2}$$
@@ -384,13 +412,46 @@ Para fundamentar analíticamente el desempeño dinámico del vehículo en pista 
 * **Radio Efectivo de Rueda Trasera ($r_{rueda}$):** Diámetro $\varnothing = 43\text{ mm} \implies r = 0.0215\text{ metros}$.
 * **Coeficiente de Fricción Caucho/Pista ($\mu_s$):** Estimado conservadoramente en $\mu_s \approx 0.70$ para neumáticos de goma LEGO EV3 limpios sobre tapiz de vinilo.
 
-### 1.5.1 Cálculo del Torque de Ruptura Estática en Ruedas (Breakout Torque)
+### 1.5.1 Ecuación Característica Electromecánica: Curva Torque vs. Velocidad ($\tau - \omega$)
+El comportamiento electromecánico del motor Makeblock de corriente continua gobernado mediante PWM se fundamenta en las leyes acopladas de Kirchhoff y Lorentz para actuadores de armadura con escobillas:
+
+$$V = I \cdot R + K_e \cdot \omega$$
+$$\tau = K_t \cdot I \implies I = \frac{\tau}{K_t}$$
+
+Despejando la corriente de inducido $I$ y sustituyéndola en la relación de malla eléctrica, se obtiene la **ecuación lineal característica de par vs. velocidad angular ($\tau - \omega$)**:
+
+$$\tau(\omega) = \frac{K_t \cdot V}{R} - \frac{K_t \cdot K_e}{R} \cdot \omega = \tau_{\text{stall}} \cdot \left(1 - \frac{\omega}{\omega_{\text{nl}}}\right)$$
+
+Donde las variables y constantes del actuador se definen como:
+* $V$: Voltaje neto en bornes del motor = **$12.0\text{V DC}$** (garantizado mediante la elevación a $14.0\text{V}$ del módulo XL6009 para neutralizar la caída interna $V_{CE(sat)} \approx 2.0\text{V}$ de la etapa Darlington del driver L298N).
+* $R$: Resistencia óhmica del devanado de armadura ($\approx 6.5\ \Omega$).
+* $K_t$: Constante de par del motor ($\approx 0.016\text{ N}\cdot\text{m/A}$).
+* $K_e$: Constante de fuerza contraelectromotriz o Back-EMF ($\approx 0.016\text{ V}\cdot\text{s/rad}$).
+* $\tau_{\text{stall}} = \frac{K_t \cdot V}{R}$: Par de estancamiento (*stall torque*) a rotor bloqueado ($\approx 3.2\text{ kg}\cdot\text{cm} = 0.314\text{ Nm}$).
+* $\omega_{\text{nl}} = \frac{V}{K_e}$: Velocidad angular teórica en vacío (*no-load speed*) ($\approx 210\text{ RPM} \approx 22.0\text{ rad/s}$).
+
+```mermaid
+graph LR
+    subgraph "Curva Característica Par vs Velocidad (Alimentación 12V Netos)"
+        A["🔴 Par de Arranque / Stall<br>τ_stall ≈ 3.2 kg·cm<br>(ω = 0 RPM / I_peak = 1.1A)"] --- B["🟢 PUNTO NOMINAL 'SMOKE'<br>τ_nom ≈ 1.5 kg·cm @ 185 RPM<br>(Zona de Máxima Eficiencia η ≈ 70%)"]
+        B --- C["⚪ Velocidad Libre / Vacío<br>ω_nl ≈ 210 RPM<br>(τ = 0 / I_stby = 80mA)"]
+    end
+    classDef pt fill:#1f2328,stroke:#58a6ff,stroke-width:2px,color:#fff;
+    classDef opt fill:#1f2328,stroke:#2ea44f,stroke-width:3px,color:#fff;
+    class A,C pt;
+    class B opt;
+```
+
+> 🛡️ **Mitigación de Riesgo de Ingeniería:**
+> **Para mitigar el riesgo de estancamiento del motor (*motor stall*), sobrecalentamiento en el bobinado y derretimiento térmico de la bancada en PETG**, el tren cinemático se dimensionó para que el par de trabajo continuo del vehículo ($\tau_{\text{nom}} \approx 1.5\text{ kg}\cdot\text{cm}$ a $185\text{ RPM}$) opere a menos del $47\%$ de su límite de bloqueo ($\tau_{\text{stall}}$). Esto proporciona un factor de reserva de par de **$2.22$** y garantiza que el motor trabaje estrictamente en su régimen de máxima eficiencia ($\eta \approx 70\%$) con un consumo moderado de apenas $350\text{ a }500\text{ mA}$.
+
+### 1.5.2 Cálculo del Torque de Ruptura Estática en Ruedas (Breakout Torque)
 El par de torsión mínimo que debe vencerse en el eje de las ruedas traseras para romper la inercia estática e iniciar el movimiento acelerado sin patinaje viene dado por:
 
 $$\tau_{rueda} = N_{trasero} \cdot \mu_s \cdot r_{rueda}$$
 $$\tau_{rueda} = 4.64\text{ N} \times 0.70 \times 0.0215\text{ m} \approx \mathbf{0.0698\text{ Nm}} \approx \mathbf{0.712\text{ kg}\cdot\text{cm}}$$
 
-### 1.5.2 Par Motor Makeblock y Eficiencia de Transmisión
+### 1.5.3 Par Motor Makeblock y Eficiencia de Transmisión
 El motor Makeblock de 9V a 185 RPM entrega un torque nominal constante de $\tau_{motor} \approx 1.5\text{ kg}\cdot\text{cm}$ ($0.147\text{ Nm}$).
 Considerando la relación de transmisión cónica ($i \approx 1.2:1$) y una eficiencia mecánica global de transmisión de $\eta = 88\%$ (0.88) para los engranajes cónicos apoyados sobre bujes lisos:
 $$\tau_{disponible} = \tau_{motor} \cdot i \cdot \eta = 1.5\text{ kg}\cdot\text{cm} \times 1.2 \times 0.88 \approx \mathbf{1.58\text{ kg}\cdot\text{cm}}$$
@@ -402,7 +463,7 @@ $$\text{Margen de Seguridad de Tracción: } \frac{\tau_{disponible}}{\tau_{rueda
 > 2. No existe riesgo de calentamiento por efecto Joule en las bobinas ni derretimiento térmico de la bancada de PETG.
 > 3. El carro acelera de $0\text{ a }100\%$ de velocidad en menos de **$0.25\text{ segundos}$** tras salir de cada curva de 90°.
 
-### 1.5.3 Velocidad Lineal Teórica Máxima en Pista
+### 1.5.4 Velocidad Lineal Teórica Máxima en Pista
 La velocidad tangencial máxima del vehículo en los tramos rectos a 185 RPM nominales en el eje se rige por:
 $$v_{teorica} = \omega \cdot r_{rueda} = \left( 185 \cdot \frac{2\pi}{60} \right) \cdot 0.0215\text{ m} \approx 19.37\text{ rad/s} \times 0.0215\text{ m} \approx \mathbf{0.416\text{ m/s}} \approx \mathbf{1.50\text{ km/h}}$$
 
@@ -455,7 +516,7 @@ Bajo la rúbrica oficial de la WRO, la calidad de ingeniería no se mide por lle
 | **Selección de Neumáticos** | **Neumáticos Homogéneos:** 4 ruedas idénticas de Ø 43 mm en ambos trenes. | **Neumáticos Escalonados (*Staggered Setup*):** Ø 30 mm adelante y Ø 43 mm atrás. | Utilizar ruedas de 43 mm adelante incrementaba la inercia rotacional del tren directriz en un **358%**, forzando al servomotor a su límite térmico y retardando la evasión de obstáculos en más de 80 ms. |
 <p align="right"><a href="#indice-general">⬆️ Volver al Índice</a></p>
 
-# ⚡ Pilar 2: Arquitectura de Energía y Sensores <a id="pilar-2-energia-sensores"></a>
+# ⚡ Módulo 2: Arquitectura de Energía y Sensores <a id="modulo-2-energia-sensores"></a><a id="pilar-2-energia-sensores"></a>
 La concepción del sistema eléctrico y sensorial de **"Smoke"** parte de una premisa crítica de ingeniería: para lograr un vehículo de alta fiabilidad en pista, es indispensable desacoplar galvánica y físicamente las cargas dinámicas e inductivas de los actuadores de las líneas de alimentación del microcontrolador y los sensores, garantizando al mismo tiempo una adquisición sensorial determinista en tiempo real.
 
 ## 2.1 Topología de Alimentación Desacoplada en 3 Ramas Independientes <a id="topologia-alimentacion"></a>
@@ -489,6 +550,9 @@ flowchart TD
     class SERVO,HUSKY,MCU,US,L298N_VSS,L298N_VS,MOTOR dev;
     class SW1,SW2,BTN sw;  
 ```
+
+> 🛡️ **Mitigación de Riesgo de Ingeniería:**
+> **Para mitigar el riesgo de transitorios inductivos (*inductive flyback*), interferencia electromagnética (EMI) y caídas de tensión (*brownouts*)** en el microcontrolador ESP32-S3 provocadas por las demandas dinámicas de corriente del servomotor y el motor de tracción, el sistema separa físicamente la alimentación en tres ramas de conversión DC-DC independientes (XL4015 para lógica a 5V, LM2596 para actuadores a 5V y XL6009 para tracción a 14V), acopladas exclusivamente mediante un plano de tierra equipotencial común.
 
 ## 2.2 Presupuesto Energético y Cuadro de Consumo de Corriente (*Power Budget*) <a id="presupuesto-energetico"></a>
 Bajo los criterios de la rúbrica WRO, el dimensionamiento eléctrico debe justificarse mediante un balance riguroso entre la energía almacenada y las demandas nominales y de pico de cada subsistema:
@@ -545,6 +609,9 @@ Para entregar los **12.0V netos de máxima eficiencia al motor Makeblock**:
    $$V_{Boost} = V_{nominal} + V_{drop} = 12.0\text{V} + 2.0\text{V} = \mathbf{14.0\text{V DC}}$$
 3. El pin $V_{ss}$ lógico del chip se alimenta directamente desde los 5V limpios del regulador XL4015, garantizando una conmutación lógica rápida y libre de ruido electromagnético.
 
+> 🛡️ **Mitigación de Riesgo de Ingeniería:**
+> **Para mitigar el riesgo de pérdida crítica de par motor, caída de velocidad lineal y estancamiento** provocado por la caída de tensión interna $V_{CE(sat)} \approx 2.0\text{V}$ en los transistores Darlington del driver L298N, elevamos la tensión del riel de tracción a **14.0V con el convertidor Step-Up XL6009**, asegurando que el motor Makeblock reciba 12.0V netos constantes y desarrolle su par nominal completo de $1.5\text{ kg}\cdot\text{cm}$ a 185 RPM.
+
 ### 2.4.2 Beneficios de la Tierra Común Unificada (Common Ground Plane)
 Todos los polos negativos (GND) del banco de baterías 18650, los tres convertidores DC-DC, el driver L298N, los sensores ultrasónicos, el servo y el microcontrolador ESP32-S3 están **interconectados eléctricamente en un nodo de masa común**:
 * **Referencia Equipotencial Cero:** Erradica bucles de tierra (*ground loops*) y tensiones parásitas flotantes que podrían provocar reinicios espontáneos en el procesador.
@@ -569,6 +636,9 @@ flowchart TD
     class US_F,US_R,US_L,MPU,HUSKY sens;
     class ESP mcu;
 ```
+
+> 🛡️ **Mitigación de Riesgo de Ingeniería:**
+> **Para mitigar el riesgo de diafonía acústica (*acoustic crosstalk*), aceleraciones centrífugas espurias e interferencias cruzadas en las comunicaciones**, la arquitectura distribuye los sensores física y temporalmente: la IMU MPU6050 se sitúa estrictamente concéntrica al centro de gravedad ($CoG$), la cámara HuskyLens 2 se segrega a un enlace serie UART punto a punto dedicado a 115,200 baudios, y el arreglo ultrasónico ejecuta un muestreo rotativo asíncrono con ventanas de guarda que erradica ecos parásitos.
 
 ### 2.5.1 Cámara Neuronal HuskyLens 2 (IA / Visión por Color) <a id="sensor-huskylens"></a>
 Para superar el **Desafío de Obstáculos (Obstacle Challenge)**, el vehículo emplea el procesador de visión inteligente **HuskyLens 2** montado rígidamente en el Piso 2:
@@ -638,7 +708,7 @@ En ingeniería de sistemas críticos para WRO, se analizaron los posibles fallos
 
 <a id="arquitectura-software"></a>
 
-# 💻 Pilar 3: Arquitectura de Software y Estrategia para Superar Obstáculos <a id="pilar-3-software"></a>
+# 💻 Módulo 3: Arquitectura de Software y Control Autónomo <a id="modulo-3-software"></a><a id="pilar-3-software"></a>
 El software embebido de **"Smoke"** fue desarrollado en **C++ bajo el entorno Arduino IDE**, optimizado específicamente para el microcontrolador de doble núcleo **ESP32-S3**. 
 Para garantizar un control en tiempo real estricto, el código opera bajo una **arquitectura asíncrona no bloqueante gobernada por el sistema operativo en tiempo real FreeRTOS y temporizadores de hardware (`millis()`)**, evitando por completo el uso de funciones bloqueantes tipo `delay()` en los bucles de carrera.
 El código fuente oficial de la ronda abierta se encuentra alojado en [`./src/OPENCHALLENGE/NUMERO4.ino`](./src/OPENCHALLENGE/NUMERO4.ino) y el de la ronda de obstáculos en [`./src/CLOSECHALLENGE/CAZA_NUMERO1.ino`](./src/CLOSECHALLENGE/CAZA_NUMERO1.ino).
@@ -701,6 +771,10 @@ escribirServoGrados(SERVO_CENTRO);
 // Lanzamiento de tarea en tiempo real en Core 0 para el MPU6050
 xTaskCreatePinnedToCore(tareaLeerMPU, "TareaMPU", 4096, NULL, 2, &TareaMPU, 0);
 ```
+
+> 🛡️ **Mitigación de Riesgo de Ingeniería:**
+> **Para mitigar el riesgo de arranques violentos e incontrolados (*uncontrolled startup*)** al energizar el circuito o durante el posicionamiento manual en la celda de partida por parte del operador, la función `setup()` bloquea el PWM en 0, coloca en bajo las líneas de dirección del motor y clava el servo en 96° antes de habilitar el botón de arranque.
+
 ### 3.2.2 Percepción Ultrasónica y Detección Dinámica de Esquinas <a id="software-ultrasonico"></a>
 El vehículo elimina cualquier dependencia de configuración manual previa a la carrera, detectando de forma autónoma el sentido del circuito reglamentario:
 * **Calibración Estática en Salida:** Al presionar el pulsador de inicio (`PIN_INICIO` en GPIO 21), el ESP32 recolecta 50 muestras estáticas de la velocidad angular en Z para determinar el offset de deriva (`gz_offset`) mientras el chasis permanece en reposo.
@@ -721,6 +795,9 @@ if (direccion_giro == 0) {
 Durante el tránsito por los tramos rectos de la pista, el firmware ejecuta un lazo de control cada **1 ms** (`TIEMPO_LECTURA_MS = 1`):
 * **Controlador Proporcional-Derivativo (PD):** Compara el rumbo objetivo (`setpoint_efectivo`) contra el ángulo inercial integrado (`yaw_actual`). Si el error angular supera la **zona muerta de $\pm 2.0^\circ$**, modula la timonería del servomotor MG90S con constantes $K_p = 1.0$ y $K_d = 0.0$.
 * **Escape Lateral Reactivo:** Los sensores ultrasónicos laterales vigilan la proximidad a las paredes. Si la distancia en cualquiera de los flancos cae por debajo del umbral de seguridad de **$25.0\text{ cm}$** (`DISTANCIA_MIN_LATERAL`), el firmware inyecta un offset angular instantáneo de $\pm 25^\circ$ (`ANGULO_ESCAPE`), alejando al vehículo del muro sin perder la referencia global de rumbo.
+
+> 🛡️ **Mitigación de Riesgo de Ingeniería:**
+> **Para mitigar el riesgo de oscilaciones parásitas de alta frecuencia (*hunting/jitter*) y sobrecalentamiento térmico del servomotor** causadas por el ruido de integración del giróscopo en tramos rectos, se implementó una zona muerta (*deadband*) de $\pm 2.0^\circ$ y una corrección lateral de escape condicionada estrictamente a la invasión de la cota perimetral de $25.0\text{ cm}$.
 ```cpp
 // Lazo de control PD inercial
 float setpoint_efectivo = setpoint_yaw + offset_lateral;
@@ -946,6 +1023,9 @@ El sensor óptico de la HuskyLens entrega las coordenadas de los bloques delimit
 En curvas cerradas, las paredes de madera blanca reflejan tonalidades o capturan pilares de secciones contiguas de la pista en el extremo del sensor. Si se procesa un obstáculo rojo muy pegado al borde izquierdo absoluto ($X < 10$), el robot intentaría esquivar hacia el centro de la pista cuando en realidad el obstáculo está fuera de carril. Por tanto, se define una máscara de exclusión espacial:
 
 $$\text{Validez}(\text{Bloque}) = \begin{cases} \text{FALSO} & \text{si } (\text{ID} = 1 \land X_c < 10) \lor (\text{ID} = 2 \land X_c > 630) \\ \text{VERDADERO} & \text{en cualquier otro caso} \end{cases}$$
+
+> 🛡️ **Mitigación de Riesgo de Ingeniería:**
+> **Para mitigar el riesgo de falsos positivos ópticos, detecciones erróneas por reflejos especulares en los muros blancos y virajes bruscos prematuros**, el software evalúa una máscara de exclusión espacial que anula detecciones en bordes extremos ($X < 10\text{ px}$ y $X > 630\text{ px}$) y exige una persistencia mínima de 3 ciclos de inferencia ($100\text{ ms}$) antes de autorizar la transición de la máquina de estados hacia el modo de evasión activa.
 
 ###### B. Ley de Control del Modo Cazador Proporcional (Centrado Dinámico)
 En lugar de esquivar de inmediato con una trayectoria curva incierta, el vehículo primero **apunta directamente hacia el centro del obstáculo** para enfrentar la maniobra en ángulo perfectamente normal ($90^\circ$ respecto a la cara del pilar).
@@ -1292,7 +1372,7 @@ Para el desafío de obstáculos, las reglas de la WRO exigen que los bloques roj
 * **Validación de la HuskyLens 2:** Permite al equipo colocar los bloques en pista en segundos durante las sesiones de prueba, sometiendo al algoritmo de visión por computador a cientos de combinaciones distintas para garantizar que nunca confunda un color o sufra un punto ciego.
 <p align="right"><a href="#indice-general">⬆️ Volver al Índice</a></p>
 
-# 🧠 Pilar 4: Pensamiento Sistémico, Limitaciones y Decisiones de Ingeniería <a id="pilar-4-pensamiento-sistemico"></a>
+# 🧠 Módulo 4: Pensamiento Sistémico y Gestión Integral de Riesgos <a id="modulo-4-pensamiento-sistemico"></a><a id="pilar-4-pensamiento-sistemico"></a>
 En el marco de la World Robot Olympiad™ Future Engineers, un prototipo de alto rendimiento no es el resultado fortuito de componentes de alta gama ensamblados entre sí, sino el producto de un **enfoque de ingeniería de sistemas holístico**, donde cada interfaz física, térmica, eléctrica y computacional se concibe con plena conciencia de sus interdependencias, restricciones y modos de fallo.
 
 ## 4.1 Interacción Dinámica entre Subsistemas y Filosofía Holística <a id="interaccion-subsistemas"></a>
@@ -1364,7 +1444,7 @@ En el recinto ferial de la competencia nacional en Valencia, las condiciones de 
 ---
 
 ## 4.5 Matriz de Identificación, Gestión y Mitigación de Riesgos <a id="mitigacion-riesgos"></a>
-Se aplicó una metodología de Análisis Modal de Fallos y Efectos (FMEA) adaptada a robótica de competición para clasificar los riesgos y definir planes de contingencia inmediatos:
+El diseño robusto de **"Smoke"** parte de un enfoque sistemático de **Gestión Integral de Riesgos y FMEA (*Failure Mode and Effects Analysis*)**. Bajo las exigencias de la WRO, la ingeniería preventiva exige formular contramedidas explícitas: **ante cada modo de fallo potencial identificado, se diseñó e implementó una mitigación activa de hardware o software (*«Para mitigar este riesgo...»*)**:
 
 | Categoría | Riesgo Específico Identificado | Probabilidad | Severidad | Medida Preventiva (Diseño / Hardware) | Medida Reactiva (En Pista / Software) |
 | :--- | :--- | :---: | :---: | :--- | :--- |
@@ -1404,8 +1484,8 @@ flowchart LR
 
 <p align="right"><a href="#indice-general">⬆️ Volver al Índice</a></p>
 
-# 📦 Pilar 5: Reproducibilidad, Guía de Construcción y Calidad de GitHub <a id="pilar-5-reproducibilidad"></a>
-La excelencia en ingeniería no concluye con un prototipo funcional en pista; exige que el sistema sea **100% reproducible, auditable y transferible** a cualquier equipo de la comunidad internacional de robótica educativa. Este pilar documenta la lista maestra de materiales, las especificaciones paso a paso de ensamble mecánico y eléctrico, las versiones exactas del stack de software y el protocolo de control de calidad bajo Git.
+# 📦 Módulo 5: Reproducibilidad, Guía de Construcción y Control de Calidad <a id="modulo-5-reproducibilidad"></a><a id="pilar-5-reproducibilidad"></a>
+La excelencia en ingeniería no concluye con un prototipo funcional en pista; exige que el sistema sea **100% reproducible, auditable y transferible** a cualquier equipo de la comunidad internacional de robótica educativa. Este módulo documenta la lista maestra de materiales, las especificaciones paso a paso de ensamble mecánico y eléctrico, las versiones exactas del stack de software y el protocolo de control de calidad bajo Git.
 
 ## 5.1 Lista Maestra de Materiales (BOM) y Mini-Datasheets de Componentes <a id="bom"></a>
 La selección de hardware para la plataforma **"Smoke"** responde a una metodología rigurosa de **análisis de compromisos (*Trade-off Analysis*) e ingeniería de valor**: cada componente fue evaluado no solo por sus especificaciones teóricas, sino por su balance óptimo entre peso, fiabilidad mecánica, eficiencia energética y coste.
