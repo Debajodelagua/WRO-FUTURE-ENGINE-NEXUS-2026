@@ -863,6 +863,7 @@ $$b_z = \frac{1}{N} \sum_{i=1}^{N} \omega_{z,i}$$
 
 - $\Delta t_k = t_k - t_{k-1}$: Paso de integración temporal real medido en microsegundos mediante `micros()`.
 - **Filtro de Banda Muerta (Deadband):** Para eliminar la acumulación de ruido gaussiano de baja amplitud cuando el robot se encuentra detenido o en avance rectilíneo, se aplica una función no lineal de supresión de umbral:
+
 $$\omega_{z,\text{filtrada}} = \begin{cases} 0 & \text{si } |\omega_{z,k} - b_z| < U_r \\ (\omega_{z,k} - b_z) & \text{en otro caso} \end{cases}$$
 
 Donde el umbral de ruido configurado es:
