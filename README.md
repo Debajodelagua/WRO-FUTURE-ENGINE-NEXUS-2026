@@ -312,13 +312,11 @@ Cuando un vehículo traza una curva, la rueda directriz interior recorre un radi
 2. Pérdida crítica de adherencia en el tren delantero, provocando subviraje (*understeer*).
 3. Sobrecarga de corriente y calentamiento prematuro en el servomotor.
 Para resolver esto, **"Smoke"** implementa una **geometría de dirección Ackermann**, donde la timonería hace que **la rueda interior gire más pronunciadamente ($\theta_i$) que la exterior ($\theta_o$)**:
-<div align="center">
-  
+
 | 1. Principio Teórico | 2. Diseño CAD en Fusion 360 | 3. Ensamble Físico en Piso 1 |
-| :--- :---: | :---: | :---: |
-| <img src="./v-fotos/ackermann_teoria.jpg" width="220" alt="Esquema Teórico Ackermann"> | <img src=".//v-fotos/Sistema%20de%20direccion.png" width="220" alt="Modelo CAD de Dirección"> | <img src="./v-fotos/FOTO%20DEL%20SERVO%20ARMADO.jpg" width="220" alt="Ensamble Físico en Chasis"> |
+| :---: | :---: | :---: |
+| <img src="./v-fotos/ackermann_teoria.jpg" width="220" alt="Esquema Teórico Ackermann"> | <img src="./v-fotos/Sistema%20de%20direccion.png" width="220" alt="Modelo CAD de Dirección"> | <img src="./v-fotos/FOTO%20DEL%20SERVO%20ARMADO.jpg" width="220" alt="Ensamble Físico en Chasis"> |
 | *Convergencia hacia el eje trasero* | *Brazo custom en PETG + manguetas* | *Integración con servo MG90S* |
-</div>
 
 ### 1.3.2 Solución de Co-Diseño: Manguetas Inyectadas LEGO + Brazo Custom en PETG
 Durante las fases de prototipado inicial, evaluamos imprimir las manguetas y tirantes de dirección completamente en 3D. Sin embargo, las piezas pequeñas impresas en FDM presentaban microporosidad superficial, lo que generaba un rozamiento irregular y juego mecánico acumulado (*backlash*).
@@ -412,13 +410,11 @@ A una velocidad tangencial nominal de $0.416\text{ m/s}$, el vehículo completa 
 
 ## 1.6 Configuración Escalonada de Ruedas (*Staggered Setup*) e Inercia Rotacional <a id="ruedas-escalonadas"></a>
 La selección de neumáticos en **"Smoke"** no responde a criterios estéticos, sino a una rigurosa optimización de la **dinámica vehicular y la inercia rotacional**:
-<div align="center">
-  
+
 | 1. Tren Delantero (Dirección) | 2. Tren Trasero (Tracción) | 3. Comparativa de Escalonamiento |
 | :---: | :---: | :---: |
 | <img src="./v-fotos/RUEDASDELANTERAS.jpg" width="220" alt="Ruedas Delanteras Smoke" style="border-radius: 8px; border: 1px solid #444;"> | <img src="./v-fotos/RUEDASTRASERAS.jpg" width="220" alt="Ruedas Traseras Smoke" style="border-radius: 8px; border: 1px solid #444;"> | <img src="./v-fotos/RUEDAS.jpg" width="220" alt="Comparativa de Neumáticos" style="border-radius: 8px; border: 1px solid #444;"> |
 | *Ø 30 mm – LEGO EV3* | *Ø 43 mm – LEGO EV3* | *Diferencial de diámetro y banda de rodadura* |
-</div>
 
 | Tren / Posición | Diámetro Circular | Procedencia | Función Dinámica en "Smoke" |
 | :---: | :---: | :---: | :--- |
@@ -1259,13 +1255,10 @@ La validación experimental de "Smoke" se realizó mediante una batería de **60
 Para asegurar que los algoritmos de navegación y visión artificial de **"Smoke"** sean verdaderamente autónomos y no dependan de una configuración fija de pista, el equipo desarrolló y desplegó dos aplicaciones web especializadas de código abierto bajo la plataforma **Netlify**.
 Estas herramientas replican con exactitud matemática los algoritmos de sorteo reglamentarios de los jueces de la **World Robot Olympiad™**, permitiendo entrenar al robot bajo condiciones aleatorias impredecibles en el laboratorio de INIAR y poniendo a disposición de la comunidad internacional un entorno de simulación accesible desde cualquier dispositivo móvil o navegador.
 
-<div align="center">
-  
 | Herramienta Web | Despliegue en Vivo | Propósito de Entrenamiento Reglamentario |
 | :--- | :---: | :--- |
 | **🎲 Randomizador Ronda Abierta**<br>*(Open Challenge)* | [![Netlify Status](https://img.shields.io/badge/Netlify-En_Línea-00C7B7.svg?style=for-the-badge&logo=netlify&logoColor=white)](https://teamnexussorteoabierta.netlify.app) | Sortea de forma pseudoaleatoria el sentido de giro de la pista (horario o antihorario) y la celda de posicionamiento inicial del vehículo sobre la recta de salida. |
 | **🎲 Randomizador Ronda Cerrada**<br>*(Obstacle Challenge)* | [![Netlify Status](https://img.shields.io/badge/Netlify-En_Línea-00C7B7.svg?style=for-the-badge&logo=netlify&logoColor=white)](https://teamnexussorteocerrada.netlify.app) | Sortea la distribución espacial de los 6 pilares de tráfico reglamentarios (rojos y verdes) garantizando que se cumplan las distancias mínimas entre obstáculos y zonas de cruce exigidas por la WRO. |
-</div>
 
 <a id="randomizador-abierta"></a>
 
