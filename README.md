@@ -1027,21 +1027,21 @@ Cuando el robot alcanza el umbral de disparo ($W \ge 180\text{ px}$), la aproxim
 ###### A. Verificación de Desviación Angular y Reversa en S
 Antes de quebrar la dirección hacia el lado de evasión, el firmware evalúa el ángulo inercial acumulado ($\theta_{\text{actual}}$) obtenido por la MPU6050:
 
-$$\Delta \theta_d = |\theta_{\text{actual}} - \theta_{\text{recta}}|$$\
+$$\Delta \theta_d = |\theta_{\text{actual}} - \theta_{\text{recta}}|$$
 
 Si la desviación angular excede el umbral de seguridad:
 $$\Delta \theta_d > 200^\circ$$
 
 El chasis ejecuta una maniobra de **Pre-Alineación en S en dos fases de retroceso**:
-- **Fase A (Retroceso con quiebre inverso):** $\theta_{\text{servo}} = \text{SERVO\_CENTRO} \pm \text{MAX\_DEFLEXION} = 96^\circ \pm 31^\circ$ en reversa durante $800\text{ ms}$ (`TIEMPO_REVERSA_ALIN_PASO1`), forzando al eje trasero a pivotar alejándose de la zona de riesgo.
-- **Fase B (Contravolanteo en reversa):** $\theta_{\text{servo}} = \text{SERVO\_CENTRO} \mp \text{MAX\_DEFLEXION} = 96^\circ \mp 31^\circ$ en reversa durante $400\text{ ms}$ (`TIEMPO_REVERSA_ALIN_PASO2`), devolviendo el eje longitudinal a una orientación paralela al carril.
+- **Fase A (Retroceso con quiebre inverso):** $\theta_{\text{servo}} = \delta_{\text{centro}} \pm \delta_{\text{max}} = 96^\circ \pm 31^\circ$ en reversa durante $800\text{ ms}$ (`TIEMPO_REVERSA_ALIN_PASO1`), forzando al eje trasero a pivotar alejándose de la zona de riesgo.
+- **Fase B (Contravolanteo en reversa):** $\theta_{\text{servo}} = \delta_{\text{centro}} \mp \delta_{\text{max}} = 96^\circ \mp 31^\circ$ en reversa durante $400\text{ ms}$ (`TIEMPO_REVERSA_ALIN_PASO2`), devolviendo el eje longitudinal a una orientación paralela al carril.
 
 ###### B. Coreografía Evasiva en 5 Fases Temporizadas
 Una vez alineado, el sistema conmuta la referencia inercial de rumbo (`setpoint_yaw`) mediante el factor de dirección según el identificador de color:
 
 $$S_d = \begin{cases} +1 & \text{si ID} = 1 \text{ (Rojo } \rightarrow \text{ Esquivar por Derecha)} \\ -1 & \text{si ID} = 2 \text{ (Verde } \rightarrow \text{ Esquivar por Izquierda)} \end{cases}$$
 
-El sistema inyecta un desfase angular inercial $\Delta \theta_{\text{esquive}} = 55.0^\circ$ (`GRADOS_ESQUIVE`), induciendo al lazo PD a saturar la timonería Ackermann hasta su límite mecánico seguro ($\text{MAX\_DEFLEXION} = 31^\circ$ alrededor del centro neutro de $96^\circ$):
+El sistema inyecta un desfase angular inercial $\Delta \theta_{\text{esquive}} = 55.0^\circ$ (`GRADOS_ESQUIVE`), induciendo al lazo PD a saturar la timonería Ackermann hasta su límite mecánico seguro ($\delta_{\text{max}} = \pm 31^\circ$ alrededor del centro neutro de $96^\circ$, constante `MAX_DEFLEXION`):
 
 $$\text{Setpoint}_{\text{salida}} = \text{Setpoint}_{\text{base}} \mp (55^\circ \cdot S_d)$$
 
@@ -1573,6 +1573,72 @@ WRO-FUTURE-ENGINE-NEXUS-2026/
 │   └── movimientoservo.gif       # Validación cinemática de la dirección Ackermann
 └── README.md                     # Libro blanco de ingeniería y documentación maestro
 ```
+
+### 🗂️ Explorador Interactivo del Repositorio *(Haz clic para desplegar cada carpeta)*
+
+<details open>
+<summary>📂 <b>Modelos/</b> – Modelos 3D Paramétricos STL para Impresión 3D en PETG <i>(Clic para desplegar)</i></summary>
+<br>
+
+| Archivo 3D | Subsistema del Vehículo | Parámetros de Impresión Recomendados | Enlace de Descarga / Vista |
+| :--- | :--- | :--- | :---: |
+| [`Chassis.stl`](./Modelos/Chassis.stl) | Piso 1: Placa base inferior | 4 perímetros, 40% infill giroide en PETG | [📥 Descargar STL](./Modelos/Chassis.stl) |
+| [`Chassis Roof.stl`](./Modelos/Chassis%20Roof.stl) | Pisos 2 y 3: Bandejas de soporte | 4 perímetros, alojamientos empotrados M3 | [📥 Descargar STL](./Modelos/Chassis%20Roof.stl) |
+| [`ENGRANAJEM.stl`](./Modelos/ENGRANAJEM.stl) | Piñón cónico con cavidad en D para motor | 100% relleno concéntrico sólido, PETG | [📥 Descargar STL](./Modelos/ENGRANAJEM.stl) |
+| [`Steering System.stl`](./Modelos/Steering%20System.stl) | Reenvío de dirección Ackermann | Alta tenacidad, tolerancias calibradas | [📥 Descargar STL](./Modelos/Steering%20System.stl) |
+| [`Servor Arm.stl`](./Modelos/Servor%20Arm.stl) | Brazo de timonería para servo MG90S | Estriado reforzado para evitar holguras | [📥 Descargar STL](./Modelos/Servor%20Arm.stl) |
+| [`Readme.md`](./Modelos/Readme.md) | Guía técnica de fabricación aditiva | Parámetros de boquilla y cama caliente | [📄 Leer Guía](./Modelos/Readme.md) |
+
+</details>
+
+<details>
+<summary>📂 <b>src/</b> – Código Fuente Embebido C++ (Arduino IDE & FreeRTOS) <i>(Clic para desplegar)</i></summary>
+<br>
+
+| Carpeta / Sketch | Ronda de Competencia | Descripción Técnica y Módulos | Código Fuente |
+| :--- | :--- | :--- | :---: |
+| [`OPENCHALLENGE/NUMERO4.ino`](./src/OPENCHALLENGE/NUMERO4.ino) | **Open Challenge** (Ronda Abierta) | FSM determinista de 12 esquinas, odometría MPU6050 a 500 Hz en Core 0, escape reactivo ultrasónico | [💻 Ver Sketch](./src/OPENCHALLENGE/NUMERO4.ino) |
+| [`CLOSECHALLENGE/CAZA_NUMERO1.ino`](./src/CLOSECHALLENGE/CAZA_NUMERO1.ino) | **Obstacle Challenge** (Ronda Cerrada) | FreeRTOS concurrente, visión HuskyLens 2 IA (UART Serial1), Modo Cazador y coreografía evasiva en 5 etapas | [💻 Ver Sketch](./src/CLOSECHALLENGE/CAZA_NUMERO1.ino) |
+
+</details>
+
+<details>
+<summary>📂 <b>Esquemas/</b> – Planos Eléctricos, Conexiones y Pinout <i>(Clic para desplegar)</i></summary>
+<br>
+
+| Archivo | Formato | Contenido Técnico | Enlace |
+| :--- | :---: | :--- | :---: |
+| [`DIAGRAMAVF.jpg`](./Esquemas/DIAGRAMAVF.jpg) | Imagen HD | Plano esquemático oficial en Fritzing con arquitectura en 3 ramas y tierra unificada | [👁️ Ver Plano](./Esquemas/DIAGRAMAVF.jpg) |
+| [`ESP32-S3.jpeg`](./Esquemas/ESP32-S3.jpeg) | Imagen | Mapeo de pines GPIO del microcontrolador de doble núcleo | [📄 Ver Pinout](./Esquemas/ESP32-S3.jpeg) |
+| [`L298N.jpg`](./Esquemas/L298N.jpg) | Imagen | Etapa de potencia de tracción con alimentación elevada a 14V | [📄 Ver](./Esquemas/L298N.jpg) |
+| [`LM2596.jpg`](./Esquemas/LM2596.jpg) / [`XL4015.webp`](./Esquemas/XL4015.webp) | Imágenes | Convertidores DC-DC reductores desacoplados | [📁 Ver Galería](./Esquemas/) |
+
+</details>
+
+<details>
+<summary>📂 <b>v-fotos/ & t-fotos/</b> – Inspección Técnica 360° y Equipo Humano <i>(Clic para desplegar)</i></summary>
+<br>
+
+| Fotografía / Registro | Vista Técnica | Enlace Directo |
+| :--- | :--- | :---: |
+| [`SMOKE.jpg`](./v-fotos/SMOKE.jpg) | Vehículo completo "Smoke" listo para pista reglamentaria | [📸 Ver Foto](./v-fotos/SMOKE.jpg) |
+| [`CHASISCOMPLETO.jpg`](./v-fotos/CHASISCOMPLETO.jpg) | Estructura modular multicapa en PETG ensamblada con M3 | [📸 Ver Foto](./v-fotos/CHASISCOMPLETO.jpg) |
+| [Perfiles Ortogonales 360°](./v-fotos/) | Vistas reglamentarias: Delantera, Trasera, Arriba, Abajo, Derecha, Izquierda | [🔍 Inspección 360°](./v-fotos/) |
+| [Equipo INIAR](./t-fotos/) | David Ocando, José Montiel, Jairo Cruz, Ing. Wender Sánchez | [👥 Conocer Equipo](./t-fotos/) |
+
+</details>
+
+<details>
+<summary>📂 <b>Video/</b> – Evidencias Audiovisuales y Validación en Pista <i>(Clic para desplegar)</i></summary>
+<br>
+
+| Archivo Multimedia | Descripción Técnica | Enlace |
+| :--- | :--- | :---: |
+| [`ESQUIVANDO ROJOS.mp4`](./Video/ESQUIVANDO%20ROJOS.mp4) | Grabación de video real de maniobra evasiva completa ante pilar de tráfico rojo | [🎥 Reproducir Video](./Video/ESQUIVANDO%20ROJOS.mp4) |
+| [`ESQUIVANDOROJOS.gif`](./Video/ESQUIVANDOROJOS.gif) | Animación en bucle de la clasificación por visión y esquive | [🎞️ Ver GIF](./Video/ESQUIVANDOROJOS.gif) |
+| [`movimientoservo.gif`](./Video/movimientoservo.gif) | Verificación cinemática de deflexión angular de timonería Ackermann | [🎞️ Ver GIF](./Video/movimientoservo.gif) |
+
+</details>
 
 ### Historial de Versiones y Notas de Lanzamiento (*Release Notes*)
 * **v1.0.0 (Prototipo Inicial Alpha - PLA):** Chasis monolítico 100% impreso en 3D PLA; dirección con holguras mecánicas; alimentación por dos baterías comerciales en serie con reguladores en cascada. Descubrimiento de fallos por retorno inductivo.
