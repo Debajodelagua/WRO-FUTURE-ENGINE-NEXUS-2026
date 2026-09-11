@@ -327,29 +327,43 @@ Durante las fases de prototipado inicial, evaluamos imprimir las manguetas y tir
 > - **Manguetas y Rótulas Inyectadas (LEGO EV3):** Proporcionan una superficie de giro industrial con fricción prácticamente nula y tolerancias dimensionales microscópicas imposibles de igualar en FDM.
 > - **Brazo de Servo (*Servo Horn*) Custom en PETG:** Diseñado a medida en **Autodesk Fusion 360** e impreso con **100% de relleno sólido en PETG**, conectando rígidamente el estriado metálico del servo TowerPro MG90S con los tirantes de LEGO.
 
-#### Rediseño Estructural de la Veleta del Servomotor (`Modelos/Servor Arm.stl`)
-El servomotor comercial TowerPro MG90S incluye por defecto una colección de veletas (*servo horns*) estándar fabricadas en nylon blanco moldeado por inyección fina. No obstante, en las pruebas dinámicas preliminares con el vehículo a plena masa (**859 gramos**), la veleta comercial demostró ser un punto crítico de vulnerabilidad cinemática:
+#### Anatomía y Justificación del Rediseño del Brazo de Servo (`Modelos/Servor Arm.stl` / `v-fotos/BRAZOSERVO.jpg`)
+Los brazos comerciales que vienen de fábrica con el servomotor TowerPro MG90S resultaban totalmente incompatibles con las exigencias dinámicas del vehículo **"Smoke"**:
+1. **Longitud Insuficiente y Falta de Recorrido:** Los brazos estándar de nylon son excesivamente pequeños ($\approx 12\text{--}15\text{ mm}$ de radio de palanca). Al acoplarlos a la barra de dirección Ackermann de $142\text{ mm}$ de trocha, el desplazamiento transversal de la cremallera era mínimo, restringiendo drásticamente el ángulo de viraje de las ruedas e imposibilitando que el vehículo trazara curvas cerradas de $90^\circ$ en pasillos estrechos de $800\text{ mm}$.
+2. **Atascos Cinemáticos Recurrentes (*Mechanical Binding*):** Al utilizar un orificio circular fijo tradicional, el sistema **se trababa frecuentemente en las pruebas iniciales**. Debido a que el servo rota en un arco circular mientras la barra de LEGO se desplaza linealmente, la distancia radial entre el centro del servo y el pin de empuje varía de forma no lineal ($\Delta r = d \cdot (1 - \cos\theta)$). Un orificio circular rígido aprisionaba el pin en ángulos pronunciados, forzando los engranes metálicos del servo bajo bloqueo y deteniendo el vehículo en plena curva.
 
-| Criterio de Comparación | Veleta Comercial Estándar (Nylon MG90S) | Veleta Personalizada Nexus en Fusion 360 (`Servor Arm.stl`) |
+<div align="center">
+  <img src="./v-fotos/BRAZOSERVO.jpg" alt="Brazo de Servomotor Personalizado en Autodesk Fusion 360" width="500" style="border-radius: 8px; border: 1px solid #444; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+  <br>
+  <i>Render de ingeniería en Autodesk Fusion 360 del brazo custom ('Modelos/Servor Arm.stl'): se destaca el núcleo con estriado hembra para MG90S, el orificio central para tornillo axial de retención y la ranura corredera superior (colisa) anti-atasco.</i>
+</div>
+
+#### Innovaciones Geométricas del Brazo Personalizado "Smoke":
+* **Ranura Corredera Longitudinal Superior (*Slotted Guide / Colisa*):** Se reemplazó el orificio circular cerrado por una ranura alargada calibrada en la pala superior del brazo. Esta colisa permite que el pin de enlace LEGO EV3 deslice radialmente con total fluidez a lo largo del brazo mientras este rota. Esto **erradica al 100% los atascos mecánicos (*binding*) y permite un ángulo de giro suave y sin restricciones de hasta $\pm 80^\circ$**.
+* **Estriado Negativo Paramétrico (Splined Core):** El cilindro vertical incorpora internamente el estriado hembra de 21 dientes modelado en Fusion 360 para acoplarse con tolerancia micrométrica al eje estriado metálico del servo MG90S, suprimiendo cualquier holgura angular circunferencial (*zero-backlash*).
+* **Alojamiento Central para Tornillo Axial de Fijación:** Dispone de una cavidad pasante central concéntrica al eje que permite insertar el tornillo de retención métrico del servo, bloqueando rígidamente el brazo contra el motor e impidiendo que se desacople verticalmente ante vibraciones o impactos leves en pista.
+* **Brazo Extendido de Mayor Palanca y Resistencia:** Fabricado en **PETG sólido al 100% de relleno con espesor reforzado a 3.5 mm**, otorga el brazo de palanca necesario para desplazar completamente la barra de dirección, garantizando que las ruedas directrices alcancen $\pm 21^\circ$ de deflexión con mínima demanda de corriente.
+
+| Criterio de Comparación | Brazo Comercial Estándar (Nylon MG90S) | Brazo Personalizado Nexus en Fusion 360 (`Servor Arm.stl`) |
 | :--- | :--- | :--- |
 | **Material y Densidad** | Nylon comercial flexible (~1.5 mm de espesor). | **PETG Estructural al 100% de relleno sólido (*infill 100%*)**. |
-| **Espesor y Nervaduras** | Paredes delgadas propensas a pandeo elástico bajo torsión. | **Espesor reforzado a 3.5 mm** con nervaduras axiales de rigidización geométrica. |
-| **Acople con la Timonería** | Orificio circular pasante delgado ($\varnothing 1.0\text{ mm}$); tornillo con holgura. | **Alojamiento paramétrico de precisión milimétrica para rótula/pin LEGO EV3**. |
-| **Juego Mecánico (*Backlash*)** | Histéresis angular progresiva ($> 4^\circ$) tras 50 ciclos de giro en pista. | **Cero juego mecánico (*Zero-backlash*, $< 0.5^\circ$)**, manteniendo el centro calibrado en $96^\circ$. |
-| **Transmisión de Par** | Deformación elástica que absorbe parte del torque del servo. | Transmisión rígida e instantánea del par del servo a las manguetas de dirección. |
+| **Longitud de Palanca** | Muy pequeña ($\approx 12\text{ mm}$); viraje insuficiente. | **Longitud extendida optimizada** para el ancho de trocha de 142 mm. |
+| **Geometría de Acople** | Orificio circular único fijo; provocaba trabas mecánicas. | **Ranura corredera longitudinal (colisa)** que erradica atascos (*anti-binding*). |
+| **Fijación Axial** | Tornillo con asiento plástico fino y riesgo de zafado. | **Cavidad cilíndrica profunda** con tope rígido para tornillo métrico central. |
+| **Juego Mecánico (*Backlash*)** | Histéresis angular progresiva ($> 4^\circ$) tras 50 ciclos. | **Cero juego mecánico (*Zero-backlash*, $< 0.5^\circ$)**, manteniendo el centro calibrado en $96^\circ$. |
 
 > 🛡️ **Mitigación de Riesgo de Ingeniería:**
-> **Para mitigar el riesgo de histéresis cinemática, holgura acumulada (*backlash*) y flexión elástica bajo esfuerzos dinámicos de viraje rápido**, el equipo rediseñó en **Autodesk Fusion 360** la veleta del servomotor ([`Modelos/Servor Arm.stl`](./Modelos/Servor%20Arm.stl)), modelándola con paredes de 3.5 mm de grosor, nervaduras de refuerzo y cavidad de anclaje de tolerancia cero para la rótula LEGO EV3. Esto garantiza que cada microsegundo de señal PWM se traduzca de forma lineal y determinista en ángulo de rueda sin deriva.
+> **Para mitigar el riesgo de bloqueo mecánico cinemático (*mechanical binding*), sobrecalentamiento del servomotor y limitación del radio de giro**, el equipo diseñó en **Autodesk Fusion 360** un brazo extendido personalizado ([`Modelos/Servor Arm.stl`](./Modelos/Servor%20Arm.stl)) provisto de una colisa longitudinal que absorbe las variaciones radiales del pin de articulación LEGO EV3 y un estriado hembra acoplado con tornillo pasante axial, garantizando virajes fluidos de hasta $\pm 80^\circ$ sin atascamientos.
 
 <div align="center">
   <img src="./v-fotos/Sistema%20de%20direccion.png" alt="Conjunto de Dirección y Veleta Custom en Autodesk Fusion 360" width="500" style="border-radius: 8px; border: 1px solid #444; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
   <br>
-  <i>Render de ensamble en Autodesk Fusion 360: Integración del servomotor MG90S con la veleta personalizada en PETG ('Modelos/Servor Arm.stl', visible en la zona inferior acoplando el pin de dirección) y los elementos de articulación LEGO EV3.</i>
+  <i>Render de ensamble en Autodesk Fusion 360: Integración del servomotor MG90S con el brazo personalizado en PETG ('Modelos/Servor Arm.stl', visible en la zona inferior acoplando el pin de dirección) y los elementos de articulación LEGO EV3.</i>
 </div>
 
 > [!NOTE]
 > **Disponibilidad del Archivo CAD 3D de Manufactura:**
-> El modelo tridimensional listo para impresión 3D se encuentra alojado en el repositorio bajo la ruta [`Modelos/Servor Arm.stl`](./Modelos/Servor%20Arm.stl). *(Nota técnica: Los archivos STL son mallas poligonales de fabricación aditiva y no son renderizados nativamente como imagen en GitHub Markdown; por este motivo, se incluye la vista renderizada exportada desde Fusion 360).*
+> El modelo tridimensional listo para impresión 3D se encuentra alojado en el repositorio bajo la ruta [`Modelos/Servor Arm.stl`](./Modelos/Servor%20Arm.stl). La documentación visual incluye tanto el render aislado de la pieza ([`v-fotos/BRAZOSERVO.jpg`](./v-fotos/BRAZOSERVO.jpg)) como el render del ensamble cinemático completo ([`v-fotos/Sistema de direccion.png`](./v-fotos/Sistema%20de%20direccion.png)).
 
 ### 1.3.3 Validación del Rango de Viraje del Servomotor (±80°)
 Para garantizar que la timonería no sufra atascos mecánicos (*binding*) en maniobras de evasión extrema ante obstáculos, se calibró el recorrido del servomotor MG90S:
@@ -1703,6 +1717,7 @@ WRO-FUTURE-ENGINE-NEXUS-2026/
 | :--- | :--- | :---: |
 | [`SMOKE.jpg`](./v-fotos/SMOKE.jpg) | Vehículo completo "Smoke" listo para pista reglamentaria | [📸 Ver Foto](./v-fotos/SMOKE.jpg) |
 | [`CHASISCOMPLETO.jpg`](./v-fotos/CHASISCOMPLETO.jpg) | Estructura modular multicapa en PETG ensamblada con M3 | [📸 Ver Foto](./v-fotos/CHASISCOMPLETO.jpg) |
+| [`BRAZOSERVO.jpg`](./v-fotos/BRAZOSERVO.jpg) | Render CAD de ingeniería del brazo de servo custom con colisa anti-atasco | [📸 Ver Render](./v-fotos/BRAZOSERVO.jpg) |
 | [Perfiles Ortogonales 360°](./v-fotos/) | Vistas reglamentarias: Delantera, Trasera, Arriba, Abajo, Derecha, Izquierda | [🔍 Inspección 360°](./v-fotos/) |
 | [Equipo INIAR](./t-fotos/) | David Ocando, José Montiel, Jairo Cruz, Ing. Wender Sánchez | [👥 Conocer Equipo](./t-fotos/) |
 
