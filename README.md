@@ -42,6 +42,7 @@ Este documento técnico ha sido elaborado bajo un formato de **libro blanco de i
 - 1.5 [Estudio Dinámico: Razonamiento de Par Motor vs. Velocidad](#estudio-dinamico)
 - 1.6 [Configuración Escalonada de Ruedas (*Staggered Setup*) e Inercia Rotacional](#ruedas-escalonadas)
 - 1.7 [Diseños Alternativos Considerados vs. Diseño Mecánico Elegido](#alternativas-mecanicas)
+  - 1.7.1 [Evolución Cronológica y Autopsia Técnica de Prototipos Descartados](#prototipos-descartados)
 
 ---
 
@@ -528,6 +529,77 @@ Bajo la rúbrica oficial de la WRO, la calidad de ingeniería no se mide por lle
 | **Timonería de Giro** | **Dirección 100% Impresa en 3D (FDM):** Manguetas y pivotes impresos íntegramente en PETG/PLA. | **Dirección Híbrida:** Manguetas inyectadas LEGO EV3 con brazo de servo (*horn*) custom en PETG al 100% de infill. | Las piezas mecánicas diminutas impresas en FDM poseen microporosidad entre capas que genera un rozamiento parásito elevado ($\mu_k > 0.35$) y holgura acumulada (*backlash*) tras 50 ciclos de giro, degradando el centrado a 96°. |
 | **Tren Trasero** | **Eje Rígido Monomotor sin Diferencial:** Ambas ruedas traseras unidas rígidamente al mismo eje motriz. | **Caja Diferencial LEGO EV3 con 3 Satélites Cónicos Internos.** | Al negociar curvas cerradas de 90° con radio de 20 cm, la rueda exterior debe recorrer un arco un **35% mayor** que la interior. Sin diferencial, una de las ruedas derrapa forzosamente (*tire scrub*), frenando el robot en seco y sobrecalentando el motor. |
 | **Selección de Neumáticos** | **Neumáticos Homogéneos:** 4 ruedas idénticas de Ø 43 mm en ambos trenes. | **Neumáticos Escalonados (*Staggered Setup*):** Ø 30 mm adelante y Ø 43 mm atrás. | Utilizar ruedas de 43 mm adelante incrementaba la inercia rotacional del tren directriz en un **358%**, forzando al servomotor a su límite térmico y retardando la evasión de obstáculos en más de 80 ms. |
+
+<a id="prototipos-descartados"></a>
+
+### 1.7.1 Evolución Cronológica y Autopsia Técnica de Prototipos Descartados
+El diseño de **"Smoke"** no surgió de forma espontánea; fue el resultado de un riguroso **proceso de diseño iterativo (*Iterative Engineering Design Process*)**. En lugar de ocultar los errores iniciales, el equipo documenta con transparencia las tres iteraciones descartadas en el taller de INIAR, analizando la causa raíz de cada fallo mecánico y térmico que nos permitió concebir la plataforma definitiva:
+
+#### 1. Fase 0: Sistema de Dirección Piñón-Cremallera Inicial (Descartado en CAD)
+Antes de diseñar el chasis, el equipo modeló una primera aproximación de dirección basada en piñón y cremallera lineal dentada acoplada a un eje en D:
+
+<div align="center">
+  <img src="./Otro/SISTEMA%20DE%20DIRECCION%20DESCARTADO.jpg" alt="Sistema de Dirección Piñón-Cremallera Descartado" width="500" style="border-radius: 8px; border: 1px solid #444; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+  <br>
+  <i>Fase 0 (CAD): Prototipo exploratorio preliminar de piñón y cremallera lineal. Descartado en fase virtual por inviabilidad práctica.</i>
+</div>
+
+* **Diagnóstico y Causa Raíz de Descarte:**
+  * **Diseño Preliminar Ineficiente:** Fue el primer intento conceptual del equipo cuando aún no contábamos con el chasis modelado. Se concibió como un mecanismo de cremallera recto tradicional, pero resultó ser una solución anticuada y sumamente ineficiente para robótica móvil autónoma.
+  * **Sin Alojamiento para Servomotor:** Carecía por completo de cabida, bancada o fijación para el servomotor de dirección.
+  * **Incompatibilidad Cinemática:** No implementaba la geometría angular de Ackermann, forzando un viraje en paralelo que hubiera inducido un arrastre lateral (*wheel scrub*) severo en pista.
+  * **Decisión:** Nunca se llevó a imprimir en 3D; se descartó directamente en CAD para iniciar un diseño adaptado a servomotores y geometría vehicular real.
+
+---
+
+#### 2. Fase 1: Prototipo Físico 1 – Chasis Monolítico Delgado y Dirección FDM 100% 3D (Descartado)
+Fue el primer prototipo fabricado físicamente en la impresora 3D para evaluar la integración conjunta del motor Makeblock, la transmisión cónica y la dirección:
+
+| Vista General del Chasis 1 Descartado | Detalle del Sistema de Dirección 2 Descartado |
+| :---: | :---: |
+| <img src="./Otro/CHASIS%20DESCARTADO%201.jpg" width="400" alt="Chasis Descartado 1" style="border-radius: 8px; border: 1px solid #444;"> | <img src="./Otro/SISTEMA%20DE%20DIRECCION%202%20DESCARTADO.jpg" width="400" alt="Sistema de Dirección 2 Descartado" style="border-radius: 8px; border: 1px solid #444;"> |
+| *Placa base delgada, bancada precaria y soportes débiles de semiejes* | *Tirantes y manguetas diminutas impresas en 3D (fracturadas en pruebas)* |
+
+* **Diagnóstico y Causa Raíz de Descarte:**
+  1. **Rotura Inmediata de Piezas de Dirección FDM:** Debido al tamaño diminuto de las rótulas y la debilidad inherente de adhesión entre capas en piezas tan finas impresas en 3D, **la gran mayoría de las piezas de la dirección se partieron durante el ensamblaje y las primeras pruebas de viraje**.
+  2. **Flexión y Fragilidad Extrema del Chasis:** La placa base era excesivamente delgada y de baja densidad. Cada vez que el motor DC Makeblock aceleraba, la placa flexaba y torsionaba visiblemente, transmitiendo la sensación de que **el chasis iba a romperse en cualquier segundo por el torque del motor**.
+  3. **Vibración y Estrangulamiento de los Ejes:** Las barras verticales delgadas que sostenían los semiejes de transmisión flexaban de forma incontrolable. Además, los orificios para mantener derecho el eje del motor se modelaron con tolerancias tan reducidas que aprisionaban los ejes, estrangulando la rotación e induciendo una fricción parásita destructiva.
+* **Lección de Ingeniería:** Aunque fue un diseño deficiente, **imprimir este prototipo físico fue la mejor práctica del equipo**, ya que nos permitió ver de forma tangible todos los errores mecánicos y sentó las bases para el rediseño robusto que hoy conforma a "Smoke".
+
+---
+
+#### 3. Fase 2: Prototipo Físico 2 – Chasis con Columnas Sensoriales y Fallo Térmico por Silicón (Descartado)
+En esta penúltima versión, el chasis ya presentaba una silueta muy cercana a la definitiva, pero surgieron fallos graves en el montaje de sensores y en la gestión térmica de los componentes:
+
+<div align="center">
+  <img src="./Otro/CHASIS%20DESCARTADO%202.jpg" alt="Chasis Descartado 2 con Columnas para Sensores" width="520" style="border-radius: 8px; border: 1px solid #444; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+  <br>
+  <i>Fase 2 (CAD/Físico): Penúltimo chasis. Obsérvense los tres postes cilíndricos por flanco para sujetar ultrasonidos con ligas y la precaria fijación de electrónica.</i>
+</div>
+
+* **Diagnóstico y Causa Raíz de Descarte:**
+  1. **Inestabilidad de los Sensores Ultrasónicos por Ligas Elásticas:** Se modelaron tres postes cilíndricos verticales por lado para sujetar los sensores HC-SR04 mediante bandas elásticas (ligas). En pista, los sensores oscilaban y cabeceaban con las aceleraciones, falseando completamente las distancias de escape ultrasónico.
+  2. **Aprisionamiento y Pellizco de Cables:** Al ensamblar los pisos superiores sobre las columnas, las tres barras cilíndricas laterales **aprisionaban y estrangulaban los cables de conexión de los ultrasonidos**, dificultando el rutado y generando riesgo inminente de falso contacto o rotura de conductores.
+  3. **Fallo Térmico Crítico por Fijación con Silicón Caliente (*Thermal Trapping*):** Al principio, varios módulos se fijaban utilizando pegamento de silicón termofusible. Durante pruebas continuas en banco, uno de los primeros reguladores elevadores de voltaje experimentó un calentamiento térmico severo. **El silicón actuó como un aislante térmico en lugar de permitir disipar el calor**, acumulando la energía térmica hasta derretir localmente el PETG del piso del chasis y **abrir un pequeño agujero por derretimiento térmico**.
+* **Solución y Mitigación Definitiva en "Smoke":**
+  * Se eliminaron las barras cilíndricas del chasis.
+  * Se sustituyó el amarre por ligas y el pegamento de silicón caliente por **cinta adhesiva de doble contacto de espuma acrílica industrial (*doble faz*)** para los sensores y bases de módulos.
+  * La cinta doble faz amortigua vibraciones sin bloquear la transferencia térmica natural, protege la integridad del PETG y se combina con tornillería métrica M3 pasante y tuercas autoblocantes.
+
+---
+
+#### 4. Cuadro Comparativo de la Evolución de Prototipos hacia "Smoke"
+
+| Parámetro Evaluado | Fase 0: Piñón-Cremallera | Fase 1: Chasis 1 + Dirección 2 | Fase 2: Chasis 2 (Penúltimo) | Prototipo Final: "Smoke" |
+| :--- | :--- | :--- | :--- | :--- |
+| **Material y Estructura** | Virtual (CAD únicamente) | FDM Monocapa fina ($\approx 1.5\text{ mm}$); propensa a fractura | FDM Monocapa con postes cilíndricos | **Modular vertical 3 Pisos en PETG estructural ($\mathbf{3.5\text{ mm}}$)** con tornillos pasantes M3 |
+| **Sistema de Dirección** | Cremallera recta sin Ackermann; sin soporte de servo | Manguetas 100% 3D FDM; rotura mecánica en pruebas | Manguetas híbridas pero montaje endeble | **Híbrido de alta precisión:** Manguetas LEGO EV3 + brazo custom con colisa anti-atasco |
+| **Soporte de Transmisión** | Inexistente | Bancada débil en voladizo; orificios estrechos con fricción | Soportes independientes sin rigidización inter-eje | **Bancada envolvente de 8 puntos M3** con bujes lisos y tuercas Nyloc |
+| **Fijación de Sensores** | Sin prever | Soportes improvisados | Postes cilíndricos con ligas (oscilaban y mordían cables) | **Montaje perimetral rasante a 25 mm** fijado sólidamente con cinta doble faz |
+| **Gestión Térmica** | Sin prever | Módulos sueltos | Pegamento de silicón (atrapó calor y perforó el plástico) | **Cinta doble faz disipativa + separación vertical de 19 mm** con disipador expuesto |
+
+> 🛡️ **Mitigación de Riesgo de Ingeniería:**
+> **Para mitigar el riesgo de perforación térmica del chasis, daño en módulos de potencia y fatiga por vibración**, se erradicó por completo el uso de silicón termofusible en el ensamblaje, sustituyéndolo por cinta adhesiva de doble contacto de espuma acrílica industrial y fijaciones mecánicas roscadas M3 con separación de aire libre de $19\text{ mm}$ entre estratos para garantizar convección natural eficiente.
 <p align="right"><a href="#indice-general">⬆️ Volver al Índice</a></p>
 
 # ⚡ Módulo 2: Arquitectura de Energía y Sensores <a id="modulo-2-energia-sensores"></a><a id="pilar-2-energia-sensores"></a>
@@ -1643,7 +1715,11 @@ WRO-FUTURE-ENGINE-NEXUS-2026/
 │   ├── Servor Arm.stl            # Brazo de reenvío para servomotor TowerPro MG90S
 │   ├── Steering System.stl       # Mecanismo de timonería Ackermann híbrida
 │   └── Readme.md                 # Parámetros de impresión FDM y tolerancias en PETG
-├── Otro/                         # Registro fotográfico de componentes y subsistemas
+├── Otro/                         # Registro fotográfico de prototipos descartados y componentes
+│   ├── SISTEMA DE DIRECCION DESCARTADO.jpg # Fase 0: Piñón-cremallera preliminar en CAD
+│   ├── CHASIS DESCARTADO 1.jpg   # Fase 1: Primer chasis físico monocapa delgado
+│   ├── SISTEMA DE DIRECCION 2 DESCARTADO.jpg # Fase 1: Dirección 100% FDM (fracturada)
+│   ├── CHASIS DESCARTADO 2.jpg   # Fase 2: Chasis penúltimo con columnas para ultrasonidos
 │   ├── BATERIA.jpg               # Pack cilíndrico EVE 18650 2S2P (7000 mAh)
 │   ├── Diferencial Lego.jpg      # Caja diferencial de 3 satélites LEGO EV3
 │   ├── ENGRANAJECONICO.jpg       # Corona cónica LEGO y piñones
@@ -1706,6 +1782,23 @@ WRO-FUTURE-ENGINE-NEXUS-2026/
 | [`ESP32-S3.jpeg`](./Esquemas/ESP32-S3.jpeg) | Imagen | Mapeo de pines GPIO del microcontrolador de doble núcleo | [📄 Ver Pinout](./Esquemas/ESP32-S3.jpeg) |
 | [`L298N.jpg`](./Esquemas/L298N.jpg) | Imagen | Etapa de potencia de tracción con alimentación elevada a 14V | [📄 Ver](./Esquemas/L298N.jpg) |
 | [`LM2596.jpg`](./Esquemas/LM2596.jpg) / [`XL4015.webp`](./Esquemas/XL4015.webp) | Imágenes | Convertidores DC-DC reductores desacoplados | [📁 Ver Galería](./Esquemas/) |
+
+</details>
+
+<details>
+<summary>📂 <b>Otro/</b> – Registro de Prototipos Descartados y Hardware Individual <i>(Clic para desplegar)</i></summary>
+<br>
+
+| Archivo / Fotografía | Etapa de Desarrollo / Componente | Descripción de Ingeniería | Enlace |
+| :--- | :--- | :--- | :---: |
+| [`SISTEMA DE DIRECCION DESCARTADO.jpg`](./Otro/SISTEMA%20DE%20DIRECCION%20DESCARTADO.jpg) | Fase 0 (CAD) | Primer diseño preliminar de piñón-cremallera; descartado por inviabilidad cinemática | [📸 Ver Foto](./Otro/SISTEMA%20DE%20DIRECCION%20DESCARTADO.jpg) |
+| [`CHASIS DESCARTADO 1.jpg`](./Otro/CHASIS%20DESCARTADO%201.jpg) | Fase 1 (Prototipo 1) | Chasis monocapa delgado y flexible; soportes de motor endebles | [📸 Ver Foto](./Otro/CHASIS%20DESCARTADO%201.jpg) |
+| [`SISTEMA DE DIRECCION 2 DESCARTADO.jpg`](./Otro/SISTEMA%20DE%20DIRECCION%202%20DESCARTADO.jpg) | Fase 1 (Dirección FDM) | Piezas diminutas 100% 3D que se fracturaron durante las pruebas | [📸 Ver Foto](./Otro/SISTEMA%20DE%20DIRECCION%202%20DESCARTADO.jpg) |
+| [`CHASIS DESCARTADO 2.jpg`](./Otro/CHASIS%20DESCARTADO%202.jpg) | Fase 2 (Penúltimo) | Chasis con columnas para ligas de ultrasonidos y fallo térmico por silicón | [📸 Ver Foto](./Otro/CHASIS%20DESCARTADO%202.jpg) |
+| [`Diferencial Lego.jpg`](./Otro/Diferencial%20Lego.jpg) | Tren Motriz RWD | Caja diferencial de satélites cónicos LEGO EV3 | [📸 Ver Foto](./Otro/Diferencial%20Lego.jpg) |
+| [`ENGRANAJECONICO.jpg`](./Otro/ENGRANAJECONICO.jpg) | Transmisión 90° | Acople entre piñón PETG y corona LEGO | [📸 Ver Foto](./Otro/ENGRANAJECONICO.jpg) |
+| [`BATERIA.jpg`](./Otro/BATERIA.jpg) | Banco de Potencia | Celdas de iones de litio EVE 18650 2S2P (7000 mAh) | [📸 Ver Foto](./Otro/BATERIA.jpg) |
+| [`Makeblock.jpg`](./Otro/Makeblock.jpg) | Motorreductor | Motor DC Makeblock de 9V a 185 RPM nominales | [📸 Ver Foto](./Otro/Makeblock.jpg) |
 
 </details>
 
