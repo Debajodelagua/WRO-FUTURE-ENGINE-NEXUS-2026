@@ -51,6 +51,7 @@ Este documento técnico ha sido elaborado bajo un formato de **libro blanco de i
 - 2.2 [Presupuesto Energético y Cuadro de Consumo de Corriente (*Power Budget*)](#presupuesto-energetico)
 - 2.3 [Banco de Baterías EVE 18650 2S2P (7.0V - 7.4V, 7000 mAh) y Autonomía Teórica](#baterias-18650)
 - 2.4 [Regulación de Voltaje: Elevador XL6009 a 14V y Supresión de Caída L298N](#regulacion-voltaje)
+  - 2.4.3 [Selección de Conductores: Cable 18 AWG Automotriz y Borneras](#cableado-conductores)
 - 2.5 [Selección, Justificación y Ubicación Geométrica de Sensores](#justificacion-sensores)
   - 2.5.1 [Cámara Neuronal HuskyLens 2 (IA / Visión por Color)](#sensor-huskylens)
   - 2.5.2 [Unidad de Medición Inercial MPU6050 (Giroscopio / Acelerómetro)](#sensor-mpu6050)
@@ -702,6 +703,16 @@ Para entregar los **12.0V netos de máxima eficiencia al motor Makeblock**:
 Todos los polos negativos (GND) del banco de baterías 18650, los tres convertidores DC-DC, el driver L298N, los sensores ultrasónicos, el servo y el microcontrolador ESP32-S3 están **interconectados eléctricamente en un nodo de masa común**:
 * **Referencia Equipotencial Cero:** Erradica bucles de tierra (*ground loops*) y tensiones parásitas flotantes que podrían provocar reinicios espontáneos en el procesador.
 * **Integridad de Buses de Comunicación Serial (UART e I2C):** Al compartir un plano de 0V idéntico, las líneas de datos de alta velocidad (`Serial1` a 115,200 baudios de la HuskyLens 2 y las señales PWM del servo a 50 Hz) mantienen sus umbrales de nivel lógico $V_{IL}$ y $V_{IH}$ sin distorsiones ni lecturas corruptas.
+
+### 2.4.3 Selección de Conductores: Cable 18 AWG Automotriz y Fijación por Borneras <a id="cableado-conductores"></a>
+Para asegurar que la corriente fluya sin pérdidas resistivas ni riesgos térmicos desde el banco 2S2P hacia los tres convertidores DC-DC, el driver L298N y el motor Makeblock, se realizó una selección técnica específica de conductores y métodos de sujeción:
+
+* **Descarte de Cable 14 AWG Convencional:** Durante las primeras fases de prueba se implementó cable de cobre estándar de calibre 14 AWG. Aunque ofrecía excelente capacidad de conducción, su aislamiento de PVC grueso y su elevada rigidez mecánica entorpecían enormemente el enrutamiento (*cable management*) dentro de los pisos del chasis ($225 \times 170\text{ mm}$), generando un sobrepeso innecesario y ejerciendo fuerzas de torsión que aflojaban las conexiones en las placas.
+* **Adopción de Cable 18 AWG Automotriz (Alta Temperatura):** Se migró a cable automotriz multifilamento de **calibre 18 AWG**. Este tipo de conductor cuenta con una chaqueta polimérica de pared delgada diseñada para soportar ambientes térmicos exigentes, permitiendo tender las líneas de potencia muy cerca de los disipadores del driver L298N y de la carcasa del motor sin riesgo de degradación del aislante. Con una resistencia lineal de apenas $\approx 0.021\ \Omega/\text{m}$, tolera holgadamente los picos de más de $2.7\text{ A}$ demandados a las celdas Li-ion, manteniendo caídas de tensión despreciables ($\Delta V < 0.03\text{V}$).
+* **Fijación Mecánica Exclusiva por Borneras de Tornillo (*Screw Terminals*):** En lugar de realizar soldaduras fijas en las líneas de potencia principales, **todos los empalmes entre baterías, switches, entradas/salidas de los tres convertidores DC-DC y el driver L298N se realizaron mediante borneras de tornillo**:
+  1. **Modularidad y Mantenimiento Inmediato en Boxes:** Si un regulador requiere calibración de voltaje fino o sustitución urgente entre mangas oficiales, se desacopla en segundos utilizando un destornillador plano de precisión, sin depender de un cautín ni estresar térmicamente las pistas de cobre.
+  2. **Inmunidad a Fracturas por Vibración:** Las borneras mecánicas aprisionan el conductor multifilamento de 18 AWG de forma homogénea, evitando las roturas por fatiga mecánica que suelen sufrir las soldaduras rígidas expuestas a las vibraciones continuas del chasis sobre la pista.
+* **Segregación de Líneas Lógicas:** Los buses de comunicación sensible (I2C a 400 kHz y UART a 115,200 baudios) utilizan cables flexibles de 24 AWG, enrutados por canalizaciones separadas de las líneas de potencia de 18 AWG para erradicar cualquier acoplamiento inductivo (*crosstalk* o ruido EMI).
 
 ## 2.5 Selección, Justificación y Ubicación Geométrica de Sensores <a id="justificacion-sensores"></a>
 La arquitectura sensorial de **"Smoke"** opera bajo un esquema de **fusión sensorial distribuida**: combina visión artificial acelerada por hardware embebido para la clasificación semántica de obstáculos, con una red acústica de tiempo de vuelo para el mantenimiento de carril y telemetría inercial de alta frecuencia en tiempo real.
@@ -1633,7 +1644,7 @@ Todas las piezas plásticas se imprimen en impresora 3D (Bambu Lab P1S o similar
 1. **Placa de Potencia:** Fijar el soporte para el banco de baterías 2S2P EVE 18650 en la bandeja superior mediante correas de velcro industrial.
 2. **Instalación de Reguladores:** Atornillar los módulos Step-Down XL4015, LM2596 y el Step-Up XL6009 en los soportes dedicados del tercer nivel.
 3. **Driver L298N:** Fijar el puente H con su disipador hacia el flujo de aire libre del vehículo.
-4. **Interconexión en Estrella (*Star Grounding*):** Soldar todas las líneas de retorno de masa (GND) a un nodo central de cobre para eliminar bucles de tierra inductivos.
+4. **Distribución de Potencia y Tierra Común por Borneras:** Cablear los rieles de potencia y líneas de retorno de masa (GND) utilizando cable automotriz de 18 AWG conectado a las borneras de tornillo en estrella de los módulos, garantizando una conexión firme, sin soldaduras térmicas y libre de bucles inductivos.
 
 ---
 
