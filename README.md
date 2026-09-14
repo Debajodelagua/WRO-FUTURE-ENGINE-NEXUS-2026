@@ -38,7 +38,7 @@ Este documento técnico ha sido elaborado bajo un formato de **libro blanco de i
 - 1.1 [Chasis Modular Multicapa en PETG y Distribución de Masa](#chasis-petg)
 - 1.2 [Estructura Rígida, Tornillería Pasante M3 y Separación de Niveles](#separacion-niveles)
 - 1.3 [Geometría de Dirección Ackermann Híbrida y Validación de Barrido](#geometria-ackermann)
-- 1.4 [Tren Motriz Trasero (RWD), Transmisión Cónica y Diferencial LEGO EV3](#tren-motriz)
+- 1.4 [Tren Motriz Trasero (RWD), Transmisión Cónica y Caja Diferencial](#tren-motriz)
 - 1.5 [Estudio Dinámico: Razonamiento de Par Motor vs. Velocidad](#estudio-dinamico)
 - 1.6 [Configuración Escalonada de Ruedas (*Staggered Setup*) e Inercia Rotacional](#ruedas-escalonadas)
 - 1.7 [Diseños Alternativos Considerados vs. Diseño Mecánico Elegido](#alternativas-mecanicas)
@@ -163,7 +163,7 @@ Team Nexus está integrado por estudiantes universitarios del **Instituto de Int
 * **Responsabilidades Técnicas en "Smoke":**
   * **Diseño Paramétrico 3D:** Modelado en **Autodesk Fusion 360** del chasis modular de tres niveles, bancada de motor y soportes de sensado.
   * **Manufactura Aditiva Avanzada:** Optimización de laminado en **Bambu Lab** con filamento **PETG** estructural (orientación de capas, 100% infill en engranajes y tolerancias dimensionales).
-  * **Cinemática y Ensamblaje:** Adaptación híbrida del piñón cónico con entrada D-Shaft al diferencial LEGO EV3, timonería Ackermann y estandarización métrica M3.
+  * **Cinemática y Ensamblaje:** Adaptación del piñón cónico con entrada D-Shaft al diferencial trasero, timonería Ackermann y estandarización métrica M3.
 #### 🏆 Historial de Competición:
 * **Copa KAI (2023):** Competidor en diseño de chasis ultraligero y robótica móvil.
 * **FIRST Tech Challenge (FTC Championship – Italia 2024):** Integrante de la delegación internacional venezolana; diseño de sistemas de reducción mecánica y ensamblaje de alta precisión.
@@ -207,7 +207,7 @@ El diseño dimensional y dinámico de **"Smoke"** responde a una búsqueda delib
   * Unidad de Medición Inercial (**IMU MPU6050**) concéntrica con el centro de masa del vehículo.
 * **🦾 Dinámica, Dirección y Tracción:** 
   * Dirección delantera **Ackermann Híbrido** con servomotor digital metálico **TowerPro MG90S**.
-  * Propulsión trasera **RWD** impulsada por un motor DC **Makeblock 9V (185 RPM nominales con encoder de cuadratura integrado)**, acoplado mediante transmisión cónica a 90° de PETG a una caja diferencial de 3 satélites LEGO EV3.
+  * Propulsión trasera **RWD** impulsada por un motor DC **Makeblock 9V (185 RPM nominales con encoder de cuadratura integrado)**, acoplado mediante transmisión cónica a 90° de PETG a una caja diferencial trasera de 3 satélites cónicos.
 * **🔋 Subestación Energética:** Banco de celdas cilíndricas de litio **18650 (3.5V / 3500 mAh)** en configuración **2S2P** (tensión de bus nominal de 7.0V y capacidad masiva de **7000 mAh**), con 3 etapas DC-DC de regulación independiente (XL4015, LM2596 y XL6009).
 > [!NOTE]
 > **Origen del Nombre "Smoke":**
@@ -220,9 +220,9 @@ El diseño dimensional y dinámico de **"Smoke"** responde a una búsqueda delib
 ## Galería de Inspección Técnica 360°
 Para verificar la simetría estructural, la concentricidad del centro de masa ($CoG$), la rigidez de la manufactura aditiva en PETG y el despeje libre sobre el tapiz (*ground clearance*), se documentan los **6 perfiles de inspección ortogonal reglamentarios**:
 | 📸 Perfil de Inspección | 🖼️ Registro Visual | 🔍 Criterio de Verificación Técnica de Ingeniería |
-| :--- | :---: | :--- | 
-| **Vista Frontal**<br>*(Front View)* | <img width="380" alt="Perfil Delantero" src="./v-fotos/ANGULO%20POR%20DELANTE.jpg" /> | • Evalúa la orientación e inclinación angular del procesador de visión **HuskyLens 2** en el Piso 2.<br>• Muestra la posición del sensor ultrasónico central delantero para el frenado ante esquinas a 70 cm.<br>• Inspección del paralelismo de las manguetas de dirección LEGO y el despeje del parachoques. |
-| **Vista Trasera**<br>*(Rear View)* | <img width="380" alt="Perfil Trasero" src="./v-fotos/ANGULO%20POR%20ATRAS.jpg" /> | • Evidencia el anclaje del motor Makeblock sobre su bancada de PETG reforzada con 8 tornillos M3.<br>• Muestra el ensamble de la transmisión cónica atacando la corona del diferencial LEGO EV3.<br>• Verificación de los retenedores axiales amarillos LEGO que evitan el desplazamiento de las ruedas de tracción de 43 mm. |
+| :--- | :--- | :--- | 
+| **Vista Frontal**<br>*(Front View)* | <img width="380" alt="Perfil Delantero" src="./v-fotos/ANGULO%20POR%20DELANTE.jpg" /> | • Evalúa la orientación e inclinación angular del procesador de visión **HuskyLens 2** en el Piso 2.<br>• Muestra la posición del sensor ultrasónico central delantero para el frenado ante esquinas a 70 cm.<br>• Inspección del paralelismo de las manguetas de dirección y el despeje del parachoques. |
+| **Vista Trasera**<br>*(Rear View)* | <img width="380" alt="Perfil Trasero" src="./v-fotos/ANGULO%20POR%20ATRAS.jpg" /> | • Evidencia el anclaje del motor Makeblock sobre su bancada de PETG reforzada con 8 tornillos M3.<br>• Muestra el ensamble de la transmisión cónica atacando la corona del diferencial trasero.<br>• Verificación de los bujes y retenedores axiales de eje que evitan el desplazamiento transversal de las ruedas de tracción de 43 mm. |
 | **Vista Superior**<br>*(Top View)* | <img width="380" alt="Perfil Superior" src="./v-fotos/ANGULO%20DE%20ARRIBA.jpg" /> | • Evalúa el balance transversal de masas: banco 18650 (2S2P) a la par de los módulos Buck/Boost.<br>• Inspección de la posición concéntrica del sensor inercial **MPU6050** en el centro geométrico del chasis.<br>• Muestra la segregación y peinado del cableado de potencia y señales lógicas hacia el ESP32-S3. |
 | **Vista Inferior**<br>*(Bottom View)* | <img width="380" alt="Perfil Inferior" src="./v-fotos/ANGULO%20POR%20DEBAJO.jpg" /> | • Comprueba la superficie lisa del primer piso en PETG para minimizar la resistencia aerodinámica.<br>• Verificación del *ground clearance* ($\ge 15\text{ mm}$) para evitar cualquier roce en el paso por desniveles del tapiz.<br>• Muestra las cavidades hexagonales empotradas para tuercas de seguridad autoblocantes M3. |
 | **Vista Lateral Derecha**<br>*(Right View)* | <img width="380" alt="Perfil Derecho" src="./v-fotos/ANGULO%20DERECHO.jpg" /> | • Evidencia la separación vertical física estricta entre el Piso 1 (tracción), Piso 2 (lógica) y Piso 3 (potencia).<br>• Muestra la orientación perpendicular del sensor ultrasónico lateral derecho para el centrado a 30 cm.<br>• Inspección del escalonamiento de neumáticos: Ø 30 mm directrices y Ø 43 mm motrices. |
@@ -263,7 +263,7 @@ Demostración técnica de la clasificación en tiempo real de los bloques de tr�
 
 # 🏎️ Módulo 1: Movilidad y Diseño Mecánico <a id="modulo-1-movilidad"></a><a id="pilar-1-movilidad"></a>
 
-El chasis y tren cinemático de **"Smoke"** fueron desarrollados bajo un enfoque híbrido de manufactura: combinando la libertad de diseño paramétrico que ofrece la **impresión 3D en PETG** con la precisión de bajo rozamiento de componentes inyectados de robótica educativa (**LEGO MINDSTORMS EV3**).
+El chasis y tren cinemático de **"Smoke"** fueron desarrollados bajo un enfoque híbrido de manufactura: combinando piezas estructurales modeladas en Autodesk Fusion 360 e impresas en PETG con componentes de articulación de bajo rozamiento e inyección de alta precisión, garantizando resistencia, ligereza y exactitud dimensional.
 Esta arquitectura fue calculada específicamente para soportar las fuerzas de inercia y torsión generadas por una masa dinámica de **859 gramos**, optimizando la posición del centro de gravedad ($CoG$) y minimizando la fricción en pista.
 
 ## 1.1 Chasis Modular Multicapa en PETG y Distribución de Masa <a id="chasis-petg"></a>
@@ -278,7 +278,7 @@ flowchart TD
         P2["🧠 Microcontrolador Central ESP32-S3 DevKit<br>👁️ Procesador de Visión Inteligente HuskyLens 2<br>🧭 Sensor Inercial IMU MPU6050 (Alineado al CoG)<br>🔲 Driver Puente H L298N con Disipador Térmico"]
     end
     subgraph "PISO 1: DINÁMICA DE TRACCIÓN Y CONTACTO AL SUELO"
-        P1["⚙️ Motor Makeblock 9V (185 RPM) + Bancada M3 en PETG<br>🔄 Transmisión Cónica 90° + Diferencial LEGO EV3 (3 Satélites)<br>🦾 Dirección Ackermann Híbrida + Servo TowerPro MG90S<br>📡 Red de 3 Sensores Ultrasónicos HC-SR04 (Rasantes)"]
+        P1["⚙️ Motor Makeblock 9V (185 RPM) + Bancada M3 en PETG<br>🔄 Transmisión Cónica 90° + Caja Diferencial Cónica (3 Satélites)<br>🦾 Dirección Ackermann Híbrida + Servo TowerPro MG90S<br>📡 Red de 3 Sensores Ultrasónicos HC-SR04 (Rasantes)"]
     end
     P3 === P2
     P2 === P1
@@ -319,19 +319,19 @@ Para resolver esto, **"Smoke"** implementa una **geometría de dirección Ackerm
 | <img src="./v-fotos/ackermann_teoria.jpg" width="220" alt="Esquema Teórico Ackermann"> | <img src="./v-fotos/Sistema%20de%20direccion.png" width="220" alt="Modelo CAD de Dirección"> | <img src="./v-fotos/FOTO%20DEL%20SERVO%20ARMADO.jpg" width="220" alt="Ensamble Físico en Chasis"> |
 | *Convergencia hacia el eje trasero* | *Brazo custom en PETG + manguetas* | *Integración con servo MG90S* |
 
-### 1.3.2 Solución de Co-Diseño: Manguetas Inyectadas LEGO + Brazo de Servo (*Servo Horn*) Custom en PETG
+### 1.3.2 Solución de Co-Diseño: Manguetas de Dirección Inyectadas + Brazo de Servo (*Servo Horn*) Custom en PETG
 Durante las fases de prototipado inicial, evaluamos imprimir las manguetas y tirantes de dirección completamente en 3D. Sin embargo, las piezas pequeñas impresas en FDM presentaban microporosidad superficial, lo que generaba un rozamiento irregular y juego mecánico acumulado (*backlash*).
 
 > [!NOTE]
 > **Decisión de Ingeniería Híbrida:**
-> Optamos por una solución de alto rendimiento:
-> - **Manguetas y Rótulas Inyectadas (LEGO EV3):** Proporcionan una superficie de giro industrial con fricción prácticamente nula y tolerancias dimensionales microscópicas imposibles de igualar en FDM.
-> - **Brazo de Servo (*Servo Horn*) Custom en PETG:** Diseñado a medida en **Autodesk Fusion 360** e impreso con **100% de relleno sólido en PETG**, conectando rígidamente el estriado metálico del servo TowerPro MG90S con los tirantes de LEGO.
+> Optamos por una solución eficiente y probada:
+> - **Manguetas y Rótulas de Giro:** Para estos componentes tomamos como inspiración los sistemas modulares inyectados tipo LEGO, ya que proporcionan una superficie de giro suave con fricción casi nula y tolerancias difíciles de igualar en piezas tan pequeñas impresas en 3D.
+> - **Brazo de Servo (*Servo Horn*) Custom en PETG:** Diseñado por nosotros a medida en **Autodesk Fusion 360** e impreso con **100% de relleno sólido en PETG**, conectando rígidamente el estriado metálico del servo TowerPro MG90S con la barra de dirección.
 
 #### Anatomía y Justificación del Rediseño del Brazo de Servo (`Modelos/Servor Arm.stl` / `v-fotos/BRAZOSERVO.jpg`)
 Los brazos comerciales que vienen de fábrica con el servomotor TowerPro MG90S resultaban totalmente incompatibles con las exigencias dinámicas del vehículo **"Smoke"**:
 1. **Longitud Insuficiente y Falta de Recorrido:** Los brazos estándar de nylon son excesivamente pequeños ($\approx 12\text{--}15\text{ mm}$ de radio de palanca). Al acoplarlos a la barra de dirección Ackermann de $142\text{ mm}$ de trocha, el desplazamiento transversal de la cremallera era mínimo, restringiendo drásticamente el ángulo de viraje de las ruedas e imposibilitando que el vehículo trazara curvas cerradas de $90^\circ$ en pasillos estrechos de $800\text{ mm}$.
-2. **Atascos Cinemáticos Recurrentes (*Mechanical Binding*):** Al utilizar un orificio circular fijo tradicional, el sistema **se trababa frecuentemente en las pruebas iniciales**. Debido a que el servo rota en un arco circular mientras la barra de LEGO se desplaza linealmente, la distancia radial entre el centro del servo y el pin de empuje varía de forma no lineal (variación radial: **Δr = d · [1 - cos(θ)]**). Un orificio circular rígido aprisionaba el pin en ángulos pronunciados, forzando los engranes metálicos del servo bajo bloqueo y deteniendo el vehículo en plena curva.
+2. **Atascos Cinemáticos Recurrentes (*Mechanical Binding*):** Al utilizar un orificio circular fijo tradicional, el sistema **se trababa frecuentemente en las pruebas iniciales**. Debido a que el servo rota en un arco circular mientras la barra de dirección se desplaza linealmente, la distancia radial entre el centro del servo y el pin de empuje varía de forma no lineal (variación radial: **Δr = d · [1 - cos(θ)]**). Un orificio circular rígido aprisionaba el pin en ángulos pronunciados, forzando los engranes metálicos del servo bajo bloqueo y deteniendo el vehículo en plena curva.
 
 <div align="center">
   <img src="./v-fotos/BRAZOSERVO.jpg" alt="Brazo de Servomotor Personalizado en Autodesk Fusion 360" width="500" style="border-radius: 8px; border: 1px solid #444; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
@@ -340,7 +340,7 @@ Los brazos comerciales que vienen de fábrica con el servomotor TowerPro MG90S r
 </div>
 
 #### Innovaciones Geométricas del Brazo Personalizado "Smoke":
-* **Ranura Corredera Longitudinal Superior (*Slotted Guide / Colisa*):** Se reemplazó el orificio circular cerrado por una ranura alargada calibrada en la pala superior del brazo. Esta colisa permite que el pin de enlace LEGO EV3 deslice radialmente con total fluidez a lo largo del brazo mientras este rota. Esto **erradica al 100% los atascos mecánicos (*binding*) y permite un ángulo de giro suave y sin restricciones de hasta $\pm 80^\circ$**.
+* **Ranura Corredera Longitudinal Superior (*Slotted Guide / Colisa*):** Se reemplazó el orificio circular cerrado por una ranura alargada calibrada en la pala superior del brazo. Esta colisa permite que el pin de articulación de la barra de dirección deslice radialmente con total fluidez a lo largo del brazo mientras este rota. Esto **erradica al 100% los atascos mecánicos (*binding*) y permite un ángulo de giro suave y sin restricciones de hasta $\pm 80^\circ$**.
 * **Estriado Negativo Paramétrico (Splined Core):** El cilindro vertical incorpora internamente el estriado hembra de 21 dientes modelado en Fusion 360 para acoplarse con tolerancia micrométrica al eje estriado metálico del servo MG90S, suprimiendo cualquier holgura angular circunferencial (*zero-backlash*).
 * **Alojamiento Central para Tornillo Axial de Fijación:** Dispone de una cavidad pasante central concéntrica al eje que permite insertar el tornillo de retención métrico del servo, bloqueando rígidamente el brazo contra el motor e impidiendo que se desacople verticalmente ante vibraciones o impactos leves en pista.
 * **Brazo Extendido de Mayor Palanca y Resistencia:** Fabricado en **PETG sólido al 100% de relleno con espesor reforzado a 3.5 mm**, otorga el brazo de palanca necesario para desplazar completamente la barra de dirección, garantizando que las ruedas directrices alcancen $\pm 21^\circ$ de deflexión con mínima demanda de corriente.
@@ -354,12 +354,12 @@ Los brazos comerciales que vienen de fábrica con el servomotor TowerPro MG90S r
 | **Juego Mecánico (*Backlash*)** | Histéresis angular progresiva ($> 4^\circ$) tras 50 ciclos. | **Cero juego mecánico (*Zero-backlash*, $< 0.5^\circ$)**, manteniendo el centro calibrado en $96^\circ$. |
 
 > 🛡️ **Mitigación de Riesgo de Ingeniería:**
-> **Para mitigar el riesgo de bloqueo mecánico cinemático (*mechanical binding*), sobrecalentamiento del servomotor y limitación del radio de giro**, el equipo diseñó en **Autodesk Fusion 360** un brazo extendido personalizado ([`Modelos/Servor Arm.stl`](./Modelos/Servor%20Arm.stl)) provisto de una colisa longitudinal que absorbe las variaciones radiales del pin de articulación LEGO EV3 y un estriado hembra acoplado con tornillo pasante axial, garantizando virajes fluidos de hasta $\pm 80^\circ$ sin atascamientos.
+> **Para mitigar el riesgo de bloqueo mecánico cinemático (*mechanical binding*), sobrecalentamiento del servomotor y limitación del radio de giro**, el equipo diseñó en **Autodesk Fusion 360** un brazo extendido personalizado ([`Modelos/Servor Arm.stl`](./Modelos/Servor%20Arm.stl)) provisto de una colisa longitudinal que absorbe las variaciones radiales del pin de articulación y un estriado hembra acoplado con tornillo pasante axial, garantizando virajes fluidos de hasta $\pm 80^\circ$ sin atascamientos.
 
 <div align="center">
   <img src="./v-fotos/Sistema%20de%20direccion.png" alt="Conjunto de Dirección y Veleta Custom en Autodesk Fusion 360" width="500" style="border-radius: 8px; border: 1px solid #444; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
   <br>
-  <i>Render de ensamble en Autodesk Fusion 360: Integración del servomotor MG90S con el brazo personalizado en PETG ('Modelos/Servor Arm.stl', visible en la zona inferior acoplando el pin de dirección) y los elementos de articulación LEGO EV3.</i>
+  <i>Render de ensamble en Autodesk Fusion 360: Integración del servomotor MG90S con el brazo personalizado en PETG ('Modelos/Servor Arm.stl', visible en la zona inferior acoplando el pin de dirección) y los elementos de articulación delantera.</i>
 </div>
 
 > [!NOTE]
@@ -386,16 +386,16 @@ El radio de giro mínimo medido en el centro del eje posterior se rige por:
 $$R = \frac{L}{\tan(\delta)}$$
 *(Donde $\delta$ es el ángulo promedio equivalente de la dirección).*
 
-## 1.4 Tren Motriz Trasero (RWD), Transmisión Cónica y Diferencial LEGO EV3 <a id="tren-motriz"></a>
+## 1.4 Tren Motriz Trasero (RWD), Transmisión Cónica y Caja Diferencial <a id="tren-motriz"></a>
 Para impulsar la masa de **859 gramos**, "Smoke" adopta un esquema de **Tracción Trasera (RWD)** con transmisión en ángulo recto acoplada a un diferencial de satélites cónicos:
 <div align="center">
   <img src="./Otro/MOTANDO1.jpg" alt="Render CAD Transmisión Cónica y Diferencial" width="650" style="border-radius: 8px; border: 1px solid #444; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
   <br>
-  <i>Render de ingeniería en Fusion 360: Acople del eje en D del motor Makeblock al piñón cónico custom en PETG atacando la corona del diferencial LEGO EV3.</i>
+  <i>Render de ingeniería en Fusion 360: Acople del eje en D del motor Makeblock al piñón cónico custom en PETG atacando la corona del diferencial trasero.</i>
 </div>
 
 ### 1.4.1 Adaptación Mecánica: Eje en D (D-Shaft) a Engranaje Cónico
-El motorreductor Makeblock cuenta con un eje cilíndrico con rebaje plano (**eje tipo D**), incompatible con los orificios en cruz estandarizados de LEGO:
+El motorreductor Makeblock cuenta con un eje cilíndrico con rebaje plano (**eje tipo D**), incompatible con la entrada estándar en cruz del diferencial trasero:
 * **Solución Técnica:** Modelamos paramétricamente en Fusion 360 un **piñón cónico personalizado** con ranura hembra interna en "D", dimensionado con una compensación de holgura de **$0.15\text{ mm}$** para absorber la contracción térmica del plástico.
 * **Manufactura:** Impreso al **100% de densidad de relleno (infill sólido)** en **PETG** en la Bambu Lab, logrando que los dientes soporten el torque instantáneo de arranque sin cizallarse.
 <div align="center">
@@ -410,13 +410,13 @@ Para contrarrestar el momento torsor de reacción que tiende a desalinear el eng
 * La base de la bancada se ancla sólidamente al chasis del Piso 1 mediante **6 tornillos M3** con tuercas autoblocantes, formando una estructura de 8 puntos de fijación que erradica la separación de dientes (*gear separation*).
 
 > 🛡️ **Mitigación de Riesgo de Ingeniería:**
-> **Para mitigar el riesgo de desalineación axial (*gear separation*), vibración destructiva y cizallamiento** de los dientes plásticos del piñón cónico bajo el par reactivo instantáneo de aceleración, el motor Makeblock se ancló mediante una bancada envolvente en PETG fijada con 8 tornillos pasantes M3 y tuercas autoblocantes, garantizando un engrane rígido y constante con la corona del diferencial LEGO EV3.
+> **Para mitigar el riesgo de desalineación axial (*gear separation*), vibración destructiva y cizallamiento** de los dientes plásticos del piñón cónico bajo el par reactivo instantáneo de aceleración, el motor Makeblock se ancló mediante una bancada envolvente en PETG fijada con 8 tornillos pasantes M3 y tuercas autoblocantes, garantizando un engrane rígido y constante con la corona del diferencial trasero.
 
 ### 1.4.3 Diferencial de Satélites y Estabilización de Semiejes
-El conjunto diferencial de 3 piñones cónicos internos LEGO EV3 distribuye la velocidad angular en curvas:
+El conjunto diferencial de 3 piñones cónicos internos distribuye la velocidad angular en curvas:
 $$\omega_{diferencial} = \frac{\omega_{izq} + \omega_{der}}{2}$$
 * **Doble Bancada por Semieje:** Cada semieje de salida se apoya en dos puntos del PETG (uno contiguo al diferencial y otro junto a la rueda), impidiendo deflexiones axiales bajo carga.
-* **Retenedores Amarillos LEGO (*Bushings*):** Los orificios en el chasis se dimensionaron con holgura para rotación libre de fricción, fijando el eje longitudinalmente con retenedores amarillos para impedir desplazamientos transversales de las ruedas.
+* **Bujes y Retenedores de Eje:** Los orificios en el chasis se dimensionaron con holgura para rotación libre de fricción, fijando el eje longitudinalmente con bujes y retenedores de eje para impedir desplazamientos transversales de las ruedas.
 
 ## 1.5 Estudio Dinámico: Razonamiento de Par Motor vs. Velocidad <a id="estudio-dinamico"></a>
 Para fundamentar analíticamente el desempeño dinámico del vehículo en pista y justificar que el motor Makeblock de 185 RPM opera en su zona de máxima eficiencia sin estancamiento térmico (*stall*), desarrollamos el modelo físico basado en las medidas y masa real de **"Smoke"**:
@@ -425,7 +425,7 @@ Para fundamentar analíticamente el desempeño dinámico del vehículo en pista 
 * **Distribución de Masa Estática:** $45\%$ en el eje delantero y $55\%$ en el eje trasero (tracción RWD):
   $$N_{trasero} = 0.55 \times 8.43\text{ N} \approx \mathbf{4.64\text{ Newtons}}$$
 * **Radio Efectivo de Rueda Trasera ($r_{rueda}$):** Diámetro $\varnothing = 43\text{ mm} \implies r = 0.0215\text{ metros}$.
-* **Coeficiente de Fricción Caucho/Pista ($\mu_s$):** Estimado conservadoramente en $\mu_s \approx 0.70$ para neumáticos de goma LEGO EV3 limpios sobre tapiz de vinilo.
+* **Coeficiente de Fricción Caucho/Pista ($\mu_s$):** Estimado conservadoramente en $\mu_s \approx 0.70$ para neumáticos de goma EV3 limpios sobre tapiz de vinilo.
 
 ### 1.5.1 Ecuación Característica Electromecánica: Curva Torque vs. Velocidad ($\tau - \omega$)
 El comportamiento electromecánico del motor Makeblock de corriente continua gobernado mediante PWM se fundamenta en las leyes acopladas de Kirchhoff y Lorentz para actuadores de armadura con escobillas:
@@ -525,9 +525,9 @@ Bajo la rúbrica oficial de la WRO, la calidad de ingeniería no se mide por lle
 
 | Subsistema Mecánico | Alternativa Descartada | Solución Implementada en "Smoke" | ¿Por qué se descartó la alternativa? (Compromisos y Causa Raíz) |
 | :--- | :--- | :--- | :--- |
-| **Cinemática de Tracción** | **Tracción Diferencial (Skid-Steer / Tank Drive):** Dos motores independientes en ruedas fijas sin timonería de dirección. | **Tracción Trasera (RWD) con Diferencial LEGO + Dirección Ackermann.** | En un chasis de 859 g sobre tapiz de vinilo, el viraje por derrape (*skid-steering*) genera una fricción lateral destructiva en los neumáticos, induce ruido caótico en la telemetría inercial y demanda picos de más de 1.8A en plena curva, desestabilizando el rumbo en rectas largas. |
-| **Timonería de Giro** | **Dirección 100% Impresa en 3D (FDM):** Manguetas y pivotes impresos íntegramente en PETG/PLA. | **Dirección Híbrida:** Manguetas inyectadas LEGO EV3 con brazo de servo (*horn*) custom en PETG al 100% de infill. | Las piezas mecánicas diminutas impresas en FDM poseen microporosidad entre capas que genera un rozamiento parásito elevado ($\mu_k > 0.35$) y holgura acumulada (*backlash*) tras 50 ciclos de giro, degradando el centrado a 96°. |
-| **Tren Trasero** | **Eje Rígido Monomotor sin Diferencial:** Ambas ruedas traseras unidas rígidamente al mismo eje motriz. | **Caja Diferencial LEGO EV3 con 3 Satélites Cónicos Internos.** | Al negociar curvas cerradas de 90° con radio de 20 cm, la rueda exterior debe recorrer un arco un **35% mayor** que la interior. Sin diferencial, una de las ruedas derrapa forzosamente (*tire scrub*), frenando el robot en seco y sobrecalentando el motor. |
+| **Cinemática de Tracción** | **Tracción Diferencial (Skid-Steer / Tank Drive):** Dos motores independientes en ruedas fijas sin timonería de dirección. | **Tracción Trasera (RWD) con Caja Diferencial Cónica + Dirección Ackermann.** | En un chasis de 859 g sobre tapiz de vinilo, el viraje por derrape (*skid-steering*) genera una fricción lateral destructiva en los neumáticos, induce ruido caótico en la telemetría inercial y demanda picos de más de 1.8A en plena curva, desestabilizando el rumbo en rectas largas. |
+| **Timonería de Giro** | **Dirección 100% Impresa en 3D (FDM):** Manguetas y pivotes impresos íntegramente en PETG/PLA. | **Dirección Híbrida:** Manguetas de dirección inyectadas con brazo de servo (*horn*) custom en PETG al 100% de relleno. | Las piezas mecánicas diminutas impresas en FDM poseen microporosidad entre capas que genera un rozamiento parásito elevado ($\mu_k > 0.35$) y holgura acumulada (*backlash*) tras 50 ciclos de giro, degradando el centrado a 96°. |
+| **Tren Trasero** | **Eje Rígido Monomotor sin Diferencial:** Ambas ruedas traseras unidas rígidamente al mismo eje motriz. | **Caja Diferencial con 3 Satélites Cónicos Internos.** | Al negociar curvas cerradas de 90° con radio de 20 cm, la rueda exterior debe recorrer un arco un **35% mayor** que la interior. Sin diferencial, una de las ruedas derrapa forzosamente (*tire scrub*), frenando el robot en seco y sobrecalentando el motor. |
 | **Selección de Neumáticos** | **Neumáticos Homogéneos:** 4 ruedas idénticas de Ø 43 mm en ambos trenes. | **Neumáticos Escalonados (*Staggered Setup*):** Ø 30 mm adelante y Ø 43 mm atrás. | Utilizar ruedas de 43 mm adelante incrementaba la inercia rotacional del tren directriz en un **358%**, forzando al servomotor a su límite térmico y retardando la evasión de obstáculos en más de 80 ms. |
 
 <a id="prototipos-descartados"></a>
@@ -593,7 +593,7 @@ En esta penúltima versión, el chasis ya presentaba una silueta muy cercana a l
 | Parámetro Evaluado | Fase 0: Piñón-Cremallera | Fase 1: Chasis 1 + Dirección 2 | Fase 2: Chasis 2 (Penúltimo) | Prototipo Final: "Smoke" |
 | :--- | :--- | :--- | :--- | :--- |
 | **Material y Estructura** | Virtual (CAD únicamente) | FDM Monocapa fina ($\approx 1.5\text{ mm}$); propensa a fractura | FDM Monocapa con postes cilíndricos | **Modular vertical 3 Pisos en PETG estructural ($\mathbf{3.5\text{ mm}}$)** con tornillos pasantes M3 |
-| **Sistema de Dirección** | Cremallera recta sin Ackermann; sin soporte de servo | Manguetas 100% 3D FDM; rotura mecánica en pruebas | Manguetas híbridas pero montaje endeble | **Híbrido de alta precisión:** Manguetas LEGO EV3 + brazo custom con colisa anti-atasco |
+| **Sistema de Dirección** | Cremallera recta sin Ackermann; sin soporte de servo | Manguetas 100% 3D FDM; rotura mecánica en pruebas | Manguetas híbridas pero montaje endeble | **Híbrido de alta precisión:** Manguetas inyectadas de precisión + brazo custom con colisa anti-atasco |
 | **Soporte de Transmisión** | Inexistente | Bancada débil en voladizo; orificios estrechos con fricción | Soportes independientes sin rigidización inter-eje | **Bancada envolvente de 8 puntos M3** con bujes lisos y tuercas Nyloc |
 | **Fijación de Sensores** | Sin prever | Soportes improvisados | Postes cilíndricos con ligas (oscilaban y mordían cables) | **Montaje perimetral rasante a 25 mm** fijado sólidamente con cinta doble faz |
 | **Gestión Térmica** | Sin prever | Módulos sueltos | Pegamento de silicón (atrapó calor y perforó el plástico) | **Cinta doble faz disipativa + separación vertical de 19 mm** con disipador expuesto |
@@ -1466,7 +1466,7 @@ Ningún subsistema en "Smoke" opera de forma aislada. Una modificación en la ri
 
 ```mermaid
 graph TD
-    MEC["⚙️ Subsistema Mecánico\n• Masa total (859 g)\n• Dirección Ackermann híbrida\n• Diferencial LEGO EV3"] 
+    MEC["⚙️ Subsistema Mecánico\n• Masa total (859 g)\n• Dirección Ackermann híbrida\n• Diferencial cónico trasero"] 
     ELE["⚡ Subsistema Eléctrico\n• Banco EVE 18650 2S2P\n• 3 Ramas desacopladas\n• Boost XL6009 a 14V"]
     PER["👁️ Subsistema Percepción\n• HuskyLens 2 IA @ 30 FPS\n• Arreglo 3x HC-SR04\n• IMU MPU6050 I2C"]
     SFT["💻 Subsistema Software\n• ESP32-S3 Dual Core FreeRTOS\n• Tarea Core 0 @ 500 Hz\n• FSM & Evasión Determinista"]
@@ -1495,7 +1495,7 @@ Todo diseño de ingeniería implica sacrificios conscientes para optimizar la m�
 | **Límite de Masa y Centro de Gravedad** | Masa total de **$859\text{ g}$** con distribución estática del **$55\%$ en el eje trasero** y **$45\%$ en el delantero**. | Otorga tracción óptima ($N_{trasero} = 4.64\text{ N}$) en las ruedas traseras de caucho blando sin provocar sobreviraje ni subviraje en la timonería Ackermann. |
 | **Velocidad vs. Capacidad de Reacción** | Velocidad tangencial nominal calibrada a **$0.416\text{ m/s}$** ($1.50\text{ km/h}$). | Concede una ventana temporal holgada para que la HuskyLens 2 (30 FPS) y los sensores ultrasónicos ejecuten múltiples ciclos de muestreo antes de iniciar cualquier viraje. |
 | **Complejidad Sensorial vs. Robustez** | Elección de 3x HC-SR04 y 1x MPU6050 en lugar de LiDAR 2D de 360°. | Un LiDAR consume más de $400\text{ mA}$, requiere un microprocesador Linux pesado y es vulnerable a descalibraciones por vibración; la combinación ultrasonido + IMU es ligera, determinista y de bajo consumo. |
-| **Coste y Disponibilidad Local** | Uso de componentes universales y piezas LEGO EV3 en lugar de chasis CNC de fibra de carbono. | Máxima reproducibilidad en el contexto venezolano: repuestos accesibles, facilidad de sustitución inmediata en boxes y coste contenido sin perder precisión milimétrica. |
+| **Coste y Disponibilidad Local** | Uso de componentes comerciales estándar y piezas modulares inyectadas en lugar de chasis CNC de fibra de carbono. | Máxima reproducibilidad en el contexto venezolano: repuestos accesibles, facilidad de sustitución inmediata en boxes y coste contenido sin perder precisión milimétrica. |
 
 ---
 
@@ -1506,18 +1506,18 @@ A continuación se detalla el análisis de decisiones críticas de ingeniería q
 | :--- | :--- | :--- | :--- | :--- |
 | **Unidad de Procesamiento** | **ESP32-S3 Dual-Core (240 MHz)** | Arduino Mega 2560 | Reloj de 16 MHz mononúcleo; memoria RAM insuficiente para visión; incapaz de correr FreeRTOS multitarea estricto sin retrasos en la IMU. | Permite aislar la odometría inercial a 500 Hz en el Core 0 mientras el Core 1 atiende la lógica reactiva y la cámara. |
 | **Visión Artificial** | **DFRobot HuskyLens 2 (IA Embebida)** | Raspberry Pi 4 + Cámara USB (OpenCV) | Consumo eléctrico elevado ($>15\text{ W}$), calentamiento severo, tiempo de arranque del sistema operativo de 35 s y peso excesivo ($>150\text{ g}$). | Inferencia a 30 FPS en chip KPU integrado, peso pluma ($18\text{ g}$), arranque instantáneo en 1.2 s y consumo de apenas $1.6\text{ W}$. |
-| **Arquitectura de Dirección** | **Geometría Ackermann Híbrida (LEGO EV3)** | Dirección Diferencial (*Skid-Steer*) | Desgaste asimétrico acelerado de neumáticos, derrape inercial impredecible y alta deriva angular en superficies de melamina lisa. | Trayectoria circular suave sin deslizamiento transversal, comportamiento predecible y preservación de neumáticos. |
+| **Arquitectura de Dirección** | **Geometría Ackermann Híbrida** | Dirección Diferencial (*Skid-Steer*) | Desgaste asimétrico acelerado de neumáticos, derrape inercial impredecible y alta deriva angular en superficies de melamina lisa. | Trayectoria circular suave sin deslizamiento transversal, comportamiento predecible y preservación de neumáticos. |
 | **Material Estructural** | **Filamento PETG Estructural (FDM)** | PLA Estándar / ABS | El PLA sufre deformación térmica a $55^\circ\text{C}$ cerca de los motores y es quebradizo ante choques; el ABS requiere cabina cerrada y presenta alabeo (*warping*). | Temperatura de deflexión térmica de $80^\circ\text{C}$, excelente adhesión de capas y ductilidad superior para absorber colisiones sin fractura. |
 | **Fuente de Alimentación** | **Baterías Li-ion EVE 18650 2S2P (7000 mAh)** | Batería LiPo 3S (11.1V, 1500 mAh) | Riesgo de degradación química rápida si cae bajo 3.0V por celda, inflamabilidad ante golpes y autonomía inferior a 40 minutos de pruebas continuas. | Curva de descarga sumamente plana, tasa de trabajo a baja demanda ($0.2\text{C}$), química estable y más de 5 horas de autonomía en banco. |
-| **Transmisión de Fuerza** | **Diferencial LEGO EV3 + Piñón Cónico PETG** | Eje Trasero Sólido Rígido | En giros cerrados a 90°, ambas ruedas giran a idéntica velocidad, obligando a una rueda a patinar, perdiendo aceleración y tracción lateral. | Permite velocidad diferencial entre ruedas interior y exterior, optimizando el radio de giro sin perder adherencia. |
+| **Transmisión de Fuerza** | **Diferencial Cónico Trasero + Piñón Cónico PETG** | Eje Trasero Sólido Rígido | En giros cerrados a 90°, ambas ruedas giran a idéntica velocidad, obligando a una rueda a patinar, perdiendo aceleración y tracción lateral. | Permite velocidad diferencial entre ruedas interior y exterior, optimizando el radio de giro sin perder adherencia. |
 
 ---
 
 ## 4.4 Limitaciones del Robot y Compensaciones (Efecto de Iluminación en Visión de Valencia) <a id="limitaciones-compensaciones"></a>
 Un análisis de ingeniería riguroso reconoce con transparencia las restricciones físicas del sistema y diseña contramedidas para mitigar su impacto en competencia:
 
-### 1. El Desafío de la Iluminación en Recintos Competitivos (Sede Nacional: Valencia, Carabobo)
-En el recinto ferial de la competencia nacional en Valencia, las condiciones de iluminación difieren sustancialmente del laboratorio de INIAR:
+### 1. El Desafío de la Iluminación en Recintos Competitivos (Sede Nacional: Caracas)
+En el recinto ferial de la competencia nacional en Caracas, las condiciones de iluminación difieren sustancialmente del laboratorio de INIAR:
 * **Variación del Espectro Lumínico:** Las lámparas de descarga de halogenuro metálico o tubos LED industriales emiten con temperatura de color variable ($3000\text{K}\text{ a }6500\text{K}$), afectando los vectores de cromaticidad RGB.
 * **Reflejos Especulares en Muros Blancos:** La madera lacada de las paredes perimetrales y el piso encerado generan destellos que la cámara puede confundir con las caras reflectantes de los bloques rojos y verdes.
 
@@ -1536,7 +1536,7 @@ El diseño robusto de **"Smoke"** parte de un enfoque sistemático de **Gestión
 | :--- | :--- | :---: | :---: | :--- | :--- |
 | **⚡ Eléctrico** | Caída de tensión (*brownout*) del ESP32 por demanda del servo. | Baja | Crítica | Rama dedicada LM2596 (3A) exclusiva para servo y HuskyLens; condensador electrolítico de $470\ \mu\text{F}$ en bus lógico. | Reinicio ultrarrápido del ESP32-S3 en $<180\text{ ms}$ con persistencia del sentido global de pista. |
 | **🧭 Telemetría** | Bloqueo del bus I2C de la IMU por ruido electromagnético. | Media | Crítica | Líneas I2C cortas con cable trenzado apantallado y resistencias pull-up externas de $2.2\text{ k}\Omega$. | Subrutina `rescatarBusI2C()` en Core 0 que genera 9 pulsos de reloj manuales y restablece el bus en $<150\ \mu\text{s}$. |
-| **⚙️ Mecánico** | Desalineación o barrido de piñones en la dirección delantera. | Baja | Alta | Servomotor MG90S con piñonería metálica de bronce y manguetas oficiales LEGO EV3 de alta tenacidad. | Limitación por software de la carrera del servomotor a $\pm 21^\circ$ para evitar topes mecánicos. |
+| **⚙️ Mecánico** | Desalineación o barrido de piñones en la dirección delantera. | Baja | Alta | Servomotor MG90S con piñonería metálica y manguetas de dirección inyectadas de alta tenacidad. | Limitación por software de la carrera del servomotor a $\pm 21^\circ$ para evitar topes mecánicos. |
 | **👁️ Percepción** | Falso positivo de obstáculo rojo/verde por reflejo en curva. | Media | Alta | Máscara de exclusión espacial que ignora detecciones en los bordes extremos del FOV ($X < 10\text{ px}$ o $X > 630\text{ px}$). | El robot exige validación en 3 cuadros consecutivos ($\approx 100\text{ ms}$) antes de abandonar el carril central. |
 | **🏎️ Navegación** | Inversión accidental de sentido de giro (horario vs antihorario). | Baja | Crítica | Variable inmutable `direccion_global_pista` que se bloquea en la primera esquina y congela las decisiones de viraje. | Si un sensor lateral sugiere girar en sentido opuesto, el algoritmo lo veta y mantiene el rumbo inercial fijado. |
 | **🔋 Batería** | Descenso de voltaje durante mangas consecutivas de prueba. | Media | Media | Banco 2S2P industrial de 7000 mAh que opera en la zona plana de descarga con monitoreo multímetro previo. | Reguladores Step-Up y Step-Down conmutados que entregan tensiones reguladas idénticas independientemente de $V_{\text{bat}}$. |
@@ -1562,8 +1562,8 @@ flowchart LR
 | **⚡ Potencia** | **Destrucción de 3 Step-Downs (Origen del nombre "Smoke")** | Picos de sobretensión transitoria y retornos inductivos generados por el frenado del motor DC quemaron tres módulos en cascada. | Rediseño a **3 ramas independientes** (XL4015 para lógica a 5V, LM2596 para actuadores a 5V y XL6009 para tracción a 14V) + **Masa Común Unificada**. | **100% de fiabilidad eléctrica:** Cero reinicios involuntarios (*brownouts*) y rieles de alimentación libres de rizado parásito. |
 | **⚙️ Tracción** | **Pérdida crítica de torque y velocidad en motor Makeblock** | Caída interna inherente ($\Delta V \approx 2.0\text{V}$) en los transistores Darlington BJT del driver L298N, dejando al motor con apenas 5V. | Elevación del bus de tracción a **14.0V con el Step-Up XL6009** y retiro del jumper integrado de 5V para desacoplar su regulador lineal interno. | El motor recibe **12.0V netos constantes**, alcanzando su velocidad nominal de 185 RPM con torque máximo de salida. |
 | **🦾 Dirección** | **Servomotor atascado y avería de piñonería interna** | El firmware enviaba consignas angulares que superaban los topes mecánicos del chasis, forzando los engranes plásticos bajo bloqueo continuo (*stall*). | Estandarización con servomotor **TowerPro MG90S de piñonería metálica**, limitación por software (`MAX_DEFLEXION = 21°`) y rutina de prueba $\pm 80^\circ$. | Erradicación total de bloqueos mecánicos (*binding*) y virajes fluidos con respuesta lineal en menos de 0.10 segundos. |
-| **🔗 Transmisión** | **Incompatibilidad dimensional de ejes motor y diferencial** | El motor Makeblock posee un eje cilíndrico con rebaje plano (**eje en D**) y el diferencial LEGO EV3 exige acople estandarizado en cruz. | Modelado paramétrico en Fusion 360 e impresión al **100% de relleno en PETG** de un **piñón cónico con cavidad hembra en D**. | Transmisión a 90° sin holguras (*backlash* mínimo), con alta resistencia a la cizalladura en la base de los dientes. |
-| **🏎️ Cinemática** | **Fricción irregular y juego mecánico en dirección 100% 3D** | Las manguetas y tirantes impresos en FDM presentaban microporosidad superficial entre capas, induciendo holgura acumulada en las ruedas. | **Arquitectura híbrida:** Manguetas y barras de enlace oficiales moldeadas por inyección LEGO EV3 + brazo de servo custom en PETG. | Dirección hiperprecisa, sin fricción parásita y con rigidez torsional constante que elimina el subviraje (*understeer*). |
+| **🔗 Transmisión** | **Incompatibilidad dimensional de ejes motor y diferencial** | El motor Makeblock posee un eje cilíndrico con rebaje plano (**eje en D**), mientras que la caja diferencial trasera cuenta con entrada estándar en cruz. | Modelado paramétrico en Fusion 360 e impresión al **100% de relleno en PETG** de un **piñón cónico con cavidad hembra en D**. | Transmisión a 90° sin holguras (*backlash* mínimo), con alta resistencia a la cizalladura en la base de los dientes. |
+| **🏎️ Cinemática** | **Fricción irregular y juego mecánico en dirección 100% 3D** | Las manguetas y tirantes impresos en FDM presentaban microporosidad superficial entre capas, induciendo holgura acumulada en las ruedas. | **Arquitectura híbrida:** Manguetas y barras de articulación inyectadas de alta precisión + brazo de servo custom en PETG. | Dirección hiperprecisa, sin fricción parásita y con rigidez torsional constante que elimina el subviraje (*understeer*). |
 | **🧭 Telemetría** | **Congelamiento aleatorio del bus I2C (IMU MPU6050)** | Picos inductivos severos en las proximidades del cableado bloqueaban la línea SDA en nivel bajo (*I2C bus lockup*). | Implementación de la rutina de hardware `rescatarBusI2C()` con **9 pulsos de reloj manuales en SCL** en el Core 0. | El sistema detecta la falla y recupera la telemetría en caliente en menos de $150\ \mu\text{s}$ sin detener la marcha del carro. |
 | **💻 Firmware** | **Comportamiento asíncrono e irregular en C++ nativo inicial** | Condiciones de carrera (*race conditions*) y demoras bloqueantes por funciones `delay()` al procesar los tres sensores ultrasónicos simultáneamente. | Reestructuración asíncrona con **FreeRTOS en Core 0 para el MPU6050** y temporizadores no bloqueantes (`millis()`) en Core 1. | Control en tiempo real estricto con lectura inercial fija a **500 Hz** y muestreo rotativo ultrasónico cada 50 ms. |
 | **🔋 Almacenamiento**| **Decaimiento progresivo de velocidad en mangas largas** | Baterías comerciales anteriores presentaban una curva de descarga con pendiente pronunciada, alterando los tiempos de giro. | Migración al banco de celdas industriales **EVE INR18650-35V (2S2P / 7000 mAh)** con alta densidad energética. | Curva de tensión sumamente plana a lo largo de las 3 vueltas de carrera; comportamiento idéntico entre la vuelta 1 y la vuelta 12. |
@@ -1595,8 +1595,8 @@ A continuación se desglosa el inventario técnico de la plataforma, detallando 
 | :--- | :---: | :--- | :--- | :--- | :---: | 
 | **Motor de Tracción**<br>Makeblock DC Motor 9V | <img src="./Otro/Makeblock.jpg" width="80" style="border-radius: 6px;"> | • 185 RPM nominales @ 9V-12V<br>• Encoder óptico integrado<br>• Eje cilíndrico en "D" | Genera el par motriz longitudinal transferido al diferencial trasero. | **Balance Masa-Torque:** Tras evaluar múltiples opciones, este motor ofreció el torque exacto para desplazar con aceleración ágil los 859 g de "Smoke" sin sacrificar velocidad en rectas ni requerir complejas reductoras externas. | [🌐 Web](https://www.makeblock.com/) |
 | **Servomotor Dirección**<br>TowerPro MG90S | <img src="./Otro/MG90S.jpg" width="80" style="border-radius: 6px;"> | • **Piñonería 100% metálica**<br>• Torque: 2.2 kg·cm @ 6V<br>• Velocidad: 0.10 s / 60° | Acciona la timonería Ackermann delantera para el guiado del vehículo. | **Resistencia a Fuerzas de Empuje:** A diferencia de servos con engranes plásticos (como el SG90), la piñonería metálica del MG90S resiste la inercia y fuerza de empuje del motor Makeblock en virajes cerrados sin barrer dientes. | [📄 PDF](https://www.electronicoscaldas.com/datasheet/MG90S_Tower-Pro.pdf) |
-| **Diferencial Trasero**<br>Lego Technic EV3 | <img src="./Otro/Diferencial%20Lego.jpg" width="80" style="border-radius: 6px;"> | • Caja diferencial de 3 satélites<br>• Piñones cónicos internos<br>• Plástico inyectado de bajo roce | Distribuye la velocidad angular entre las ruedas traseras izquierda y derecha en curvas. | Evita el bloqueo del eje posterior y elimina el arrastre de neumáticos (*tire scrub*), permitiendo que la rueda exterior acelere libremente respecto a la interior en giros de 90°. | [🔗 Lego](https://www.bricklink.com/) |
-| **Transmisión Cónica 90°**<br>Piñón Helicoidal Custom | <img src="./Otro/ENGRANAJEM2.jpg" width="80" style="border-radius: 6px;"> | • Modelado en Fusion 360<br>• Cavidad interior en forma de "D"<br>• PETG 100% relleno sólido | Transfiere el giro longitudinal del motor al eje transversal de la corona LEGO. | Resuelve la incompatibilidad física entre el eje en D del motor Makeblock y el encaje en cruz de LEGO con una pieza compacta de alta resistencia a la cizalladura. | [⚙️ Ver STL](./Modelos/ENGRANAJEM.stl) |
+| **Diferencial Trasero**<br>Caja Cónica de 3 Satélites | <img src="./Otro/Diferencial%20Lego.jpg" width="80" style="border-radius: 6px;"> | • Caja diferencial de 3 satélites<br>• Piñones cónicos internos<br>• Plástico inyectado de bajo roce | Distribuye la velocidad angular entre las ruedas traseras izquierda y derecha en curvas. | Evita el bloqueo del eje posterior y elimina el arrastre de neumáticos (*tire scrub*), permitiendo que la rueda exterior acelere libremente respecto a la interior en giros de 90°. | [🔗 Mecanismo](./Otro/Diferencial%20Lego.jpg) |
+| **Transmisión Cónica 90°**<br>Piñón Helicoidal Custom | <img src="./Otro/ENGRANAJEM2.jpg" width="80" style="border-radius: 6px;"> | • Modelado en Fusion 360<br>• Cavidad interior en forma de "D"<br>• PETG 100% relleno sólido | Transfiere el giro longitudinal del motor al eje transversal de la corona del diferencial. | Resuelve la incompatibilidad física entre el eje en D del motor Makeblock y el encaje en cruz del diferencial con una pieza compacta de alta resistencia a la cizalladura. | [⚙️ Ver STL](./Modelos/ENGRANAJEM.stl) |
 | **Estructura de Chasis**<br>Diseño Modular 3 Pisos | <img src="./v-fotos/CHASISCOMPLETO.jpg" width="80" style="border-radius: 6px;"> | • Fabricado en Bambu Lab<br>• Filamento **PETG estructural**<br>• Arquitectura vertical | Aloja y segrega los subsistemas mecánicos, lógicos y de potencia. | **Ingeniería de Valor y Tenacidad:** El PETG ofreció la mejor relación coste-eficiencia, aportando mayor resistencia al impacto que el PLA estándar y soportando hasta $80^\circ\text{C}$ sin deformación térmica junto al motor. | [⚙️ Ver STL](./Modelos/Chassis.stl) |
 | **Tornillería Unificada**<br>Hardware M3 Hexagonal | <img src="./Otro/KITTORNILLOS.jpg" width="80" style="border-radius: 6px;"> | • Tornillos Allen M3 (8-20 mm)<br>• Tuercas de seguridad Nyloc<br>• Separadores rígidos | Unifica la fijación de todo el chasis, bancada de motor y soportes. | Estandariza el mantenimiento en boxes: una sola llave Allen de 2.5 mm opera todo el carro, y las tuercas autoblocantes impiden desajustes por vibración de alta frecuencia. | [⚙️ Ver Info](./Modelos/Readme.md) |
 
@@ -1618,8 +1618,8 @@ Todas las piezas plásticas se imprimen en impresora 3D (Bambu Lab P1S o similar
 
 #### Fase 1: Ensamble del Piso Inferior (Piso 1 - Tracción y Dirección)
 1. **Montaje de la Bancada del Motor:** Atornillar el motor Makeblock a la cara frontal de la bancada de PETG mediante 2 tornillos métricos M3, y anclar la bancada al Piso 1 con 6 tornillos M3 con tuercas autoblocantes (estructura rígida de 8 puntos de fijación). Insertar a presión el piñón cónico de PETG (cavidad en D) en el eje del motor y asegurar con un prisionero M3.
-2. **Instalación del Diferencial Trasero:** Colocar el conjunto del diferencial LEGO EV3 en los rodamientos de bolas embutidos en el chasis. Verificar el engrane a $90^\circ$ entre el piñón PETG y la corona LEGO, asegurando un juego axial menor a $0.3\text{ mm}$.
-3. **Instalación de la Timonería Ackermann:** Insertar las manguetas de dirección LEGO en los pivotes delanteros del chasis. Acoplar la barra de acoplamiento (*tie rod*) que garantiza la convergencia angular y fijar el servomotor TowerPro MG90S con tornillos autorroscantes en su cuna central.
+2. **Instalación del Diferencial Trasero:** Colocar el conjunto del diferencial trasero en los rodamientos de bolas embutidos en el chasis. Verificar el engrane a $90^\circ$ entre el piñón PETG y la corona cónica, asegurando un juego axial menor a $0.3\text{ mm}$.
+3. **Instalación de la Timonería Ackermann:** Insertar las manguetas de dirección inyectadas en los pivotes delanteros del chasis. Acoplar la barra de acoplamiento (*tie rod*) que garantiza la convergencia angular y fijar el servomotor TowerPro MG90S con tornillos autorroscantes en su cuna central.
 4. **Montaje de Ruedas Escalonadas:** Instalar las ruedas directrices delanteras de Ø 30 mm LEGO EV3 en los ejes libres delanteros y las ruedas motrices traseras de alto agarre de Ø 43 mm LEGO EV3 en los semi-ejes de salida del diferencial.
 
 #### Fase 2: Ensamble del Piso Intermedio (Piso 2 - Instrumentación y Lógica)
@@ -1691,7 +1691,7 @@ flowchart LR
     class S1,S2,S3,S4,S5,S6 check;
 ```
 
-1. **Inspección Visual y Mecánica:** Limpiar neumáticos con paño humedecido en alcohol isopropílico para retirar polvo de madera. Verificar apriete del prisionero del motor y libertad de movimiento del diferencial LEGO.
+1. **Inspección Visual y Mecánica:** Limpiar neumáticos con paño humedecido en alcohol isopropílico para retirar polvo de madera. Verificar apriete del prisionero del motor y libertad de movimiento del diferencial trasero.
 2. **Medición de Tensión de Batería:** Comprobar con multímetro que el pack 2S2P reporte $V_{\text{bat}} \ge 7.8\text{V}$. Si la tensión cae por debajo de $7.4\text{V}$, sustituir inmediatamente por el pack de reemplazo cargado.
 3. **Encendido y Verificación de Rieles:** Conectar el interruptor general. Verificar que los LEDs indicadores del XL4015 (5.0V), LM2596 (5.0V) y XL6009 (14.0V) estén encendidos con voltaje nominal.
 4. **Calibración Óptica en Pista:** Apuntar la HuskyLens 2 a un obstáculo rojo y verde colocados sobre el tapete bajo la iluminación real del evento para confirmar la clasificación a más de $80\text{ cm}$.
@@ -1721,8 +1721,8 @@ WRO-FUTURE-ENGINE-NEXUS-2026/
 │   ├── SISTEMA DE DIRECCION 2 DESCARTADO.jpg # Fase 1: Dirección 100% FDM (fracturada)
 │   ├── CHASIS DESCARTADO 2.jpg   # Fase 2: Chasis penúltimo con columnas para ultrasonidos
 │   ├── BATERIA.jpg               # Pack cilíndrico EVE 18650 2S2P (7000 mAh)
-│   ├── Diferencial Lego.jpg      # Caja diferencial de 3 satélites LEGO EV3
-│   ├── ENGRANAJECONICO.jpg       # Corona cónica LEGO y piñones
+│   ├── Diferencial Lego.jpg      # Caja diferencial trasera de 3 satélites
+│   ├── ENGRANAJECONICO.jpg       # Corona cónica y piñón de ataque
 │   ├── Makeblock.jpg             # Motor DC Makeblock 9V con encoder óptico
 │   └── ...                       # Galería de inspección de hardware individual
 ├── src/                          # Código fuente en C++ para Arduino IDE / FreeRTOS
@@ -1795,8 +1795,8 @@ WRO-FUTURE-ENGINE-NEXUS-2026/
 | [`CHASIS DESCARTADO 1.jpg`](./Otro/CHASIS%20DESCARTADO%201.jpg) | Fase 1 (Prototipo 1) | Chasis monocapa delgado y flexible; soportes de motor endebles | [📸 Ver Foto](./Otro/CHASIS%20DESCARTADO%201.jpg) |
 | [`SISTEMA DE DIRECCION 2 DESCARTADO.jpg`](./Otro/SISTEMA%20DE%20DIRECCION%202%20DESCARTADO.jpg) | Fase 1 (Dirección FDM) | Piezas diminutas 100% 3D que se fracturaron durante las pruebas | [📸 Ver Foto](./Otro/SISTEMA%20DE%20DIRECCION%202%20DESCARTADO.jpg) |
 | [`CHASIS DESCARTADO 2.jpg`](./Otro/CHASIS%20DESCARTADO%202.jpg) | Fase 2 (Penúltimo) | Chasis con columnas para ligas de ultrasonidos y fallo térmico por silicón | [📸 Ver Foto](./Otro/CHASIS%20DESCARTADO%202.jpg) |
-| [`Diferencial Lego.jpg`](./Otro/Diferencial%20Lego.jpg) | Tren Motriz RWD | Caja diferencial de satélites cónicos LEGO EV3 | [📸 Ver Foto](./Otro/Diferencial%20Lego.jpg) |
-| [`ENGRANAJECONICO.jpg`](./Otro/ENGRANAJECONICO.jpg) | Transmisión 90° | Acople entre piñón PETG y corona LEGO | [📸 Ver Foto](./Otro/ENGRANAJECONICO.jpg) |
+| [`Diferencial Lego.jpg`](./Otro/Diferencial%20Lego.jpg) | Tren Motriz RWD | Caja diferencial trasera de 3 satélites cónicos | [📸 Ver Foto](./Otro/Diferencial%20Lego.jpg) |
+| [`ENGRANAJECONICO.jpg`](./Otro/ENGRANAJECONICO.jpg) | Transmisión 90° | Acople entre piñón cónico PETG y corona trasera | [📸 Ver Foto](./Otro/ENGRANAJECONICO.jpg) |
 | [`BATERIA.jpg`](./Otro/BATERIA.jpg) | Banco de Potencia | Celdas de iones de litio EVE 18650 2S2P (7000 mAh) | [📸 Ver Foto](./Otro/BATERIA.jpg) |
 | [`Makeblock.jpg`](./Otro/Makeblock.jpg) | Motorreductor | Motor DC Makeblock de 9V a 185 RPM nominales | [📸 Ver Foto](./Otro/Makeblock.jpg) |
 
@@ -1830,7 +1830,7 @@ WRO-FUTURE-ENGINE-NEXUS-2026/
 
 ### Historial de Versiones y Notas de Lanzamiento (*Release Notes*)
 * **v1.0.0 (Prototipo Inicial Alpha - PLA):** Chasis monolítico 100% impreso en 3D PLA; dirección con holguras mecánicas; alimentación por dos baterías comerciales en serie con reguladores en cascada. Descubrimiento de fallos por retorno inductivo.
-* **v1.5.0 (Transición Híbrida - PETG & LEGO EV3):** Migración a PETG estructural para absorción de impactos; incorporación del diferencial LEGO EV3 y manguetas oficiales inyectadas; adopción del servomotor metálico MG90S.
+* **v1.5.0 (Transición Híbrida - PETG & Componentes Inyectados):** Migración a PETG estructural para absorción de impactos; incorporación del diferencial cónico trasero y manguetas inyectadas de precisión; adopción del servomotor metálico MG90S.
 * **v2.0.0 (Arquitectura Eléctrica Desacoplada):** Implementación de la topología de 3 ramas independientes (XL4015, LM2596, XL6009) con elevación a 14V para el motor Makeblock; banco de baterías industrial EVE 18650 2S2P (7000 mAh).
 * **v2.5.0 (Firmware Concurrente FreeRTOS Oficial WRO 2026):** Arquitectura simétrica multihilo: Core 0 dedicado a la IMU MPU6050 a 500 Hz con auto-rescate en bus I2C; Core 1 gestionando visión por HuskyLens 2, modo cazador y coreografía evasiva determinista en 5 etapas.
 
