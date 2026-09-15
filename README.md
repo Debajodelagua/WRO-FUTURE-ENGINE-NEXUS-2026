@@ -13,6 +13,9 @@
   [![Manufacturing](https://img.shields.io/badge/3D_Printer-Bambu_Lab_PETG-00AE42.svg?style=for-the-badge)](https://bambulab.com/)
   <br>
   [![Schematics](https://img.shields.io/badge/EDA-Fritzing-9B111E.svg?style=for-the-badge)](https://fritzing.org/)
+  [![Simulation](https://img.shields.io/badge/Simulation-MATLAB_%2F_GNU_Octave-0076A8.svg?style=for-the-badge&logo=mathworks&logoColor=white)](#simulacion-matlab)
+  [![MathWorks Award](https://img.shields.io/badge/MathWorks-Modeling_Award_Candidate-ED5C2B.svg?style=for-the-badge&logo=mathworks&logoColor=white)](#simulacion-matlab)
+  <br>
   [![YouTube](https://img.shields.io/badge/YouTube-@NEXUSTEAM--e3d-FF0000.svg?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@NEXUSTEAM-e3d)
   [![Instagram](https://img.shields.io/badge/Instagram-@iniar__zulia-%23E4405F.svg?style=for-the-badge&logo=Instagram&logoColor=white)](https://www.instagram.com/iniar_zulia/)
 
@@ -1492,6 +1495,16 @@ Para el desafío de obstáculos, las reglas de la WRO exigen que los bloques roj
 <a id="simulacion-matlab"></a>
 
 ## 3.5 Modelado Cinemático y Simulación en MATLAB / GNU Octave (Candidatura Oficial MathWorks Modeling Award) <a id="simulacion-matlab"></a>
+
+<p align="center">
+  <a href="https://www.mathworks.com/" target="_blank">
+    <img src="https://img.shields.io/badge/MathWorks-Modeling_Award_2026_Candidate-ED5C2B.svg?style=for-the-badge&logo=mathworks&logoColor=white" alt="MathWorks Modeling Award">
+  </a>
+  <a href="#simulacion-matlab">
+    <img src="https://img.shields.io/badge/Simulation-MATLAB_%2F_GNU_Octave-0076A8.svg?style=for-the-badge&logo=mathworks&logoColor=white" alt="MATLAB Simulation">
+  </a>
+</p>
+
 En consonancia con las mejores prácticas de la industria y los criterios de evaluación del **MathWorks Modeling Award** en la World Robot Olympiad™, Team Nexus implementó una metodología formal de **Diseño Basado en Modelos (*Model-Based Design - MBD*)**.
 
 Antes de ejecutar el firmware en el microcontrolador ESP32-S3 y arriesgar colisiones o fallos mecánicos en pista, el equipo modeló numéricamente la cinemática de "Smoke", las dimensiones reglamentarias del tapete de competencia y los lazos de control en lazo cerrado utilizando **MATLAB / GNU Octave**. Los tres scripts desarrollados utilizan sintaxis `.m` estándar, totalmente compatibles tanto en MATLAB Desktop / Online como en GNU Octave, permitiendo auditar y verificar el comportamiento del robot en cada escenario de carrera.
