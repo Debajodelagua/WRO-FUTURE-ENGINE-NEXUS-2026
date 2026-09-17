@@ -391,16 +391,22 @@ Para garantizar que la timonería no sufra atascos mecánicos (*binding*) en man
 </div>
 
 ### 1.3.4 Modelo Matemático de la Dirección Ackermann
+
 La condición de rodadura pura de Ackermann exige que las prolongaciones de los ejes de las ruedas coincidan en el **Centro Instantáneo de Rotación ($CIR$)**:
+
 $$\cot(\theta_o) - \cot(\theta_i) = \frac{W}{L}$$
+
 Donde:
-* $W$ = Trocha delantera entre pivotes de mangueta: **142 mm** ($0.142\text{ m}$).
-* $L$ = Batalla entre ejes delantero y trasero: **155 mm** ($0.155\text{ m}$).
-* $\theta_i$ = Ángulo de la rueda interior a la curva.
-* $\theta_o$ = Ángulo de la rueda exterior a la curva.
+* **$W$:** Trocha delantera entre pivotes de mangueta = **142 mm** ($0.142\text{ m}$).
+* **$L$:** Batalla entre ejes delantero y trasero = **155 mm** ($0.155\text{ m}$).
+* **$\theta_i$:** Ángulo de la rueda interior a la curva.
+* **$\theta_o$:** Ángulo de la rueda exterior a la curva.
+
 El radio de giro mínimo medido en el centro del eje posterior se rige por:
+
 $$R = \frac{L}{\tan(\delta)}$$
-*(Donde $\delta$ es el ángulo promedio equivalente de la dirección).*
+
+Donde $\delta$ representa el ángulo promedio equivalente de la dirección delantera.
 
 ## 1.4 Tren Motriz Trasero (RWD), Transmisión Cónica y Caja Diferencial <a id="tren-motriz"></a>
 Para impulsar la masa de **859 gramos**, "Smoke" adopta un esquema de **Tracción Trasera (RWD)** con transmisión en ángulo recto acoplada a un diferencial de satélites cónicos:
@@ -430,7 +436,9 @@ Para contrarrestar el momento torsor de reacción que tiende a desalinear el eng
 
 ### 1.4.3 Diferencial de Satélites y Estabilización de Semiejes
 El conjunto diferencial de 3 piñones cónicos internos distribuye la velocidad angular en curvas:
+
 $$\omega_{diferencial} = \frac{\omega_{izq} + \omega_{der}}{2}$$
+
 * **Doble Bancada por Semieje:** Cada semieje de salida se apoya en dos puntos del PETG (uno contiguo al diferencial y otro junto a la rueda), impidiendo deflexiones axiales bajo carga.
 * **Bujes y Retenedores de Eje:** Los orificios en el chasis se dimensionaron con holgura para rotación libre de fricción, fijando el eje longitudinalmente con bujes y retenedores de eje para impedir desplazamientos transversales de las ruedas.
 
