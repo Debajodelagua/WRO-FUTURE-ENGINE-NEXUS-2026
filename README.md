@@ -71,7 +71,7 @@ Este documento técnico ha sido elaborado bajo un formato de **libro blanco de i
   - 3.2.2 [Percepción Ultrasónica y Detección Dinámica de Esquinas](#software-ultrasonico)
   - 3.2.3 [Control PD de Heading con Giróscopo y Maniobra de Escape](#software-pd)
   - 3.2.4 [Negociación Determinista de Curvas y Conteo de 12 Esquinas](#software-curvas)
-- 3.3 [Estrategia de Obediencia a Obstáculos: Obstacle Challenge (`CAZA_NUMERO1.ino`)](#estrategia-obstaculos)
+- 3.3 [Estrategia de Obediencia a Obstáculos: Obstacle Challenge (`OBSTACULO_2.ino`)](#estrategia-obstaculos)
   - 3.3.1 [Concurrencia Multihilo en FreeRTOS y Odometría Inercial Discreta (Core 0 @ 500 Hz)](#obstaculos-modulo1-inercial)
   - 3.3.2 [Percepción por Visión IA, Filtrado Espacial de Borde y Modo Cazador Proporcional](#obstaculos-modulo2-cazador)
   - 3.3.3 [Pre-Alineación en S ante Desviación Angular y Coreografía Evasiva en 5 Fases](#obstaculos-modulo3-coreografia)
@@ -845,7 +845,7 @@ En ingeniería de sistemas críticos para WRO, se analizaron los posibles fallos
 # 💻 Módulo 3: Arquitectura de Software y Control Autónomo <a id="modulo-3-software"></a><a id="pilar-3-software"></a>
 El software embebido de **"Smoke"** fue desarrollado en **C++ bajo el entorno Arduino IDE**, optimizado específicamente para el microcontrolador de doble núcleo **ESP32-S3**. 
 Para garantizar un control en tiempo real estricto, el código opera bajo una **arquitectura asíncrona no bloqueante gobernada por el sistema operativo en tiempo real FreeRTOS y temporizadores de hardware (`millis()`)**, evitando por completo el uso de funciones bloqueantes tipo `delay()` en los bucles de carrera.
-El código fuente oficial de la ronda abierta se encuentra alojado en [`./src/OPENCHALLENGE/NUMERO4.ino`](./src/OPENCHALLENGE/NUMERO4.ino) y el de la ronda de obstáculos en [`./src/CLOSECHALLENGE/CAZA_NUMERO1.ino`](./src/CLOSECHALLENGE/CAZA_NUMERO1.ino).
+El código fuente oficial de la ronda abierta se encuentra alojado en [`./src/OPENCHALLENGE/NUMERO4.ino`](./src/OPENCHALLENGE/NUMERO4.ino) y el de la ronda de obstáculos en [`./src/CLOSECHALLENGE/OBSTACULO_2.ino`](./src/CLOSECHALLENGE/OBSTACULO_2.ino) (con su versión preliminar histórica preservada en [`./src/CLOSECHALLENGE/legacy/CAZA_NUMERO1.ino`](./src/CLOSECHALLENGE/legacy/CAZA_NUMERO1.ino)).
 
 <a id="fsm-navegacion"></a>
 
@@ -977,30 +977,31 @@ if (carrera_terminada && !motor_frenado) {
 
 <a id="estrategia-obstaculos"></a>
 
-## 3.3 Estrategia de Obediencia a Obstáculos: Obstacle Challenge (`CAZA_NUMERO1.ino`) <a id="estrategia-obstaculos"></a>
+## 3.3 Estrategia de Obediencia a Obstáculos: Obstacle Challenge (`OBSTACULO_2.ino`) <a id="estrategia-obstaculos"></a>
 La ronda de obstáculos (Obstacle Challenge) eleva exponencialmente la complejidad del sistema respecto a la ronda abierta: el vehículo ya no solo debe navegar dentro del carril delimitado por las paredes, sino también **detectar, clasificar y evadir dinámicamente obstáculos cúbicos de color rojo y verde** distribuidos de forma aleatoria a lo largo de las tres vueltas reglamentarias.
 Para cumplir con las normas de la WRO Future Engineers 2026:
 - **Obstáculo Rojo (ID 1):** Obliga a pasar por su flanco derecho (dejando el obstáculo a la izquierda del robot).
 - **Obstáculo Verde (ID 2):** Obliga a pasar por su flanco izquierdo (dejando el obstáculo a la derecha del robot).
-El firmware `CAZA_NUMERO1.ino` adopta una arquitectura de **control híbrido concurrente**: un lazo inercial de alta frecuencia gobernado por FreeRTOS en el **Core 0**, enlazado a un planificador reactivo en el **Core 1** que interconecta la visión por IA de la HuskyLens 2, el algoritmo proporcional de aproximación ("Modo Cazador"), un secuenciador de maniobra evasiva determinista en 5 etapas y un cerrojo de sentido de carrera para evitar desorientaciones en pista.
+
+El firmware oficial de competición **`OBSTACULO_2.ino`** (evolución optimizada del prototipo inicial [`CAZA_NUMERO1.ino`](./src/CLOSECHALLENGE/legacy/CAZA_NUMERO1.ino) preservado en la carpeta `legacy/`) adopta una arquitectura de **control híbrido concurrente en FreeRTOS**: un lazo inercial de alta frecuencia en el **Core 0** (500 Hz), enlazado a un planificador reactivo en el **Core 1** que interconecta la visión por IA de la HuskyLens 2 cada 30 ms, un **algoritmo cazador proporcional con ganancias desacopladas por color**, una **rutina de cabeceo/barrido activo sinusoidal para búsqueda de cubos**, y un **secuenciador de maniobra evasiva en 5 etapas**.
+
 ```mermaid
 flowchart TD
-    A([Inicio de Ronda Cerrada]) --> B[Navegación Base en Recta]
+    A([Inicio de Ronda Cerrada]) --> B[Navegación Base en Recta / Cabeceo Activo]
     B --> C{¿HuskyLens detecta Bloque?}
     C -- No --> B
-    C -- Sí --> D[Filtrado Espacial de Borde: X < 10 o X > 630]
+    C -- Sí --> D[Filtro Espacial y de Tamaño: Ancho >= 70 px]
     D --> E{¿Pasa Máscara de Exclusión?}
     E -- No --> B
-    E -- Sí --> F["Modo Cazador Proporcional (KP = 0.05)"]
+    E -- Sí --> F["Modo Cazador Proporcional (KP_CENTRAR = 0.005)"]
     F --> G{¿Ancho Bloque >= 180 px?}
     G -- No --> F
-    G -- Sí --> H{¿Desviación Angular > 200°?}
-    H -- Sí --> I[Pre-Alineación en S: Retroceso 2 Fases]
-    H -- No --> J[Frenado Activo de Inercia 500 ms]
-    I --> J
-    J --> K["Coreografía Evasiva en 5 Etapas (Escape / Retorno / Reversa)"]
-    K --> L[Ventana de Inmunidad Ultrasónica 1500 ms]
-    L --> M[Bloqueo Permanente de Sentido Global de Carrera]
+    G -- Sí --> H["Fase 0: Latigazo Evasivo Proporcional (KP_ROJO=0.009 / KP_VERDE=0.010)"]
+    H --> I["Fase 1: Escape Diagonal de Seguridad (100 ms)"]
+    I --> J["Fase 2: Retorno Consciente y Simétrico por Color"]
+    J --> K["Fase 3: Alineación Pre-Reversa con PID (1000 ms)"]
+    K --> L["Fase 4: Reversa Post-Esquive de Desenganche (1300 ms)"]
+    L --> M["Fase 5: Cabeceo Activo de Búsqueda de Nuevos Cubos (1500 ms)"]
     M --> B
 ```
 <a id="obstaculos-modulo1-inercial"></a>
@@ -1161,74 +1162,51 @@ $$\text{Validez}(\text{Bloque}) = \begin{cases} \text{FALSO} & \text{si } (\text
 > 🛡️ **Mitigación de Riesgo de Ingeniería:**
 > **Para mitigar el riesgo de falsos positivos ópticos, detecciones erróneas por reflejos especulares en los muros blancos y virajes bruscos prematuros**, el software evalúa una máscara de exclusión espacial que anula detecciones en bordes extremos ($X < 10\text{ px}$ y $X > 630\text{ px}$) y exige una persistencia mínima de 3 ciclos de inferencia ($100\text{ ms}$) antes de autorizar la transición de la máquina de estados hacia el modo de evasión activa.
 
-###### B. Ley de Control del Modo Cazador Proporcional (Centrado Dinámico)
+###### B. Ley de Control del Modo Cazador Proporcional (Centrado Dinámico y Latigazo Desacoplado)
 En lugar de esquivar de inmediato con una trayectoria curva incierta, el vehículo primero **apunta directamente hacia el centro del obstáculo** para enfrentar la maniobra en ángulo perfectamente normal ($90^\circ$ respecto a la cara del pilar).
 El error de desalineación horizontal respecto al centro óptico ($X_{\text{ref}} = 320 \text{ px}$) se define como:
 
 $$e_X(t) = X_c(t) - X_{\text{ref}}$$
-La corrección aplicada sobre el ángulo de la servodirección Ackermann ($\theta_{\text{servo}}$) se rige por un controlador Proporcional puro:
+La corrección aplicada sobre el ángulo de la servodirección Ackermann ($\theta_{\text{servo}}$) desacopla la ganancia de persecución lejana de las ganancias de latigazo evasivo:
 
-$$\Delta \theta(t) = K_p \cdot e_X(t)$$
+$$\Delta \theta(t) = \begin{cases} K_{p,\text{centrar}} \cdot e_X(t) & \text{si } W_{\text{px}} < W_{\text{inicio\_esquive}} \\ K_{p,\text{esquive}} \cdot e_{X,\text{extremo}} & \text{si } W_{\text{px}} \ge W_{\text{inicio\_esquive}} \end{cases}$$
 
-$$\theta_{\text{servo}}(t) = \text{constrain}\left(\theta_0 + \Delta \theta(t), \, \theta_{\min}, \, \theta_{\max}\right)$$
+$$\theta_{\text{servo}}(t) = \text{constrain}\left(\theta_0 + \Delta \theta(t), \, \theta_0 - \delta_{\max}, \, \theta_0 + \delta_{\max}\right)$$
 
 Donde:
+- $\theta_0 = 96^\circ$ (Posición central calibrada de la servodirección).
+- $\delta_{\max} = 21^\circ$ (Deflexión máxima física admitida por el chasis).
+- $K_{p,\text{centrar}} = 0.005$ (Ganancia de persecución lejana y centrado suave).
+- $K_{p,\text{esquive, rojo}} = 0.009$ vs $K_{p,\text{esquive, verde}} = 0.010$ (Ganancias independientes de evasión rápida según color).
+- $W_{\min} = 70\text{ px}$ (Filtro que ignora objetos lejanos o reflejos ópticos menores).
+- $W_{\text{inicio\_esquive}} = 180\text{ px}$ (Gatillo de inicio de latigazo evasivo).
 
-- $\theta_0 = 90^\circ$ (Ruedas directrices en paralelo al chasis).
-- $K_p = 0.05^\circ/\text{px}$ (Ganancia experimental que evita oscilaciones bruscas a alta velocidad).
-- Límites de saturación: $\theta_{\min} = 60^\circ$ y $\theta_{\max} = 120^\circ$ (recorrido restringido de $\pm 30^\circ$ para evitar cabeceo dinámico excesivo).
+###### C. Rutina de Barrido y Cabeceo Activo (*Active Sweeping / Scanning*)
+Al concluir una curva de 90° o finalizar la maniobra evasiva de un pilar, el robot activa automáticamente una **rutina de cabeceo sinusoidal (`HABILITAR_CABECEO = true`)**:
+Durante un intervalo de $1500\text{ ms}$, el servomotor barre un arco oscilatorio de $\pm 40^\circ$ con velocidad angular controlada ($\omega_{\text{sweep}} = 0.006$) y un periodo de estabilización inercial de $300\text{ ms}$. Esto amplía el campo de visión efectivo de la HuskyLens 2, garantizando la detección inmediata del siguiente obstáculo aunque haya quedado fuera del eje óptico frontal.
 
-###### C. Estimación de Proximidad por Proyección de Ancho ($W$)
-La distancia relativa $D_{\text{rel}}$ entre la cámara y el pilar es inversamente proporcional al ancho proyectado en píxeles ($W$) según el modelo pinhole:
-
-$$D_{\text{rel}} \approx \frac{f \cdot W_{\text{real}}}{W_{\text{px}}}$$
-
-En lugar de computar divisiones de punto flotante en tiempo real, se define un umbral geométrico de activación de evasión:
-
-$$W_{\text{px}} \ge 180 \text{ px}$$
-Cuando el ancho del bloque alcanza $180\text{ px}$, el frontal del vehículo se sitúa a aproximadamente $12\text{ cm}$ del pilar, garantizando suficiente espacio para desacelerar y quebrar la dirección antes del contacto físico.
-
-##### 2. Implementación en C++ (`Core 1`)
+##### 2. Implementación en C++ (`Core 1` - `OBSTACULO_2.ino`)
 ```cpp
-// Parámetros de Calibración Óptica y Control
-const int CENTRO_OPTICO_X       = 320;
-const int UMBRAL_ANCHO_EVASION  = 180;  // Ancho en píxeles para gatillar evasión
-const float KP_CENTRAR          = 0.05; // Ganancia proporcional de seguimiento
-const int ANGULO_CENTRO         = 90;   // Punto medio de dirección (grados)
-// Límites mecánicos de guiado en aproximación
-const int ANGULO_MIN_CAZA       = 60;
-const int ANGULO_MAX_CAZA       = 120;
-void procesarVisionHuskyLens() {
-  // Petición no bloqueante de bloques analizados por la red neuronal
-  if (huskylens.request()) {
-    while (huskylens.available()) {
-      HUSKYLENSResult bloque = huskylens.read();
-      // 1. Filtrado Espacial de Bordes Ciegos (Rechazo de reflejos laterales)
-      if (bloque.ID == 1 && bloque.xCenter < 10)  continue; // Ignora rojo en extremo izq
-      if (bloque.ID == 2 && bloque.xCenter > 630) continue; // Ignora verde en extremo der
-      // 2. Discriminación de Identificador Válido (ID 1: Rojo / ID 2: Verde)
-      if (bloque.ID == 1 || bloque.ID == 2) {
-        
-        // Cálculo del error de centrado en el plano focal
-        float error_x = bloque.xCenter - CENTRO_OPTICO_X;
-        
-        // Ley de control proporcional para la servodirección
-        int deflexion = (int)(error_x * KP_CENTRAR);
-        int angulo_consigna = constrain(ANGULO_CENTRO + deflexion, ANGULO_MIN_CAZA, ANGULO_MAX_CAZA);
-        
-        // Actuación en servodirección Ackermann
-        ajustarServo(angulo_consigna);
-        // 3. Verificación de Disparo de Evasión por Tamaño de Bounding Box
-        if (bloque.width >= UMBRAL_ANCHO_EVASION) {
-          // Bloque suficientemente cerca: detener aproximación y ejecutar evasión
-          frenarMotor();
-          ejecutarSecuenciaEvasion(bloque.ID);
-          return; // Salida inmediata para transferir control a la coreografía
-        }
-      }
-    }
-  }
-}
+// =========================================================
+// ---> PARÁMETROS DE CABECEO (BÚSQUEDA DE CUBOS) <---
+// =========================================================
+bool HABILITAR_CABECEO       = true;    // Activa o desactiva la función
+unsigned long TIEMPO_CABECEO = 1500;    // ms de vaivén al terminar maniobras
+float AMPLITUD_CABECEO       = 40.0;    // Amplitud angular del barrido
+float VELOCIDAD_CABECEO      = 0.006;   // Frecuencia del vaivén sinusoidal
+unsigned long TIEMPO_ESTABILIZACION = 300; // ms para calmar inercia
+
+// =========================================================
+// ---> CONTROL DE ESQUIVE VISUAL FLUIDO (CAZADOR) <---
+// =========================================================
+float KP_CENTRAR        = 0.005;  // Perseguir y centrar el cubo desde lejos
+float KP_ESQUIVE_ROJO   = 0.009;  // Latigazo para esquivar ROJO
+float KP_ESQUIVE_VERDE  = 0.010;  // Latigazo para esquivar VERDE
+
+int MIN_WIDTH_ESQUIVE    = 70;   // Menor a 70 px = lo ignora (filtro de ruido)
+int WIDTH_INICIO_ESQUIVE = 180;  // Entre 70 y 180 centra; >= 180 gatilla evasión
+int BORDE_IZQ            = -100; // Objetivo extremo izquierdo
+int BORDE_DER            = 740;  // Objetivo extremo derecho
 ```
 <a id="obstaculos-modulo3-coreografia"></a>
 
@@ -1269,18 +1247,27 @@ $$\text{Setpoint}_{\text{retorno}} = \text{Setpoint}_{\text{base}} \pm (55^\circ
 | **4** | **Retorno Diagonal** | $\text{Setpoint} \pm 55^\circ$ (Deflexión contraria $\mp 31^\circ$) | $PWM_{\text{motor}} = 160$ | $1200\text{ ms}$ | Reinsertar el chasis hacia la línea media del carril. |
 | **5** | **Reversa de Desenganche** | $\text{Setpoint}_{\text{base}}$ (Servo Neutro $96^\circ$) | $-PWM_{\text{reversa}} = -100$ | $1000\text{ ms}$ | Eliminar efecto látigo y despejar distancia frontal con paredes. |
 
-##### 2. Implementación en C++ (`Core 1`)
+##### 2. Implementación en C++ (`Core 1` - `OBSTACULO_2.ino`)
 ```cpp
-// Parámetros de Calibración Cinemática de la Coreografía (CAZA_NUMERO1.ino)
-const int SERVO_CENTRO                  = 96;
-const int MAX_DEFLEXION                 = 31;
-const float GRADOS_ESQUIVE              = 55.0; // Desfase angular inercial
-const unsigned long TIEMPO_FRENO        = 500;
-const unsigned long TIEMPO_DIAG_SALIDA  = 900;
-const unsigned long TIEMPO_RECTO_REBASE = 100;
-const unsigned long TIEMPO_DIAG_REGRESO = 1200;
-const unsigned long TIEMPO_REVERSA_FINAL= 1000;
-const int VELOCIDAD_REVERSA_FINAL       = 100;
+// Parámetros de Calibración Cinemática de la Coreografía (OBSTACULO_2.ino)
+const int SERVO_CENTRO                    = 96;
+const int MAX_DEFLEXION                   = 21;
+int VELOCIDAD_MOTOR                       = 80;
+
+// Escape y Retorno Consciente por Color
+unsigned long TIEMPO_ESCAPE               = 100;  // ms extra en diagonal para librar RWD
+float MULTIPLICADOR_ANGULO_RETORNO_ROJO   = 2.0;
+float MULTIPLICADOR_TIEMPO_RETORNO_ROJO   = 1.0;
+unsigned long MAX_TIEMPO_RETORNO_ROJO     = 2000;
+
+float MULTIPLICADOR_ANGULO_RETORNO_VERDE  = 2.0;
+float MULTIPLICADOR_TIEMPO_RETORNO_VERDE  = 0.7;
+unsigned long MAX_TIEMPO_RETORNO_VERDE    = 2000;
+
+// Alineación Inercial PID y Reversa Post-Esquive
+unsigned long TIEMPO_ALINEACION           = 1000; // ms recto para enderezar chasis con PID
+unsigned long TIEMPO_REVERSA_POST_ESQUIVE = 1300; // ms de reversa de desenganche
+int VELOCIDAD_REVERSA_ESQUIVE             = 90;
 
 // --- Rutina de Pre-Alineación en S ante Entrada Angular Desfasada ---
 void preAlineacionCurvaS() {
@@ -1816,7 +1803,8 @@ cd WRO-FUTURE-ENGINE-NEXUS-2026
 
 # 2. Abrir el archivo .ino correspondiente en Arduino IDE
 # Para la Ronda Abierta: ./src/OPENCHALLENGE/NUMERO4.ino
-# Para la Ronda de Obstáculos: ./src/CLOSECHALLENGE/CAZA_NUMERO1.ino
+# Para la Ronda de Obstáculos (Oficial v2.0): ./src/CLOSECHALLENGE/OBSTACULO_2.ino
+# (Versión experimental histórica v1.0 disponible en: ./src/CLOSECHALLENGE/legacy/CAZA_NUMERO1.ino)
 
 # 3. Conectar el ESP32-S3 a la PC mediante cable USB-C de datos
 # 4. Seleccionar la placa "ESP32S3 Dev Module" y el puerto COM asignado
@@ -1882,7 +1870,9 @@ WRO-FUTURE-ENGINE-NEXUS-2026/
 │   ├── OPENCHALLENGE/            # Firmware para Ronda Abierta (Lane Following)
 │   │   └── NUMERO4.ino           # FSM determinista, odometría MPU6050 y escape US
 │   ├── CLOSECHALLENGE/           # Firmware para Ronda Cerrada (Obstacle Avoidance)
-│   │   └── CAZA_NUMERO1.ino      # Concurrencia FreeRTOS Core 0/1, HuskyLens IA y Evasión
+│   │   ├── OBSTACULO_2.ino       # Firmware Oficial Competición: Concurrencia FreeRTOS, Modo Cazador y Cabeceo Activo
+│   │   └── legacy/               # Versiones anteriores y prototipos de software
+│   │       └── CAZA_NUMERO1.ino  # Prototipo inicial de aproximación y evasión determinista v1.0
 │   ├── simulacion_wro.m          # Simulación MATLAB/Octave Ronda Abierta (3 vueltas PID)
 │   ├── simulacion_wro_expandida.m # Simulación MATLAB/Octave Ronda Expandida (Pared móvil)
 │   └── simulacion_wro_cerrada.m   # Simulación MATLAB/Octave Ronda Cerrada (Slalom obstáculos)
@@ -1927,7 +1917,8 @@ WRO-FUTURE-ENGINE-NEXUS-2026/
 | Archivo / Sketch | Propósito y Entorno | Descripción Técnica y Módulos | Código Fuente |
 | :--- | :--- | :--- | :---: |
 | [`OPENCHALLENGE/NUMERO4.ino`](./src/OPENCHALLENGE/NUMERO4.ino) | **Open Challenge** (C++ / FreeRTOS) | FSM determinista de 12 esquinas, odometría MPU6050 a 500 Hz en Core 0, escape reactivo ultrasónico | [💻 Ver Sketch](./src/OPENCHALLENGE/NUMERO4.ino) |
-| [`CLOSECHALLENGE/CAZA_NUMERO1.ino`](./src/CLOSECHALLENGE/CAZA_NUMERO1.ino) | **Obstacle Challenge** (C++ / FreeRTOS) | FreeRTOS concurrente, visión HuskyLens 2 IA (UART Serial1), Modo Cazador y coreografía evasiva en 5 etapas | [💻 Ver Sketch](./src/CLOSECHALLENGE/CAZA_NUMERO1.ino) |
+| [`CLOSECHALLENGE/OBSTACULO_2.ino`](./src/CLOSECHALLENGE/OBSTACULO_2.ino) | **Obstacle Challenge v2.0 Oficial** (C++ / FreeRTOS) | Firmware oficial de carrera: ganancias KP diferenciadas por color, barrido activo de cabeceo, retorno consciente y reversa post-esquive | [💻 Ver Sketch](./src/CLOSECHALLENGE/OBSTACULO_2.ino) |
+| [`CLOSECHALLENGE/legacy/CAZA_NUMERO1.ino`](./src/CLOSECHALLENGE/legacy/CAZA_NUMERO1.ino) | **Obstacle Challenge v1.0 Legacy** (C++ / FreeRTOS) | Prototipo histórico inicial de aproximación reactiva y evasión en 5 etapas | [📁 Ver Sketch Histórico](./src/CLOSECHALLENGE/legacy/CAZA_NUMERO1.ino) |
 | [`simulacion_wro.m`](./src/simulacion_wro.m) | **Simulación Abierta** (MATLAB / Octave) | Modelo cinemático de 3 vueltas en 41 s con respuesta PID ante desvío lateral forzado de $+4\text{ cm}$ | [📄 Ver Script](./src/simulacion_wro.m) |
 | [`simulacion_wro_expandida.m`](./src/simulacion_wro_expandida.m) | **Simulación Expandida** (MATLAB / Octave) | Adaptación dinámica de trayectoria ante desplazamiento físico de la isla central ($\Delta x = +0.20, \Delta y = -0.15$) | [📄 Ver Script](./src/simulacion_wro_expandida.m) |
 | [`simulacion_wro_cerrada.m`](./src/simulacion_wro_cerrada.m) | **Simulación Cerrada** (MATLAB / Octave) | Slalom cinemático continuo en 3 vueltas sorteando 4 pilares (rojos y verdes) sin colisiones | [📄 Ver Script](./src/simulacion_wro_cerrada.m) |
@@ -2002,7 +1993,8 @@ WRO-FUTURE-ENGINE-NEXUS-2026/
 * **v1.0.0 (Prototipo Inicial Alpha - PLA):** Chasis monolítico 100% impreso en 3D PLA; dirección con holguras mecánicas; alimentación por dos baterías comerciales en serie con reguladores en cascada. Descubrimiento de fallos por retorno inductivo.
 * **v1.5.0 (Transición Híbrida - PETG & Componentes Inyectados):** Migración a PETG estructural para absorción de impactos; incorporación del diferencial cónico trasero y manguetas inyectadas de precisión; adopción del servomotor metálico MG90S.
 * **v2.0.0 (Arquitectura Eléctrica Desacoplada):** Implementación de la topología de 3 ramas independientes (XL4015, LM2596, XL6009) con elevación a 14V para el motor Makeblock; banco de baterías industrial EVE 18650 2S2P (7000 mAh).
-* **v2.5.0 (Firmware Concurrente FreeRTOS Oficial WRO 2026):** Arquitectura simétrica multihilo: Core 0 dedicado a la IMU MPU6050 a 500 Hz con auto-rescate en bus I2C; Core 1 gestionando visión por HuskyLens 2, modo cazador y coreografía evasiva determinista en 5 etapas.
+* **v2.5.0 (Firmware Concurrente FreeRTOS Inicial):** Arquitectura simétrica multihilo con Core 0 a 500 Hz para la IMU MPU6050 y Core 1 para navegación reactiva y visión HuskyLens 2 con `CAZA_NUMERO1.ino`.
+* **v2.6.0 (Firmware Oficial de Obstáculos v2.0 – Competición Nacional):** Despliegue de [`OBSTACULO_2.ino`](./src/CLOSECHALLENGE/OBSTACULO_2.ino) (archivando la versión experimental inicial en [`legacy/CAZA_NUMERO1.ino`](./src/CLOSECHALLENGE/legacy/CAZA_NUMERO1.ino)); incorporación de barrido angular activo (*cabeceo*) para búsqueda de pilares, ganancias proporcionales desacopladas por color (`KP_ESQUIVE_ROJO` vs `KP_ESQUIVE_VERDE`), retorno consciente dinámico y reversa de desenganche post-esquive.
 
 <p align="right"><a href="#indice-general">⬆️ Volver al Índice</a></p>
 
