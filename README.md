@@ -125,6 +125,13 @@ flowchart TD
 ## Nuestro Equipo (INIAR) <a id="nuestro-equipo"></a>
 Team Nexus está integrado por estudiantes universitarios del **Instituto de Inteligencia Artificial y Robótica del estado Zulia "Dr. Héctor Rafael Rojas" (INIAR)**, combinando experiencia práctica en torneos nacionales y mundiales:
 
+| 📸 Fotografía Oficial del Equipo | 🤪 Detrás de Cámaras: El Estrés de Boxes y Pasión en Pista |
+| :---: | :---: |
+| <img src="./t-fotos/FOTO%20GRUPAL%20DE%20TEAM%20NEXUS.jpg" width="400" alt="Fotografía Oficial Team Nexus INIAR" style="border-radius: 8px; border: 1px solid #444; box-shadow: 0 4px 10px rgba(0,0,0,0.2);"> | <img src="./Otro/FOTO%20LOCA.jpeg" width="400" alt="Detrás de Cámaras Team Nexus en Pista" style="border-radius: 8px; border: 1px solid #444; box-shadow: 0 4px 10px rgba(0,0,0,0.2);"> |
+| *Team Nexus en el laboratorio de robótica de INIAR (Zulia, Venezuela).* | *Momentos de adrenalina y humor durante los ensayos en pista: ¡cuidando a "Smoke" de no ser pisado en plena calibración de giros!* |
+
+<br>
+
 ### 👤 David Ocando <a id="david-ocando"></a>
 **Líder de Arquitectura Eléctrica, Gestión de Potencia y Co-Administrador Digital**
 <div align="center">
@@ -307,6 +314,12 @@ Uno de los criterios esenciales para garantizar la fiabilidad del vehículo ante
   * Estos tornillos atraviesan separadores cilíndricos en PETG que fijan con precisión la luz vertical entre niveles: un espacio libre de **$15\text{ mm}$ entre el Piso 1 y el Piso 2** (para dar cabida rasante al motor y servo), y un despeje de **$19\text{ mm}$ entre el Piso 2 y el Piso 3** (para albergar el disipador del L298N, la HuskyLens 2 y el cableado de la IMU).
   * Este diseño en columna pasante distribuye las cargas de flexión a lo largo de toda la altura del vehículo ($110\text{ mm}$), evitando el pandeo estructural.
 * **Tuercas de Seguridad Autoblocantes (Nyloc):** Cada unión crítica y remate de las columnas de 35 mm incorpora tuercas con inserto elástico de nylon alojadas en cavidades hexagonales empotradas en el PETG, eliminando por completo la posibilidad de aflojamiento por resonancia mecánica.
+
+<div align="center">
+  <img src="./Otro/PROCESO%203.jpg" alt="Ensamble del Chasis Rodante Base Piso 1" width="540" style="border-radius: 8px; border: 1px solid #444; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+  <br>
+  <i><b>Figura 1.2:</b> Chasis rodante base (Piso 1) completamente ensamblado en banco de trabajo: integración de la placa inferior en PETG, bancada de motor Makeblock, timonería de dirección Ackermann con servomotor TowerPro MG90S, engranajes cónicos atacando la caja diferencial trasera y las columnas pasantes M3 listas para recibir los niveles intermedio y superior.</i>
+</div>
 
 ## 1.3 Geometría de Dirección Ackermann Híbrida y Validación de Barrido <a id="geometria-ackermann"></a>
 
@@ -523,6 +536,12 @@ Para el eje motriz (RWD), se requería maximizar dos variables opuestas: velocid
   $$F_{max} = \mu_s \cdot N_{trasero} = 0.70 \times 4.64\text{ N} \approx \mathbf{3.25\text{ Newtons}}$$
   La banda de rodadura de caucho natural vulcanizado de LEGO EV3 (ancho de $14\text{ mm}$) ofrece una mayor área de huella de contacto (*tire contact patch*), asegurando que el torque transmitido por la transmisión cónica ($\approx 0.0698\text{ Nm}$) se convierta íntegramente en aceleración lineal sin derrapes parásitos en la salida de las curvas.
 
+<div align="center">
+  <img src="./Otro/CAUCHO%20CON%20EJE.jpg" alt="Acople Mecánico de Rueda Trasera y Eje en Cruz" width="380" style="border-radius: 8px; border: 1px solid #444; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+  <br>
+  <i><b>Figura 1.5:</b> Detalle del acople mecánico de la rueda de tracción de Ø 43 mm montada rígidamente sobre el eje transversal de sección en cruz, con el entorno de verificación dimensional en Autodesk Fusion 360 en segundo plano.</i>
+</div>
+
 ## 1.7 Diseños Alternativos Considerados, Compensaciones de Diseño y Selección de Componentes <a id="alternativas-mecanicas"></a>
 Bajo la rúbrica oficial de la WRO, la calidad de ingeniería no se mide por llegar a una solución por azar, sino por la rigurosidad con la que se descartaron alternativas inviables mediante análisis cuantitativo y experimentación en banco de pruebas:
 
@@ -715,6 +734,12 @@ Para asegurar que la corriente fluya sin pérdidas resistivas ni riesgos térmic
   1. **Modularidad y Mantenimiento Inmediato en Boxes:** Si un regulador requiere calibración de voltaje fino o sustitución urgente entre mangas oficiales, se desacopla en segundos utilizando un destornillador plano de precisión, sin depender de un cautín ni estresar térmicamente las pistas de cobre.
   2. **Inmunidad a Fracturas por Vibración:** Las borneras mecánicas aprisionan el conductor multifilamento de 18 AWG de forma homogénea, evitando las roturas por fatiga mecánica que suelen sufrir las soldaduras rígidas expuestas a las vibraciones continuas del chasis sobre la pista.
 * **Segregación de Líneas Lógicas:** Los buses de comunicación sensible (I2C a 400 kHz y UART a 115,200 baudios) utilizan cables flexibles de 24 AWG, enrutados por canalizaciones separadas de las líneas de potencia de 18 AWG para erradicar cualquier acoplamiento inductivo (*crosstalk* o ruido EMI).
+
+<div align="center">
+  <img src="./Otro/PROCESO%202.jpeg" alt="Integración Eléctrica y Cableado en Banco de Taller" width="480" style="border-radius: 8px; border: 1px solid #444; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+  <br>
+  <i><b>Figura 2.2:</b> Proceso de ensamble e integración eléctrica en banco de laboratorio: David y José pelando y organizando las líneas de potencia con cable automotriz 18 AWG, calibrando tensiones de corte con multímetro digital y conectando las etapas de regulación hacia el banco 2S2P y driver L298N.</i>
+</div>
 
 ## 2.5 Selección, Compensaciones y Ubicación de Sensores Mediante la Geometría del Campo <a id="justificacion-sensores"></a>
 La arquitectura sensorial de **"Smoke"** opera bajo un esquema de **fusión sensorial distribuida**: combina visión artificial acelerada por hardware embebido para la clasificación semántica de obstáculos, con una red acústica de tiempo de vuelo para el mantenimiento de carril y telemetría inercial de alta frecuencia en tiempo real.
@@ -1673,6 +1698,13 @@ flowchart LR
     class P,A,S,V proc;
 ```
 
+<div align="center">
+  <img src="./Otro/PROCESO.jpeg" alt="Iteración y Diagnóstico de Conexiones en Pista Oficial" width="460" style="border-radius: 8px; border: 1px solid #444; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+  <br>
+  <i><b>Figura 4.1:</b> Proceso continuo de iteración técnica en pista: David y José diagnosticando el comportamiento dinámico y ajustando las conexiones en las borneras del robot al pie del circuito reglamentario entre mangas de prueba en INIAR.</i>
+</div>
+<br>
+
 | Subsistema | Problema Inicial Identificado | Causa Raíz Técnica | Solución de Ingeniería Aplicada | Impacto Técnico en "Smoke" |
 | :--- | :--- | :--- | :--- | :--- |
 | **⚡ Potencia** | **Destrucción de 3 Step-Downs (Origen del nombre "Smoke")** | Picos de sobretensión transitoria y retornos inductivos generados por el frenado del motor DC quemaron tres módulos en cascada. | Rediseño a **3 ramas independientes** (XL4015 para lógica a 5V, LM2596 para actuadores a 5V y XL6009 para tracción a 14V) + **Masa Común Unificada**. | **100% de fiabilidad eléctrica:** Cero reinicios involuntarios (*brownouts*) y rieles de alimentación libres de rizado parásito. |
@@ -1831,7 +1863,12 @@ WRO-FUTURE-ENGINE-NEXUS-2026/
 │   ├── Servor Arm.stl            # Brazo de reenvío para servomotor TowerPro MG90S
 │   ├── Steering System.stl       # Mecanismo de timonería Ackermann híbrida
 │   └── Readme.md                 # Parámetros de impresión FDM y tolerancias en PETG
-├── Otro/                         # Registro fotográfico de prototipos descartados y componentes
+├── Otro/                         # Registro fotográfico de prototipos, componentes y proceso
+│   ├── CAUCHO CON EJE.jpg        # Detalle de acople mecánico de rueda trasera a eje transversal
+│   ├── FOTO LOCA.jpeg            # Detrás de cámaras y anécdotas de boxes durante pruebas en pista
+│   ├── PROCESO.jpeg              # Proceso 1: Diagnóstico e iteración en pista reglamentaria
+│   ├── PROCESO 2.jpeg            # Proceso 2: Ensamble e integración eléctrica en banco de taller
+│   ├── PROCESO 3.jpg             # Proceso 3: Chasis rodante base (Piso 1) completamente montado
 │   ├── SISTEMA DE DIRECCION DESCARTADO.jpg # Fase 0: Piñón-cremallera preliminar en CAD
 │   ├── CHASIS DESCARTADO 1.jpg   # Fase 1: Primer chasis físico monocapa delgado
 │   ├── SISTEMA DE DIRECCION 2 DESCARTADO.jpg # Fase 1: Dirección 100% FDM (fracturada)
@@ -1916,6 +1953,11 @@ WRO-FUTURE-ENGINE-NEXUS-2026/
 
 | Archivo / Fotografía | Etapa de Desarrollo / Componente | Descripción de Ingeniería | Enlace |
 | :--- | :--- | :--- | :---: |
+| [`CAUCHO CON EJE.jpg`](./Otro/CAUCHO%20CON%20EJE.jpg) | Dinámica de Tracción | Acople mecánico de la rueda de 43 mm en eje transversal con diseño en Fusion 360 | [📸 Ver Foto](./Otro/CAUCHO%20CON%20EJE.jpg) |
+| [`FOTO LOCA.jpeg`](./Otro/FOTO%20LOCA.jpeg) | Equipo / Detrás de Cámaras | Momentos de adrenalina y humor durante las pruebas en pista de carreras | [📸 Ver Foto](./Otro/FOTO%20LOCA.jpeg) |
+| [`PROCESO.jpeg`](./Otro/PROCESO.jpeg) | Proceso de Iteración | Diagnóstico y ajuste de conexiones en borneras al pie de la pista reglamentaria | [📸 Ver Foto](./Otro/PROCESO.jpeg) |
+| [`PROCESO 2.jpeg`](./Otro/PROCESO%202.jpeg) | Integración Eléctrica | Ensamble en banco: cableado 18 AWG automotriz, multímetro y reguladores DC-DC | [📸 Ver Foto](./Otro/PROCESO%202.jpeg) |
+| [`PROCESO 3.jpg`](./Otro/PROCESO%203.jpg) | Ensamble Mecánico | Chasis rodante base (Piso 1) terminado: dirección Ackermann, motor y diferencial | [📸 Ver Foto](./Otro/PROCESO%203.jpg) |
 | [`SISTEMA DE DIRECCION DESCARTADO.jpg`](./Otro/SISTEMA%20DE%20DIRECCION%20DESCARTADO.jpg) | Fase 0 (CAD) | Primer diseño preliminar de piñón-cremallera; descartado por inviabilidad cinemática | [📸 Ver Foto](./Otro/SISTEMA%20DE%20DIRECCION%20DESCARTADO.jpg) |
 | [`CHASIS DESCARTADO 1.jpg`](./Otro/CHASIS%20DESCARTADO%201.jpg) | Fase 1 (Prototipo 1) | Chasis monocapa delgado y flexible; soportes de motor endebles | [📸 Ver Foto](./Otro/CHASIS%20DESCARTADO%201.jpg) |
 | [`SISTEMA DE DIRECCION 2 DESCARTADO.jpg`](./Otro/SISTEMA%20DE%20DIRECCION%202%20DESCARTADO.jpg) | Fase 1 (Dirección FDM) | Piezas diminutas 100% 3D que se fracturaron durante las pruebas | [📸 Ver Foto](./Otro/SISTEMA%20DE%20DIRECCION%202%20DESCARTADO.jpg) |
